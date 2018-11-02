@@ -13,21 +13,24 @@
 #include "kdtree.h"
 #define NUM_THREADS 5
 #include <stdbool.h>
-
-#define SIZE_OBJECT 126976
-#define AIR_FRICTION 0
+float acc1;
+float acc2;
+int INDEX_NRmore;
+#define SIZE_OBJECT 7936 //126976
+float springlength =  0.004;
+#define AIR_FRICTION 0.99999
 #define FIRST 1
 #define WORK 0
 float fovy = 45.0;
 float dNear = 100;
 float dFar = 2000;
-double F_total[3][SIZE_OBJECT*64] ;
-int totalneigbours[SIZE_OBJECT*64];
+double F_total[3][SIZE_OBJECT*104] ;
+int totalneigbours[SIZE_OBJECT*104];
 float     vertexpoint_g_ventral[SIZE_OBJECT][3];
 struct state_vector * springVector;
 struct state_vector ** state_result_worm_ventral_feather;
 struct state_vector  ** state_result_worm_ventral ;
-extern int KvvVENTALA[SIZE_OBJECT*64];
+extern int KvvVENTALA[SIZE_OBJECT*8];
 int llll = 0;
 int i; 
 int feather_once = 1;
@@ -37,8 +40,9 @@ Material *material;
 
 
 float springConstant =   200.202f;
+
 float frictionConstant =    0.2200000f;
-float springlength =  63.712;
+
 float cameraEye[3] = {0.0, 0.0, 1000.0};
 float lightRotation[16] = {1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1};
 float cameraLookAt[4] = {0.0, 0.0, 0.0, 1.0};
@@ -160,22 +164,43 @@ void reshape(int w, int h){
     glViewport(0, 0, w, h);
 } 
 
-
+int acc1once= 1;
 void taskworm(void )
 {
- 
+
 int k;
 for(k = 0; k <= totalneigbours[llll]; k++)
-{
- 	
-	INDEX_NR =  (state_result_worm_ventral_feather[llll][k].INDEX_NR);
-	// printf("totalneigbours[llll]  %d :: number %d :: index_____ = %d\n",totalneigbours[llll],llll,INDEX_NR);
-
-	if(state_result_worm_ventral[INDEX_NR]->force_sign != -1 && state_result_worm_ventral[INDEX_NR]->force_sign != 1 && INDEX_NR >0)
+{	// m*a = -k*s
+ 	//10*a= -k * 0.004 solve k
+if(acc1once == 0)
 	{
-		 if(feather_once == FIRST)
+	if(fabs(acc1) > 0)
+		{		
+		springConstant =   .001 *1;
+//	printf("springConstant = %.10f \n", springConstant);
+		 frictionConstant = 0.002;
+	}
+	}
+acc1once = 0;	
+	// printf("1totalneigbours[llll]  %d :: number %d :: index_____ = %d\n",totalneigbours[llll],llll,INDEX_NR);
+	INDEX_NR =  (state_result_worm_ventral_feather[llll][k].INDEX_NR);
+	
+if(INDEX_NR != llll && INDEX_NR > 0 && INDEX_NR < 1000000 && INDEX_NR != SIZE_OBJECT)
+{
+	//if(state_result_worm_ventral[INDEX_NR]->force_sign != -1 && state_result_worm_ventral[INDEX_NR]->force_sign != 1 && INDEX_NR >0)
+	//{
+		 if(feather_once == FIRST && INDEX_NR > 0)
 		{	
 
+						 if(fabs(F_total[0][INDEX_NR]) > 10 )
+	 				 	  F_total[0][INDEX_NR] =0;
+ 
+		 		 if(fabs(F_total[1][INDEX_NR])  > 10)
+						F_total[1][INDEX_NR] =0;
+
+			 	 if(fabs(F_total[2][INDEX_NR])  > 10)
+						F_total[2][INDEX_NR] =0;
+  //printf("2totalneigbours[llll]  %d :: number %d :: index_____ = %d\n",totalneigbours[llll],llll,INDEX_NR);
 		springVector->pos_new_x = state_result_worm_ventral[INDEX_NR]->pos_new_x - state_result_worm_ventral[llll]->pos_new_x;
 		springVector->pos_new_y = state_result_worm_ventral[INDEX_NR]->pos_new_y - state_result_worm_ventral[llll]->pos_new_y;
 		springVector->pos_new_z = state_result_worm_ventral[INDEX_NR]->pos_new_z - state_result_worm_ventral[llll]->pos_new_z;
@@ -183,7 +208,7 @@ for(k = 0; k <= totalneigbours[llll]; k++)
 
 		float r = length(state_result_worm_ventral[INDEX_NR],state_result_worm_ventral[llll]);
 
-		if ( r != 0    )
+		if ( r != 0  &&   r < 1  )
 		{			
 			F_total[0][INDEX_NR] +=( springVector->pos_new_x  /  r ) * ( r - springlength ) * ( -springConstant );
 			F_total[1][INDEX_NR] += ( springVector->pos_new_y /  r ) * ( r - springlength ) * ( -springConstant );
@@ -209,109 +234,96 @@ for(k = 0; k <= totalneigbours[llll]; k++)
 		state_result_worm_ventral[llll]->force_sign =   1; ; 
 		state_result_worm_ventral[llll]    =  worm_ventral(  state_result_worm_ventral[llll] ,1);
 		
- 		}
-	 	else if(feather_once == WORK )
-		{
-			float r = length(state_result_worm_ventral[INDEX_NR],state_result_worm_ventral[llll]);
 
-			//if(muscle_count % totalneigbours[llll] == 0)
-			//{
-			 printf("state_result_worm position   = [%.10f,%.10f,%.10f] @ number %d \n", state_result_worm_ventral[INDEX_NR]->pos_new_x,state_result_worm_ventral[INDEX_NR]->pos_new_y,state_result_worm_ventral[INDEX_NR]->pos_new_z,llll);
-
-			springVector->pos_new_x = state_result_worm_ventral[llll]->pos_new_x - state_result_worm_ventral[INDEX_NR]->pos_new_x;
-			springVector->pos_new_y = state_result_worm_ventral[llll]->pos_new_y - state_result_worm_ventral[INDEX_NR]->pos_new_y;
-			springVector->pos_new_z = state_result_worm_ventral[llll]->pos_new_z - state_result_worm_ventral[INDEX_NR]->pos_new_z;
-			if ( r != 0    )
-			{
-				F_total[0][INDEX_NR] +=( springVector->pos_new_x  / r ) * ( r - springlength ) * ( -springConstant );
-				F_total[1][INDEX_NR] += ( springVector->pos_new_y  / r ) * ( r - springlength ) * ( -springConstant );
-				F_total[2][INDEX_NR] +=( springVector->pos_new_z  / r ) * ( r - springlength ) * ( -springConstant );
-				
-				F_total[0][llll] +=( springVector->pos_new_x  / r ) * ( r - springlength ) * ( -springConstant );
-				F_total[1][llll] += ( springVector->pos_new_y  / r ) * ( r - springlength) * ( -springConstant );
-				F_total[2][llll] +=( springVector->pos_new_z  / r ) * ( r - springlength ) * ( -springConstant );
-				printf("r = %f\n",r);
-			}
-
-	 		F_total[0][INDEX_NR] +=-(  state_result_worm_ventral[INDEX_NR]->vel_new_x - state_result_worm_ventral[llll]->vel_new_x ) * frictionConstant;
- 			F_total[1][INDEX_NR] += -( state_result_worm_ventral[INDEX_NR]->vel_new_y- state_result_worm_ventral[llll]->vel_new_y ) * frictionConstant;
- 			F_total[2][INDEX_NR] += -(  state_result_worm_ventral[INDEX_NR]->vel_new_z - state_result_worm_ventral[llll]->vel_new_z ) * frictionConstant;
-
-			F_total[0][llll] +=-(  state_result_worm_ventral[INDEX_NR]->vel_new_x - state_result_worm_ventral[llll]->vel_new_x ) * frictionConstant;
- 			F_total[1][llll] += -( state_result_worm_ventral[INDEX_NR]->vel_new_y- state_result_worm_ventral[llll]->vel_new_y ) * frictionConstant;
- 			F_total[2][llll] += -(  state_result_worm_ventral[INDEX_NR]->vel_new_z - state_result_worm_ventral[llll ]->vel_new_z ) * frictionConstant;
  
-			state_result_worm_ventral[llll]->force_sign =       1;  
-			state_result_worm_ventral[llll]= 		    worm_ventral(  state_result_worm_ventral[llll] ,1) ;
-			state_result_worm_ventral[INDEX_NR]->force_sign =  -1;
-			state_result_worm_ventral[INDEX_NR]=   	            worm_ventral(  state_result_worm_ventral[INDEX_NR] ,1) ;
-  
+	for(int d = 1; d <= totalneigbours[llll]; d++)
+	{	 
+		
+		if(d != k  )
+		{
+		  INDEX_NRmore =  (state_result_worm_ventral_feather[llll][d].INDEX_NR);
+		
+		if(INDEX_NRmore != llll && INDEX_NRmore != INDEX_NR)
+		{
+
+					if(fabs(F_total[0][INDEX_NRmore]) > 10 )
+	 				 	  F_total[0][INDEX_NRmore] =0;
+ 
+		 		 if(fabs(F_total[1][INDEX_NRmore])  > 10)
+						F_total[1][INDEX_NRmore] =0;
+
+			 	 if(fabs(F_total[2][INDEX_NRmore])  > 10)
+						F_total[2][INDEX_NRmore] =0;
 			
-			//}		
+		springVector->pos_new_x = state_result_worm_ventral[INDEX_NR]->pos_new_x - state_result_worm_ventral[INDEX_NRmore]->pos_new_x;
+		springVector->pos_new_y = state_result_worm_ventral[INDEX_NR]->pos_new_y - state_result_worm_ventral[INDEX_NRmore]->pos_new_y;
+		springVector->pos_new_z = state_result_worm_ventral[INDEX_NR]->pos_new_z - state_result_worm_ventral[INDEX_NRmore]->pos_new_z;
+ 			
 
+		float r = length(state_result_worm_ventral[INDEX_NR],state_result_worm_ventral[INDEX_NRmore]);
 
-			if(state_result_worm_ventral[INDEX_NR]->pos_new_y < -7 || state_result_worm_ventral[llll]->pos_new_y < -7   )
-			{
-				//state_result_worm_ventral[llll]->pos_new_y = -3 ;
-				//state_result_worm_ventral[INDEX_NR]->pos_new_y = -3 ;
-				//state_result_worm_ventral[INDEX_NR]->vel_new_x = -state_result_worm_ventral[INDEX_NR]->vel_new_y*0.999;
-				//state_result_worm_ventral[llll]->vel_new_y = -state_result_worm_ventral[llll]->vel_new_y*0.999;
-				//state_result_worm_ventral[INDEX_NR]->have_bounce =1;
-			}
-			// if(state_result_worm_ventral[INDEX_NR]->have_bounce == 1)
-			state_result_worm_ventral[INDEX_NR]->vel_new_y =    - state_result_worm_ventral[INDEX_NR]->vel_new_y*AIR_FRICTION;
-		        state_result_worm_ventral[INDEX_NR]->vel_new_x =    - state_result_worm_ventral[INDEX_NR]->vel_new_x*AIR_FRICTION;
- 			state_result_worm_ventral[INDEX_NR]->vel_new_z =    - state_result_worm_ventral[INDEX_NR]->vel_new_z*AIR_FRICTION;
- 
- 			state_result_worm_ventral[llll]->vel_new_y =        - state_result_worm_ventral[llll]->vel_new_y*AIR_FRICTION;
-			state_result_worm_ventral[llll]->vel_new_x =        - state_result_worm_ventral[llll]->vel_new_x*AIR_FRICTION;
- 			state_result_worm_ventral[llll]->vel_new_z =        - state_result_worm_ventral[llll]->vel_new_z*AIR_FRICTION;
- 			 
-			}
- 		}
-		else if(INDEX_NR > 0)
-		{
-
-			springVector->pos_new_x = state_result_worm_ventral[INDEX_NR]->pos_new_x - state_result_worm_ventral[llll]->pos_new_x;
-			springVector->pos_new_y = state_result_worm_ventral[INDEX_NR]->pos_new_y - state_result_worm_ventral[llll]->pos_new_y;
-			springVector->pos_new_z = state_result_worm_ventral[INDEX_NR]->pos_new_z - state_result_worm_ventral[llll]->pos_new_z;
-
-			float r = length(state_result_worm_ventral[INDEX_NR],state_result_worm_ventral[llll]);
-
+		if ( r != 0  &&   r < 1  )
+		{			
 			F_total[0][INDEX_NR] +=( springVector->pos_new_x  /  r ) * ( r - springlength ) * ( -springConstant );
 			F_total[1][INDEX_NR] += ( springVector->pos_new_y /  r ) * ( r - springlength ) * ( -springConstant );
 			F_total[2][INDEX_NR] +=( springVector->pos_new_z  /  r ) * ( r - springlength ) * ( -springConstant );
 
-			F_total[0][llll] +=( springVector->pos_new_x  / r ) * ( r - springlength ) * ( -springConstant );
-			F_total[1][llll] += ( springVector->pos_new_y  / r ) * ( r - springlength) * ( -springConstant );
-			F_total[2][llll] +=( springVector->pos_new_z  / r ) * ( r - springlength ) * ( -springConstant );
-
-
-		 
-			state_result_worm_ventral[llll]= 		    worm_ventral(  state_result_worm_ventral[llll] ,1) ;
-			 
-			state_result_worm_ventral[INDEX_NR]=   	            worm_ventral(  state_result_worm_ventral[INDEX_NR] ,1) ;
-			 
+			F_total[0][INDEX_NRmore] +=( springVector->pos_new_x  / r ) * ( r - springlength ) * ( -springConstant );
+			F_total[1][INDEX_NRmore] += ( springVector->pos_new_y  / r ) * ( r - springlength) * ( -springConstant );
+			F_total[2][INDEX_NRmore] +=( springVector->pos_new_z  / r ) * ( r - springlength ) * ( -springConstant );
 		}
-		 
 
+		F_total[0][INDEX_NR] +=-(  state_result_worm_ventral[INDEX_NR]->vel_new_x - state_result_worm_ventral[INDEX_NRmore]->vel_new_x ) * frictionConstant;
+ 		F_total[1][INDEX_NR] += -( state_result_worm_ventral[INDEX_NR]->vel_new_y- state_result_worm_ventral[INDEX_NRmore]->vel_new_y ) * frictionConstant;
+ 		F_total[2][INDEX_NR] += -(  state_result_worm_ventral[INDEX_NR]->vel_new_z - state_result_worm_ventral[INDEX_NRmore ]->vel_new_z ) * frictionConstant;
+
+
+		F_total[0][INDEX_NRmore] +=-(  state_result_worm_ventral[INDEX_NR]->vel_new_x - state_result_worm_ventral[INDEX_NRmore]->vel_new_x ) * frictionConstant;
+ 		F_total[1][INDEX_NRmore] += -( state_result_worm_ventral[INDEX_NR]->vel_new_y- state_result_worm_ventral[INDEX_NRmore]->vel_new_y ) * frictionConstant;
+ 		F_total[2][INDEX_NRmore] += -(  state_result_worm_ventral[INDEX_NR]->vel_new_z - state_result_worm_ventral[INDEX_NRmore ]->vel_new_z ) * frictionConstant;
+
+		state_result_worm_ventral[INDEX_NR]->force_sign =  -1;
+		state_result_worm_ventral[INDEX_NR]    =  worm_ventral(  state_result_worm_ventral[INDEX_NR] ,1) ;
+
+		state_result_worm_ventral[INDEX_NRmore]->force_sign =   1; ; 
+		state_result_worm_ventral[INDEX_NRmore]    =  worm_ventral(  state_result_worm_ventral[INDEX_NRmore] ,1);
+	//	 printf("f[0] = %.10f:%.10f%.10f \n", state_result_worm_ventral[INDEX_NRmore]->pos_new_x,state_result_worm_ventral[INDEX_NRmore]->pos_new_y,state_result_worm_ventral[INDEX_NRmore]->pos_new_z);
+	}
+	}
+ 	}
+}
+	
+	//}
+	 
+		 
+ }		
+
+
+
+ 	
+
+
+ 				if(fabs(F_total[0][llll]) > 10 )
+	 				 	  F_total[0][llll] =0;
+ 
+		 		 if(fabs(F_total[1][llll])  > 10)
+						F_total[1][llll] =0;
+
+			 	 if(fabs(F_total[2][llll])  > 10)
+						F_total[2][llll] =0;
+	 printf("FORCE(x,y,z) = %.50f:%.50f%.50f \n", fabs(F_total[0][INDEX_NR]),fabs(F_total[1][llll]),fabs(F_total[2][INDEX_NRmore]));
 			
 			if(llll >= SIZE_OBJECT -1  )
 			{
-				feather_once= WORK;
+				//feather_once= WORK;
 	   			llll =0;
 				int var;
-				for(var = 0; var <  SIZE_OBJECT -1 ; var++)
+				for(var = 0; var <  3 -1 ; var++)
 				{
-					state_result_worm_ventral[var]->force_sign = 0;
-					if(fabs(F_total[0][var]) > 10 )
-	 				 	  F_total[0][var] =0;
-
-					if(fabs(F_total[1][var])  > 10)
-						F_total[1][var] =0;
-
-					if(fabs(F_total[2][var])  > 10)
-						F_total[2][var] =0;
+				//	state_result_worm_ventral[var]->force_sign = 0;
+ 	
+			 	
+	
  
 				}
 			}
@@ -348,7 +360,7 @@ char *data, *pch;
 struct kdres *presults;
 double pos[3], dist;
 double pt[3] = { worm[num]->pos_new_x,worm[num]->pos_new_y, worm[num]->pos_new_z };
-double radius = 0.0005;
+double radius = 0.00004;
 
 num_pts =points;
 
@@ -373,7 +385,7 @@ presults = kd_nearest_range( ptree, pt, radius );
  state_result_worm_ventral_feather[num][0].totaln = kd_res_size(presults) ;
 
 //state_result_worm_dorsal_feather[num][0].totaln = kd_res_size(presults) ;
-// printf( "found %d results:\n", kd_res_size(presults) );
+ //printf( "found %d results:\n", kd_res_size(presults) );
 int feather_count = 0;
 //printf(" state_result_worm_ventral_feather[llll][0].totaln %d ::%d\n",  state_result_worm_ventral_feather[num][0].totaln,num);
 while( !kd_res_end( presults ) ) {
@@ -381,23 +393,23 @@ while( !kd_res_end( presults ) ) {
 	pch = (char*)kd_res_item( presults, pos ); 
     	dist = sqrt( dist_sq( pt, pos, 3 ) );
 
-   
-   	  //printf( "node at (%.3f, %.3f, %.3f) is %.3f away   \n", 
-	  //    pos[0], pos[1], pos[2], dist  );
+ // if(worm[num]->pos_new_x != pos[0])
+ //	  printf( "node at (%.3f, %.3f, %.3f) is %.3f away   \n", 
+ //	    pos[0], pos[1], pos[2], dist  );
 	 
 
   	totalneigbours[num] = state_result_worm_ventral_feather[num][0].totaln;
-	//if(worm[num]->pos_new_x != pos[0])
+	// if(worm[num]->pos_new_x != pos[0])
    		state_result_worm_ventral_feather[num][feather_count].pos_new_x = pos[0];
-	//if(worm[num]->pos_new_y != pos[1])
+	// if(worm[num]->pos_new_y != pos[1])
   		state_result_worm_ventral_feather[num][feather_count].pos_new_y = pos[1];
-	//if(worm[num]->pos_new_z != pos[2])
+	//  if(worm[num]->pos_new_z != pos[2])
    		state_result_worm_ventral_feather[num][feather_count].pos_new_z = pos[2];
 	int k;
  
    
   INDEX = find_index_____(SIZE_OBJECT,state_result_worm_ventral,num,feather_count);
-  //printf("INDEX = %d \n", INDEX);
+ // printf("INDEX = %d \n", INDEX);
   state_result_worm_ventral_feather[num][feather_count].INDEX_NR = INDEX;
   feather_count++;
     kd_res_next( presults );
@@ -427,23 +439,23 @@ extern float* V2;
 int main (int argc, char **argv)
 { 
 
-loadOBJ__("sphere2.obj"); //61856 //61856 //13108_Eastern_Hognose_Snake_v1_L3  61856
+loadOBJ__("sphere.obj"); //61856 //61856 //13108_Eastern_Hognose_Snake_v1_L3  61856
  
-springVector = malloc(SIZE_OBJECT*2);
-state_result_worm_ventral_feather = (struct state_vector*)malloc(sizeof(struct state_vector*)*SIZE_OBJECT*64);
+springVector = malloc(SIZE_OBJECT*1);
+state_result_worm_ventral_feather = (struct state_vector*)malloc(sizeof(struct state_vector*)*SIZE_OBJECT*4);
 
-state_result_worm_ventral =(struct state_vector*)malloc(sizeof(struct state_vector*)*SIZE_OBJECT*64);
+state_result_worm_ventral =(struct state_vector*)malloc(sizeof(struct state_vector*)*SIZE_OBJECT*32);
 
 
  int i,j,k;
 
-for(int i=0; i<SIZE_OBJECT*2; i++)
-	state_result_worm_ventral[i] = (struct state_vector*)malloc(sizeof(struct state_vector)*64);
+for(int i=0; i<SIZE_OBJECT*1; i++)
+	state_result_worm_ventral[i] = (struct state_vector*)malloc(sizeof(struct state_vector)*32);
        
 printf("done ! \n");
  
-for(int i=0; i<SIZE_OBJECT*2; i++)
-	state_result_worm_ventral_feather[i] = (struct state_vector*)malloc(sizeof(struct state_vector)*64);
+for(int i=0; i<SIZE_OBJECT*1; i++)
+	state_result_worm_ventral_feather[i] = (struct state_vector*)malloc(sizeof(struct state_vector)*32);
   
 printf("done ! \n");
   
@@ -461,9 +473,9 @@ if(initonce==1)
  	          state_result_worm_ventral[ll]->pos_new_y = v->y ;
  		  state_result_worm_ventral[ll]->pos_new_z = v->z ;
  
- 	  	  state_result_worm_ventral[ll]->vel_new_x = 0.0001 ;
- 		  state_result_worm_ventral[ll]->vel_new_y = 0.0001 ;
- 		  state_result_worm_ventral[ll]->vel_new_z = 0.0001 ;
+ 	  	  state_result_worm_ventral[ll]->vel_new_x =   1e-4 ;
+ 		  state_result_worm_ventral[ll]->vel_new_y =  1e-4 ;
+ 		  state_result_worm_ventral[ll]->vel_new_z =  1e-4  ;
 	}
 
  
@@ -628,41 +640,41 @@ void display  (void){
 		  {
 taskworm();
 glPushMatrix();
-glScalef(15,15,15);
+glScalef(150,150,150);
   glTranslatef(state_result_worm_ventral[ll]->pos_new_x, state_result_worm_ventral[ll]->pos_new_y,state_result_worm_ventral[ll]->pos_new_z);
 glBegin(GL_TRIANGLES);
      glColor3f(state_result_worm_ventral[ll]->pos_new_x, state_result_worm_ventral[ll]->pos_new_y, state_result_worm_ventral[ll]->pos_new_z);     // Red
-      glVertex3f(0, 1.0f/100.0f, 0.0f);
+      glVertex3f(0, 1.0f/300.0f, 0.0f);
       glColor3f(state_result_worm_ventral[ll]->pos_new_x, state_result_worm_ventral[ll]->pos_new_y,state_result_worm_ventral[ll]->pos_new_z);     // Green
-      glVertex3f(-1.0f/100.0f, -1.0f/100.0f, 1.0f/100.0f);
+      glVertex3f(-1.0f/300.0f, -1.0f/300.0f, 1.0f/300.0f);
       glColor3f(state_result_worm_ventral[ll]->pos_new_x, state_result_worm_ventral[ll]->pos_new_y, state_result_worm_ventral[ll]->pos_new_z);     // Blue
-      glVertex3f(1.0f/100.0f, -1.0f/100.0f, 1.0f/100.0f);
+      glVertex3f(1.0f/300.0f, -1.0f/300.0f, 1.0f/300.0f);
  
       // Right
       glColor3f(state_result_worm_ventral[ll]->pos_new_x, state_result_worm_ventral[ll]->pos_new_y, state_result_worm_ventral[ll]->pos_new_z);     // Red
-      glVertex3f(0.0f, 1.0f/100.0f, 0.0f);
+      glVertex3f(0.0f, 1.0f/300.0f, 0.0f);
       glColor3f(state_result_worm_ventral[ll]->pos_new_x, state_result_worm_ventral[ll]->pos_new_y, state_result_worm_ventral[ll]->pos_new_z);     // Blue
-      glVertex3f(1.0f/100.0f, -1.0f/100.0f, 1.0f/100.0f);
+      glVertex3f(1.0f/300.0f, -1.0f/300.0f, 1.0f/300.0f);
       glColor3f(state_result_worm_ventral[ll]->pos_new_x,state_result_worm_ventral[ll]->pos_new_y, state_result_worm_ventral[ll]->pos_new_z);     // Green
-      glVertex3f(1.0f/100.0f, -1.0f/100.0f, -1.0f/100.0f);
+      glVertex3f(1.0f/300.0f, -1.0f/300.0f, -1.0f/300.0f);
  
       // Back
       glColor3f(state_result_worm_ventral[ll]->pos_new_x,state_result_worm_ventral[ll]->pos_new_y, state_result_worm_ventral[ll]->pos_new_z);     // Red
-      glVertex3f(0.0f, 1.0f/100.0f, 0.0f);
+      glVertex3f(0.0f, 1.0f/300.0f, 0.0f);
       glColor3f(state_result_worm_ventral[ll]->pos_new_x, state_result_worm_ventral[ll]->pos_new_y, state_result_worm_ventral[ll]->pos_new_z);     // Green
-      glVertex3f(1.0f/100.0f, -1.0f/100.0f, -1.0f/100.0f);
+      glVertex3f(1.0f/300.0f, -1.0f/300.0f, -1.0f/300.0f);
       glColor3f(state_result_worm_ventral[ll]->pos_new_x, state_result_worm_ventral[ll]->pos_new_y, state_result_worm_ventral[ll]->pos_new_z);     // Blue
-      glVertex3f(-1.0f/100.0f, -1.0f/100.0f, -1.0f/100.0f);
+      glVertex3f(-1.0f/300.0f, -1.0f/300.0f, -1.0f/300.0f);
  
       // Left
       glColor3f(state_result_worm_ventral[ll]->pos_new_x,state_result_worm_ventral[ll]->pos_new_y,state_result_worm_ventral[ll]->pos_new_z);       // Red
-      glVertex3f( 0.0f, 1.0f/100.0f, 0.0f);
+      glVertex3f( 0.0f, 1.0f/300.0f, 0.0f);
       glColor3f(state_result_worm_ventral[ll]->pos_new_x,state_result_worm_ventral[ll]->pos_new_y,state_result_worm_ventral[ll]->pos_new_z);       // Blue
-      glVertex3f(-1.0f/100.0f,-1.0f/100.0f,-1.0f/100.0f);
+      glVertex3f(-1.0f/300.0f,-1.0f/300.0f,-1.0f/300.0f);
       glColor3f(state_result_worm_ventral[ll]->pos_new_x,state_result_worm_ventral[ll]->pos_new_y,state_result_worm_ventral[ll]->pos_new_z);       // Green
-      glVertex3f(-1.0f/100.0f,-1.0f/100.0f, 1.0f/100.0f);
+      glVertex3f(-1.0f/300.0f,-1.0f/300.0f, 1.0f/300.0f);
 	glEnd(); 	
-glEnd(); 	
+ 	
  
  glPopMatrix();
  glutPostRedisplay();
@@ -676,27 +688,35 @@ glutSwapBuffers();
 
 
 
+
 void rates_dorsal ( double *t, double *f, double result[]   )
 {
- 
+// printf("f[0] = %.10f:%.10f%.10f \n", f[0],f[1],f[2]);
 if(state_result_worm_ventral[llll]->force_sign == 1)
 {
-    	result[0] =             f[3]/1.0;
-    	result[1] =             f[4]/1.0;
-    	result[2] =             f[5]/1.0;
+    	result[0] =             f[3]/100.0;
+    	result[1] =             f[4]/100.0;
+    	result[2] =             f[5]/100.0;
   
-	result[3] = (F_total[0][llll])/(1e8   );
-	result[4] = (F_total[1][llll]   )/(1e8   );
-	result[5] = (F_total[2][llll] )/(1e8 ); 
+	result[3] = (F_total[0][llll])/(1.0   );
+	result[4] = (F_total[1][llll]   )/(1.0   );
+	result[5] = (F_total[2][llll] )/(1.0); 
+
+ 
 }
 else if(state_result_worm_ventral[INDEX_NR]->force_sign == -1)
 {
-    result[0] =             f[3]/1.0;
-    result[1] =             f[4]/1.0;
-    result[2] =             f[5]/1.0;
+    result[0] =             f[3]/100.0;
+    result[1] =             f[4]/100.0;
+    result[2] =             f[5]/100.0;
   
-    result[3] = -(F_total[0][INDEX_NR])/(1e8  );
-    result[4] = -(F_total[1][INDEX_NR] ) /(1e8) ;
-    result[5] = -(F_total[2][INDEX_NR] )/(1e8  ); //522
+    result[3] = -(F_total[0][INDEX_NR])/(1.0  );
+    result[4] = -(F_total[1][INDEX_NR]  ) /(1.0) ;
+    result[5] = -(F_total[2][INDEX_NR] )/(1.0  ); //522
+ 
+
 }
+
+  acc1 = sqrtf(pow(result[3],2.0) + pow(result[4],2.0)+pow(result[5],2.0));
+//printf("acc1 = %.10f \n", acc1);
 }
