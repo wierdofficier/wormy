@@ -16,7 +16,7 @@
 float acc1;
 float acc2;
 int INDEX_NRmore;
-#define SIZE_OBJECT 126976 //126976
+#define SIZE_OBJECT 7936 //126976
 float springlength =  0.004/4.0;
 #define AIR_FRICTION 0.9959999
 #define FIRST 1
@@ -176,29 +176,29 @@ if(acc1once == 0)
 	{
 	if(fabs(acc1) > 0)
 		{		
-		springConstant =   16.0/1 *1;
+		springConstant =   275.0/1 *1;
 //	printf("springConstant = %.10f \n", springConstant);
-		 frictionConstant = 0.2;
+		 frictionConstant = 2.2;
 	}
 	}
 acc1once = 0;	
 	// printf("1totalneigbours[llll]  %d :: number %d :: index_____ = %d\n",totalneigbours[llll],llll,INDEX_NR);
 	INDEX_NR =  (state_result_worm_ventral_feather[llll][k].INDEX_NR);
 	
-if(INDEX_NR != llll && INDEX_NR > 0 && INDEX_NR < 1000000 && INDEX_NR != SIZE_OBJECT)
+if(  INDEX_NR > 0 && INDEX_NR < 1000000  )
 {
 	//if(state_result_worm_ventral[INDEX_NR]->force_sign != -1 && state_result_worm_ventral[INDEX_NR]->force_sign != 1 && INDEX_NR >0)
 	//{
 		 if(feather_once == FIRST && INDEX_NR > 0)
 		{	
 
-						 if(fabs(F_total[0][INDEX_NR]) > 11 )
+						 if(fabs(F_total[0][INDEX_NR]) > 21 )
 	 				 	  F_total[0][INDEX_NR] =0;
  
-		 		 if(fabs(F_total[1][INDEX_NR])  > 11)
+		 		 if(fabs(F_total[1][INDEX_NR])  > 21)
 						F_total[1][INDEX_NR] =0;
 
-			 	 if(fabs(F_total[2][INDEX_NR])  > 11)
+			 	 if(fabs(F_total[2][INDEX_NR])  > 21)
 						F_total[2][INDEX_NR] =0;
   //printf("2totalneigbours[llll]  %d :: number %d :: index_____ = %d\n",totalneigbours[llll],llll,INDEX_NR);
 		springVector->pos_new_x = state_result_worm_ventral[INDEX_NR]->pos_new_x - state_result_worm_ventral[llll]->pos_new_x;
@@ -208,7 +208,7 @@ if(INDEX_NR != llll && INDEX_NR > 0 && INDEX_NR < 1000000 && INDEX_NR != SIZE_OB
 
 		float r = length(state_result_worm_ventral[INDEX_NR],state_result_worm_ventral[llll]);
 
-		if ( r != 0  &&   r < 100  )
+		if ( r != 0  &&   r < 50  )
 		{			
 			F_total[0][INDEX_NR] +=( springVector->pos_new_x  /  r ) * ( r - springlength ) * ( -springConstant );
 			F_total[1][INDEX_NR] += ( springVector->pos_new_y /  r ) * ( r - springlength ) * ( -springConstant );
@@ -265,23 +265,23 @@ INDEX_NRmore = state_result_worm_ventral_feather[llll][d].INDEX_NR;
 
  
 
-				 if(fabs(F_total[0][INDEX_NRmore]) > 11 )
+				 if(fabs(F_total[0][INDEX_NRmore]) > 21 )
 	 				  F_total[0][INDEX_NRmore] =0;
  
-		 		 if(fabs(F_total[1][INDEX_NRmore])  > 11)
+		 		 if(fabs(F_total[1][INDEX_NRmore])  > 21)
 					  F_total[1][INDEX_NRmore] =0;
 
-			 	 if(fabs(F_total[2][INDEX_NRmore])  > 11)
+			 	 if(fabs(F_total[2][INDEX_NRmore])  > 21)
 					  F_total[2][INDEX_NRmore] =0;
 			
 
- 				if(fabs(F_total[0][INDEX_NR]) > 11 )
+ 				if(fabs(F_total[0][INDEX_NR]) > 21 )
 	 				  F_total[0][INDEX_NR] =0;
  
-		 		 if(fabs(F_total[1][INDEX_NR])  > 11)
+		 		 if(fabs(F_total[1][INDEX_NR])  > 21)
 					  F_total[1][INDEX_NR] =0;
 
-			 	 if(fabs(F_total[2][INDEX_NR])  > 11)
+			 	 if(fabs(F_total[2][INDEX_NR])  > 21)
 					  F_total[2][INDEX_NR] =0;
 			
 		springVector->pos_new_x = state_result_worm_ventral[INDEX_NR]->pos_new_x - state_result_worm_ventral[INDEX_NRmore]->pos_new_x;
@@ -291,7 +291,7 @@ INDEX_NRmore = state_result_worm_ventral_feather[llll][d].INDEX_NR;
 
 		float r = length(state_result_worm_ventral[INDEX_NR],state_result_worm_ventral[INDEX_NRmore]);
 
-		if ( r != 0  &&   r < 100    )
+		if ( r != 0  &&   r < 50    )
 		{	
 	//	 printf("1totalneigbours[llll]  %d :: number %d :: index_____ = %d\n",totalneigbours[llll],llll,INDEX_NRmore);	
 			F_total[0][INDEX_NR] +=( springVector->pos_new_x  /  r ) * ( r - springlength ) * ( -springConstant );
@@ -343,13 +343,13 @@ INDEX_NRmore = state_result_worm_ventral_feather[llll][d].INDEX_NR;
 //}
 		 
  }		
-				 if(fabs(F_total[0][llll]) > 11 )
+				 if(fabs(F_total[0][llll]) > 21 )
 	 				 F_total[0][llll] =0;
  
-		 		 if(fabs(F_total[1][llll])  > 11)
+		 		 if(fabs(F_total[1][llll])  > 21)
 					 F_total[1][llll] =0;
 
-			 	 if(fabs(F_total[2][llll])  > 11)
+			 	 if(fabs(F_total[2][llll])  > 21)
 					 F_total[2][llll] =0;
 			// printf("FORCE(x,y,z) = %.50f:%.50f%.50f \n", fabs(F_total[0][INDEX_NR]),fabs(F_total[1][llll]),fabs(F_total[2][INDEX_NRmore]));
 			
@@ -471,7 +471,7 @@ extern float* V2;
 int main (int argc, char **argv)
 { 
 
-loadOBJ__("sphere2.obj"); //61856 //61856 //13108_Eastern_Hognose_Snake_v1_L3  61856
+loadOBJ__("sphere.obj"); //61856 //61856 //13108_Eastern_Hognose_Snake_v1_L3  61856
  
 springVector = malloc(SIZE_OBJECT*1);
 state_result_worm_ventral_feather = (struct state_vector*)malloc(sizeof(struct state_vector*)*SIZE_OBJECT*4);
@@ -561,8 +561,8 @@ material->setDifusse_material = setDifusse_material;
 material->setSpecular_material =setSpecular_material;
 material->setShininess_material = setShininess_material;
 material->setAmbient_material(0, 0, 1, 1);
-material->setDifusse_material(0.5f, 0.1f, 0.995f, 1.0f/450.0f);
-material->setSpecular_material(0.01f, 0.01f, 0.01f, 1.0f/450.0f);
+material->setDifusse_material(0.5f, 0.1f, 0.995f, 1.0f/50.0f);
+material->setSpecular_material(0.01f, 0.01f, 0.01f, 1.0f/50.0f);
 material->setShininess_material(128);
 glLightfv(GL_LIGHT0, GL_POSITION, dirLight->pos);
 glLightfv(GL_LIGHT0, GL_AMBIENT,   dirLight->ambient);
@@ -676,35 +676,35 @@ glScalef(120,120,120);
   glTranslatef(state_result_worm_ventral[ll]->pos_new_x, state_result_worm_ventral[ll]->pos_new_y,state_result_worm_ventral[ll]->pos_new_z);
 glBegin(GL_TRIANGLES);
      glColor3f(state_result_worm_ventral[ll]->pos_new_x, state_result_worm_ventral[ll]->pos_new_y, state_result_worm_ventral[ll]->pos_new_z);     // Red
-      glVertex3f(0, 1.0f/450.0f, 0.0f);
+      glVertex3f(0, 1.0f/50.0f, 0.0f);
       glColor3f(state_result_worm_ventral[ll]->pos_new_x, state_result_worm_ventral[ll]->pos_new_y,state_result_worm_ventral[ll]->pos_new_z);     // Green
-      glVertex3f(-1.0f/450.0f, -1.0f/450.0f, 1.0f/450.0f);
+      glVertex3f(-1.0f/50.0f, -1.0f/50.0f, 1.0f/50.0f);
       glColor3f(state_result_worm_ventral[ll]->pos_new_x, state_result_worm_ventral[ll]->pos_new_y, state_result_worm_ventral[ll]->pos_new_z);     // Blue
-      glVertex3f(1.0f/450.0f, -1.0f/450.0f, 1.0f/450.0f);
+      glVertex3f(1.0f/50.0f, -1.0f/50.0f, 1.0f/50.0f);
  
       // Right
       glColor3f(state_result_worm_ventral[ll]->pos_new_x, state_result_worm_ventral[ll]->pos_new_y, state_result_worm_ventral[ll]->pos_new_z);     // Red
-      glVertex3f(0.0f, 1.0f/450.0f, 0.0f);
+      glVertex3f(0.0f, 1.0f/50.0f, 0.0f);
       glColor3f(state_result_worm_ventral[ll]->pos_new_x, state_result_worm_ventral[ll]->pos_new_y, state_result_worm_ventral[ll]->pos_new_z);     // Blue
-      glVertex3f(1.0f/450.0f, -1.0f/450.0f, 1.0f/450.0f);
+      glVertex3f(1.0f/50.0f, -1.0f/50.0f, 1.0f/50.0f);
       glColor3f(state_result_worm_ventral[ll]->pos_new_x,state_result_worm_ventral[ll]->pos_new_y, state_result_worm_ventral[ll]->pos_new_z);     // Green
-      glVertex3f(1.0f/450.0f, -1.0f/450.0f, -1.0f/450.0f);
+      glVertex3f(1.0f/50.0f, -1.0f/50.0f, -1.0f/50.0f);
  
       // Back
       glColor3f(state_result_worm_ventral[ll]->pos_new_x,state_result_worm_ventral[ll]->pos_new_y, state_result_worm_ventral[ll]->pos_new_z);     // Red
-      glVertex3f(0.0f, 1.0f/450.0f, 0.0f);
+      glVertex3f(0.0f, 1.0f/50.0f, 0.0f);
       glColor3f(state_result_worm_ventral[ll]->pos_new_x, state_result_worm_ventral[ll]->pos_new_y, state_result_worm_ventral[ll]->pos_new_z);     // Green
-      glVertex3f(1.0f/450.0f, -1.0f/450.0f, -1.0f/450.0f);
+      glVertex3f(1.0f/50.0f, -1.0f/50.0f, -1.0f/50.0f);
       glColor3f(state_result_worm_ventral[ll]->pos_new_x, state_result_worm_ventral[ll]->pos_new_y, state_result_worm_ventral[ll]->pos_new_z);     // Blue
-      glVertex3f(-1.0f/450.0f, -1.0f/450.0f, -1.0f/450.0f);
+      glVertex3f(-1.0f/50.0f, -1.0f/50.0f, -1.0f/50.0f);
  
       // Left
       glColor3f(state_result_worm_ventral[ll]->pos_new_x,state_result_worm_ventral[ll]->pos_new_y,state_result_worm_ventral[ll]->pos_new_z);       // Red
-      glVertex3f( 0.0f, 1.0f/450.0f, 0.0f);
+      glVertex3f( 0.0f, 1.0f/50.0f, 0.0f);
       glColor3f(state_result_worm_ventral[ll]->pos_new_x,state_result_worm_ventral[ll]->pos_new_y,state_result_worm_ventral[ll]->pos_new_z);       // Blue
-      glVertex3f(-1.0f/450.0f,-1.0f/450.0f,-1.0f/450.0f);
+      glVertex3f(-1.0f/50.0f,-1.0f/50.0f,-1.0f/50.0f);
       glColor3f(state_result_worm_ventral[ll]->pos_new_x,state_result_worm_ventral[ll]->pos_new_y,state_result_worm_ventral[ll]->pos_new_z);       // Green
-      glVertex3f(-1.0f/450.0f,-1.0f/450.0f, 1.0f/450.0f);
+      glVertex3f(-1.0f/50.0f,-1.0f/50.0f, 1.0f/50.0f);
 	glEnd(); 	
  	
  
