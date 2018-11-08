@@ -20,7 +20,7 @@ int INDEX_NRmore;
 int INDEX_NRmores;
 void taskwormsmall(void );
 #define SIZE_OBJECT 7936 //126976
-#define SIZE_OBJECTs 39680 //126976
+#define SIZE_OBJECTs 7936 //126976
 float springlength =  0.004/4.0;
 #define AIR_FRICTION 0.9959999
 #define FIRST 1
@@ -52,7 +52,7 @@ Material *material;
 
 float springConstant =   200.202f;
 
-float frictionConstant =    0.2200000f;
+float frictionConstant =    0.4200000f;
 
 float cameraEye[3] = {0.0, 0.0, 1000.0};
 float lightRotation[16] = {1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1};
@@ -187,9 +187,9 @@ if(acc1once == 0)
 	{
 	if(fabs(acc1) > 0)
 		{		
-		springConstant =    1.0/1 *1;
+		springConstant =    14.0/1 *1;
 //	printf("springConstant = %.10f \n", springConstant);
-		 frictionConstant =  .2*1;
+		 frictionConstant =   .001*1;
 	}
 	}
 acc1once = 0;	
@@ -203,13 +203,13 @@ acc1once = 0;
 		 if(feather_once == FIRST  )
 		{	
 
-						 if(fabs(F_total[0][INDEX_NR]) > 21 )
+						 if(fabs(F_total[0][INDEX_NR]) > 1  )
 	 				 	  F_total[0][INDEX_NR] =0;
  
-		 		 if(fabs(F_total[1][INDEX_NR])  > 21)
+		 		 if(fabs(F_total[1][INDEX_NR])  > 1 )
 						F_total[1][INDEX_NR] =0;
 
-			 	 if(fabs(F_total[2][INDEX_NR])  > 21)
+			 	 if(fabs(F_total[2][INDEX_NR])  > 1 )
 						F_total[2][INDEX_NR] =0;
   //printf("2totalneigbours[llll]  %d :: number %d :: index_____ = %d\n",totalneigbours[llll],llll,INDEX_NR);
 		springVector->pos_new_x = state_result_worm_ventral[INDEX_NR]->pos_new_x - state_result_worm_ventral[llll]->pos_new_x;
@@ -219,7 +219,7 @@ acc1once = 0;
 
 		float r = length(state_result_worm_ventral[INDEX_NR],state_result_worm_ventral[llll]);
 
-		if ( r != 0  &&r < 1  && r > -1   )
+		if ( r != 0  &&r < 1.25  && r > -1.25   )
 		{			
 			F_total[0][INDEX_NR] +=( springVector->pos_new_x  /  r ) * ( r - springlength ) * ( -springConstant );
 			F_total[1][INDEX_NR] += ( springVector->pos_new_y /  r ) * ( r - springlength ) * ( -springConstant );
@@ -248,15 +248,15 @@ F_total[0][INDEX_NR] +=-(  state_result_worm_ventral[INDEX_NR]->vel_new_x - stat
 		state_result_worm_ventral[INDEX_NR]->vel_new_y = state_result_worm_ventral[INDEX_NR]->vel_new_y*0.995 ;
 		state_result_worm_ventral[INDEX_NR]->vel_new_z = state_result_worm_ventral[INDEX_NR]->vel_new_z*0.995 ;
 
-if(state_result_worm_ventral[INDEX_NR]->pos_new_y < -1)
+if(state_result_worm_ventral[INDEX_NR]->pos_new_y < -4)
 			{
-			 state_result_worm_ventral[INDEX_NR]->pos_new_y = -1;
+			 state_result_worm_ventral[INDEX_NR]->pos_new_y = -4;
 			 state_result_worm_ventral[INDEX_NR]->vel_new_y = -state_result_worm_ventral[INDEX_NR]->vel_new_y*0.00995;
  
 			}	
-		if(state_result_worm_ventral[llll]->pos_new_y < -1)
+		if(state_result_worm_ventral[llll]->pos_new_y < -4)
 			{
-				 state_result_worm_ventral[llll]->pos_new_y = -1;
+				 state_result_worm_ventral[llll]->pos_new_y = -4;
 			 state_result_worm_ventral[llll]->vel_new_y = -state_result_worm_ventral[llll]->vel_new_y*0.00995;
  
 			}
@@ -280,13 +280,13 @@ if(llll < SIZE_OBJECTs)
  if( k <=totalneigbourss[llll])
 	{
 	  INDEX_NRs =  (state_result_worm_ventral_feathers[llll][k].INDEX_NR);
- if(fabs(F_totals[0][INDEX_NRs]) > 21 )
+ if(fabs(F_totals[0][INDEX_NRs]) > 1  )
 	 				 	  F_totals[0][INDEX_NRs] =0;
  
-		 		 if(fabs(F_totals[1][INDEX_NRs])  > 21)
+		 		 if(fabs(F_totals[1][INDEX_NRs])  > 1 )
 						F_totals[1][INDEX_NRs] =0;
 
-			 	 if(fabs(F_totals[2][INDEX_NRs])  > 21)
+			 	 if(fabs(F_totals[2][INDEX_NRs])  > 1 )
 						F_totals[2][INDEX_NRs] =0;
 springVector->pos_new_x = state_result_worm_ventral_small[INDEX_NRs]->pos_new_x - state_result_worm_ventral[llll]->pos_new_x;
 		springVector->pos_new_y = state_result_worm_ventral_small[INDEX_NRs]->pos_new_y - state_result_worm_ventral[llll]->pos_new_y;
@@ -295,7 +295,7 @@ springVector->pos_new_x = state_result_worm_ventral_small[INDEX_NRs]->pos_new_x 
 
 		  r = length(state_result_worm_ventral_small[INDEX_NRs],state_result_worm_ventral[llll]);
 
-		if ( r != 0  &&   r < 1.25   && r > -1.25   )
+		if ( r != 0  &&   r < 0.01   && r > -0.01   )
 		{			
 			F_totals[0][INDEX_NRs] +=( springVector->pos_new_x  /  r ) * ( r - springlength ) * ( -springConstant );
 			F_totals[1][INDEX_NRs] += ( springVector->pos_new_y /  r ) * ( r - springlength ) * ( -springConstant );
@@ -324,15 +324,15 @@ F_totals[0][INDEX_NRs] +=-(  state_result_worm_ventral_small[INDEX_NRs]->vel_new
 		state_result_worm_ventral_small[INDEX_NRs]->vel_new_y = state_result_worm_ventral_small[INDEX_NRs]->vel_new_y*0.995 ;
 		state_result_worm_ventral_small[INDEX_NRs]->vel_new_z = state_result_worm_ventral_small[INDEX_NRs]->vel_new_z*0.995 ;
 
-if(state_result_worm_ventral_small[INDEX_NRs]->pos_new_y < -1)
+if(state_result_worm_ventral_small[INDEX_NRs]->pos_new_y < -4)
 			{
-			 state_result_worm_ventral_small[INDEX_NRs]->pos_new_y = -1;
+			 state_result_worm_ventral_small[INDEX_NRs]->pos_new_y = -4;
 			 state_result_worm_ventral_small[INDEX_NRs]->vel_new_y = -state_result_worm_ventral_small[INDEX_NRs]->vel_new_y*0.00995;
  
 			}	
-		if(state_result_worm_ventral[llll]->pos_new_y < -1)
+		if(state_result_worm_ventral[llll]->pos_new_y < -4)
 			{
-				 state_result_worm_ventral[llll]->pos_new_y = -1;
+				 state_result_worm_ventral[llll]->pos_new_y = -4;
 			 state_result_worm_ventral[llll]->vel_new_y = -state_result_worm_ventral[llll]->vel_new_y*0.00995;
  
 			}
@@ -371,23 +371,23 @@ INDEX_NRmore = state_result_worm_ventral_feather[llll][d].INDEX_NR;
 
  
 
-				 if(fabs(F_total[0][INDEX_NRmore]) > 21 )
+				 if(fabs(F_total[0][INDEX_NRmore]) > 1  )
 	 				  F_total[0][INDEX_NRmore] =0;
  
-		 		 if(fabs(F_total[1][INDEX_NRmore])  > 21)
+		 		 if(fabs(F_total[1][INDEX_NRmore])  > 1 )
 					  F_total[1][INDEX_NRmore] =0;
 
-			 	 if(fabs(F_total[2][INDEX_NRmore])  > 21)
+			 	 if(fabs(F_total[2][INDEX_NRmore])  > 1 )
 					  F_total[2][INDEX_NRmore] =0;
 			
 
- 				if(fabs(F_total[0][INDEX_NR]) > 21 )
+ 				if(fabs(F_total[0][INDEX_NR]) > 1  )
 	 				  F_total[0][INDEX_NR] =0;
  
-		 		 if(fabs(F_total[1][INDEX_NR])  > 21)
+		 		 if(fabs(F_total[1][INDEX_NR])  > 1 )
 					  F_total[1][INDEX_NR] =0;
 
-			 	 if(fabs(F_total[2][INDEX_NR])  > 21)
+			 	 if(fabs(F_total[2][INDEX_NR])  > 1 )
 					  F_total[2][INDEX_NR] =0;
 			
 		springVector->pos_new_x = state_result_worm_ventral[INDEX_NR]->pos_new_x - state_result_worm_ventral[INDEX_NRmore]->pos_new_x;
@@ -397,7 +397,7 @@ INDEX_NRmore = state_result_worm_ventral_feather[llll][d].INDEX_NR;
 
 		float r = length(state_result_worm_ventral[INDEX_NR],state_result_worm_ventral[INDEX_NRmore]);
 
-		if ( r != 0 && r < 1  && r > -1    )
+		if ( r != 0 && r < 1.25  && r > -1.25    )
 		{	
 	//	 printf("1totalneigbours[llll]  %d :: number %d :: index_____ = %d\n",totalneigbours[llll],llll,INDEX_NRmore);	
 			F_total[0][INDEX_NR] +=( springVector->pos_new_x  /  r ) * ( r - springlength ) * ( -springConstant );
@@ -428,15 +428,15 @@ INDEX_NRmore = state_result_worm_ventral_feather[llll][d].INDEX_NR;
 		state_result_worm_ventral[INDEX_NR]->vel_new_y = state_result_worm_ventral[INDEX_NR]->vel_new_y*0.995 ;
 		state_result_worm_ventral[INDEX_NR]->vel_new_z = state_result_worm_ventral[INDEX_NR]->vel_new_z*0.995 ;
 
-if(state_result_worm_ventral[INDEX_NR]->pos_new_y < -1)
+if(state_result_worm_ventral[INDEX_NR]->pos_new_y < -4)
 			{
-			 state_result_worm_ventral[INDEX_NR]->pos_new_y = -1;
+			 state_result_worm_ventral[INDEX_NR]->pos_new_y = -4;
 			 state_result_worm_ventral[INDEX_NR]->vel_new_y = -state_result_worm_ventral[INDEX_NR]->vel_new_y*0.00995;
  
 			}	
-		if(state_result_worm_ventral[INDEX_NRmore]->pos_new_y < -1)
+		if(state_result_worm_ventral[INDEX_NRmore]->pos_new_y < -4)
 			{
-				 state_result_worm_ventral[INDEX_NRmore]->pos_new_y = -1;
+				 state_result_worm_ventral[INDEX_NRmore]->pos_new_y = -4;
 			 state_result_worm_ventral[INDEX_NRmore]->vel_new_y = -state_result_worm_ventral[INDEX_NRmore]->vel_new_y*0.00995;
  
 			}
@@ -471,13 +471,13 @@ if(llll < SIZE_OBJECTs)
 INDEX_NRmores = state_result_worm_ventral_feathers[llll][d].INDEX_NR;
 
 
-			if(fabs(F_totals[0][INDEX_NRmores]) > 21 )
+			if(fabs(F_totals[0][INDEX_NRmores]) > 1  )
 	 				  F_totals[0][INDEX_NRmores] =0;
  
-		 		 if(fabs(F_totals[1][INDEX_NRmores])  > 21)
+		 		 if(fabs(F_totals[1][INDEX_NRmores])  > 1 )
 					  F_totals[1][INDEX_NRmores] =0;
 
-			 	 if(fabs(F_totals[2][INDEX_NRmores])  > 21)
+			 	 if(fabs(F_totals[2][INDEX_NRmores])  > 1 )
 					  F_totals[2][INDEX_NRmores] =0;
 
 
@@ -491,7 +491,7 @@ springVector->pos_new_x = state_result_worm_ventral[INDEX_NR]->pos_new_x - state
 
 		float r = length(state_result_worm_ventral[INDEX_NR],state_result_worm_ventral_small[INDEX_NRmores]);
 
-		if ( r != 0  &&    r < 1  && r > -1    )
+		if ( r != 0  &&    r < 0.01  && r > -0.01     )
 		{	
 	//	 printf("1totalneigbours[llll]  %d :: number %d :: index_____ = %d\n",totalneigbours[llll],llll,INDEX_NRmore);	
 			F_total[0][INDEX_NR] +=( springVector->pos_new_x  /  r ) * ( r - springlength ) * ( -springConstant );
@@ -522,15 +522,15 @@ springVector->pos_new_x = state_result_worm_ventral[INDEX_NR]->pos_new_x - state
 		state_result_worm_ventral[INDEX_NR]->vel_new_y = state_result_worm_ventral[INDEX_NR]->vel_new_y*0.995 ;
 		state_result_worm_ventral[INDEX_NR]->vel_new_z = state_result_worm_ventral[INDEX_NR]->vel_new_z*0.995 ;
 
-if(state_result_worm_ventral[INDEX_NR]->pos_new_y < -1)
+if(state_result_worm_ventral[INDEX_NR]->pos_new_y < -4)
 			{
-			 state_result_worm_ventral[INDEX_NR]->pos_new_y = -1;
+			 state_result_worm_ventral[INDEX_NR]->pos_new_y = -4;
 			 state_result_worm_ventral[INDEX_NR]->vel_new_y = -state_result_worm_ventral[INDEX_NR]->vel_new_y*0.00995;
  
 			}	
-		if(state_result_worm_ventral_small[INDEX_NRmores]->pos_new_y < -1)
+		if(state_result_worm_ventral_small[INDEX_NRmores]->pos_new_y < -4)
 			{
-				 state_result_worm_ventral_small[INDEX_NRmores]->pos_new_y = -1;
+				 state_result_worm_ventral_small[INDEX_NRmores]->pos_new_y = -4;
 			 state_result_worm_ventral_small[INDEX_NRmores]->vel_new_y = -state_result_worm_ventral_small[INDEX_NRmores]->vel_new_y*0.00995;
  
 			}
@@ -558,23 +558,23 @@ if(state_result_worm_ventral[INDEX_NR]->pos_new_y < -1)
 		 
  }		
 
-		 if(fabs(F_total[0][lllls]) > 21 )
+		 if(fabs(F_total[0][lllls]) > 1  )
 	 				 F_total[0][lllls] =0;
  
-		 		 if(fabs(F_total[1][lllls])  > 21)
+		 		 if(fabs(F_total[1][lllls])  > 1 )
 					 F_total[1][lllls] =0;
 
-			 	 if(fabs(F_total[2][lllls])  > 21)
+			 	 if(fabs(F_total[2][lllls])  > 1 )
 					 F_total[2][lllls] =0;
 
 
-				 if(fabs(F_total[0][llll]) > 21 )
+				 if(fabs(F_total[0][llll]) > 1  )
 	 				 F_total[0][llll] =0;
  
-		 		 if(fabs(F_total[1][llll])  > 21)
+		 		 if(fabs(F_total[1][llll])  > 1 )
 					 F_total[1][llll] =0;
 
-			 	 if(fabs(F_total[2][llll])  > 21)
+			 	 if(fabs(F_total[2][llll])  > 1 )
 					 F_total[2][llll] =0;
 			// printf("FORCE(x,y,z) = %.50f:%.50f%.50f \n", fabs(F_total[0][INDEX_NR]),fabs(F_total[1][llll]),fabs(F_total[2][INDEX_NRmore]));
 			
@@ -844,15 +844,15 @@ if(initonce==1)
 	}
 	for(ll = 0; ll < SIZE_OBJECT      ; ll++)
 	{
- 		findnearestpoint(SIZE_OBJECT  ,state_result_worm_ventral,ll,1 );
+ 		 findnearestpoint(SIZE_OBJECT  ,state_result_worm_ventral,ll,1 );
 	}
 
 printf("done ! \n");
-loadOBJ__("spheresmall.obj"); //61856 //61856 //13108_Eastern_Hognose_Snake_v1_L3  61856	 
+loadOBJ__("sphere.obj"); //61856 //61856 //13108_Eastern_Hognose_Snake_v1_L3  61856	 
 	for(ll = 0; ll < SIZE_OBJECTs  ; ll++)
 	{
 		  v= (Vec3 *)(V + 3*(KvvVENTALA[ll]-1));
-printf("done ! \n");
+ 
     		  state_result_worm_ventral_small[ll]->pos_new_x = v->x ;
  
  	          state_result_worm_ventral_small[ll]->pos_new_y = v->y +3;
@@ -869,7 +869,7 @@ printf("done ! \n");
 
 	for(ll = 0; ll < SIZE_OBJECTs     ; ll++)
 	{
- 		findnearestpoints(SIZE_OBJECTs  ,state_result_worm_ventral_small,ll,1 );
+ 	 	findnearestpoints(SIZE_OBJECTs  ,state_result_worm_ventral_small,ll,1 );
 	}
  
 	initonce = 0;
@@ -1032,12 +1032,12 @@ taskworm();
 if(ll <  SIZE_OBJECT/4)
 {
 glPushMatrix();
-glScalef(120,120,120);
+glScalef(100,100,100);
    glTranslatef(state_result_worm_ventral[ll]->pos_new_x, state_result_worm_ventral[ll]->pos_new_y,state_result_worm_ventral[ll]->pos_new_z);
  
   glColor3f(state_result_worm_ventral[ll]->pos_new_x, state_result_worm_ventral[ll]->pos_new_y, state_result_worm_ventral[ll]->pos_new_z);  
 
-  glutSolidSphere(0.06,20,20);
+  glutSolidSphere(0.03,20,20);
   glPopMatrix();
  
 }
@@ -1047,12 +1047,12 @@ BIGONE = 0;
 
 taskwormsmall();
 glPushMatrix();
-glScalef(120,120,120);
+glScalef(100,100,100);
   glTranslatef(state_result_worm_ventral_small[ll]->pos_new_x, state_result_worm_ventral_small[ll]->pos_new_y,state_result_worm_ventral_small[ll]->pos_new_z);
  
  glColor3f(state_result_worm_ventral_small[ll]->pos_new_x, state_result_worm_ventral_small[ll]->pos_new_y, state_result_worm_ventral_small[ll]->pos_new_z);  
 
- glutSolidSphere(0.06,20,20);
+ glutSolidSphere(0.03,20,20);
  
   glPopMatrix();
 
@@ -1075,37 +1075,37 @@ if(BIGONE == 1)
 {
 if(state_result_worm_ventral[llll]->force_sign == 1)
 {
-    	result[0] =             f[3]/1000.0;
-    	result[1] =             f[4]/1000.0;
-    	result[2] =             f[5]/1000.0;
+    	result[0] =             f[3]/100.0;
+    	result[1] =             f[4]/100.0;
+    	result[2] =             f[5]/100.0;
   
-	result[3] = (F_total[0][llll])/(90000   );
-	result[4] = (F_total[1][llll]   )/(90000   );
-	result[5] = (F_total[2][llll] )/(90000); 
+	result[3] = (F_total[0][llll])/(42000   );
+	result[4] = (F_total[1][llll]   )/(42000   );
+	result[5] = (F_total[2][llll] )/(42000); 
 
  
 }
 else if(state_result_worm_ventral[INDEX_NR]->force_sign == -1)
 {
-    result[0] =             f[3]/1000.0;
-    result[1] =             f[4]/1000.0;
-    result[2] =             f[5]/1000.0;
+    result[0] =             f[3]/100.0;
+    result[1] =             f[4]/100.0;
+    result[2] =             f[5]/100.0;
   
-    result[3] = -(F_total[0][INDEX_NR])/(90000);
-    result[4] = -(F_total[1][INDEX_NR]  ) /(90000) ;
-    result[5] = -(F_total[2][INDEX_NR] )/(90000); //522
+    result[3] = -(F_total[0][INDEX_NR])/(42000);
+    result[4] = -(F_total[1][INDEX_NR]  ) /(42000) ;
+    result[5] = -(F_total[2][INDEX_NR] )/(42000); //522
  
 
 }
 else if(state_result_worm_ventral[INDEX_NRmore]->force_sign == 1)
 {
-    	result[0] =             f[3]/1000.0;
-    	result[1] =             f[4]/1000.0;
-    	result[2] =             f[5]/1000.0;
+    	result[0] =             f[3]/100.0;
+    	result[1] =             f[4]/100.0;
+    	result[2] =             f[5]/100.0;
   
-	result[3] = (F_total[0][INDEX_NRmore])/(90000   );
-	result[4] = (F_total[1][INDEX_NRmore]  )/(90000  );
-	result[5] = (F_total[2][INDEX_NRmore] )/(90000); 
+	result[3] = (F_total[0][INDEX_NRmore])/(42000   );
+	result[4] = (F_total[1][INDEX_NRmore]  )/(42000  );
+	result[5] = (F_total[2][INDEX_NRmore] )/(42000); 
 
  
 }
@@ -1113,37 +1113,37 @@ else if(state_result_worm_ventral[INDEX_NRmore]->force_sign == 1)
 }else
  if(state_result_worm_ventral_small[lllls]->force_sign == 1)
 {
-    	result[0] =             f[3]/1000.0;
-    	result[1] =             f[4]/1000.0;
-    	result[2] =             f[5]/1000.0;
+    	result[0] =             f[3]/100.0;
+    	result[1] =             f[4]/100.0;
+    	result[2] =             f[5]/100.0;
   
-	result[3] = (F_totals[0][lllls])/(22000  );
-	result[4] = (F_totals[1][lllls]   -9.8  )/(22000   );
-	result[5] = (F_totals[2][lllls] )/(22000); 
+	result[3] = (F_totals[0][lllls])/(42000  );
+	result[4] = (F_totals[1][lllls]   -9.8  )/(42000   );
+	result[5] = (F_totals[2][lllls] )/(42000); 
 
  
 }
 else if(state_result_worm_ventral_small[INDEX_NRs]->force_sign == -1)
 {
-    result[0] =             f[3]/1000.0;
-    result[1] =             f[4]/1000.0;
-    result[2] =             f[5]/1000.0;
+    result[0] =             f[3]/100.0;
+    result[1] =             f[4]/100.0;
+    result[2] =             f[5]/100.0;
   
-    result[3] = -(F_totals[0][INDEX_NRs])/(22000);
-    result[4] = -(F_totals[1][INDEX_NRs]  -9.8  ) /(22000) ;
-    result[5] = -(F_totals[2][INDEX_NRs] )/(22000); //522
+    result[3] = -(F_totals[0][INDEX_NRs])/(42000);
+    result[4] = -(F_totals[1][INDEX_NRs]  -9.8  ) /(42000) ;
+    result[5] = -(F_totals[2][INDEX_NRs] )/(42000); //522
  
 
 }
 else if(state_result_worm_ventral_small[INDEX_NRmores]->force_sign == 1)
 {
-    	result[0] =             f[3]/1000.0;
-    	result[1] =             f[4]/1000.0;
-    	result[2] =             f[5]/1000.0;
+    	result[0] =             f[3]/100.0;
+    	result[1] =             f[4]/100.0;
+    	result[2] =             f[5]/100.0;
   
-	result[3] = (F_totals[0][INDEX_NRmores])/(22000   );
-	result[4] = (F_totals[1][INDEX_NRmores] -9.8  )/(22000  );
-	result[5] = (F_totals[2][INDEX_NRmores] )/(22000); 
+	result[3] = (F_totals[0][INDEX_NRmores])/(42000   );
+	result[4] = (F_totals[1][INDEX_NRmores] -9.8  )/(42000  );
+	result[5] = (F_totals[2][INDEX_NRmores] )/(42000); 
 
  
 }
@@ -1167,9 +1167,9 @@ if(acc1onces == 0)
 	{
 	if(fabs(acc1) > 0)
 		{		
-		springConstant =   1.0/1 *1;
+		springConstant =    14.0/1 *1;
 //	printf("springConstant = %.10f \n", springConstant);
-		 frictionConstant =  .2*1;
+		 frictionConstant =   .001 *1;
 	}
 	}
 acc1onces = 0;	
@@ -1183,13 +1183,13 @@ if(  INDEX_NRs > 0 && INDEX_NRs < 1000000  )
 		 if(feather_onces == FIRST && INDEX_NRs > 0)
 		{	
 
-						 if(fabs(F_totals[0][INDEX_NRs]) > 21 )
+						 if(fabs(F_totals[0][INDEX_NRs]) > 1  )
 	 				 	  F_totals[0][INDEX_NRs] =0;
  
-		 		 if(fabs(F_totals[1][INDEX_NRs])  > 21)
+		 		 if(fabs(F_totals[1][INDEX_NRs])  > 1 )
 						F_totals[1][INDEX_NRs] =0;
 
-			 	 if(fabs(F_totals[2][INDEX_NRs])  > 21)
+			 	 if(fabs(F_totals[2][INDEX_NRs])  > 1 )
 						F_totals[2][INDEX_NRs] =0;
   //printf("2totalneigbours[llll]  %d :: number %d :: index_____ = %d\n",totalneigbours[llll],llll,INDEX_NR);
 		springVectors->pos_new_x = state_result_worm_ventral_small[INDEX_NRs]->pos_new_x - state_result_worm_ventral_small[lllls]->pos_new_x;
@@ -1199,15 +1199,15 @@ if(  INDEX_NRs > 0 && INDEX_NRs < 1000000  )
 
 		float r = length(state_result_worm_ventral_small[INDEX_NRs],state_result_worm_ventral_small[lllls]);
 
-		if ( r != 0  &&   r < 0.25  && r > -0.25   )
+		if ( r != 0  &&   r < 1.25   && r > -1.25    )
 		{			
-			F_totals[0][INDEX_NRs] +=( springVectors->pos_new_x  /  r ) * ( r - springlength/5.0 ) * ( -springConstant );
-			F_totals[1][INDEX_NRs] += ( springVectors->pos_new_y /  r ) * ( r - springlength/5.0 ) * ( -springConstant );
-			F_totals[2][INDEX_NRs] +=( springVectors->pos_new_z  /  r ) * ( r - springlength/5.0 ) * ( -springConstant );
+			F_totals[0][INDEX_NRs] +=( springVectors->pos_new_x  /  r ) * ( r - springlength ) * ( -springConstant );
+			F_totals[1][INDEX_NRs] += ( springVectors->pos_new_y /  r ) * ( r - springlength ) * ( -springConstant );
+			F_totals[2][INDEX_NRs] +=( springVectors->pos_new_z  /  r ) * ( r - springlength ) * ( -springConstant );
 
-			F_totals[0][lllls] +=( springVectors->pos_new_x  / r ) * ( r - springlength/5.0 ) * ( -springConstant );
-			F_totals[1][lllls] += ( springVectors->pos_new_y  / r ) * ( r - springlength/5.0) * ( -springConstant );
-			F_totals[2][lllls] +=( springVectors->pos_new_z  / r ) * ( r - springlength/5.0 ) * ( -springConstant );
+			F_totals[0][lllls] +=( springVectors->pos_new_x  / r ) * ( r - springlength ) * ( -springConstant );
+			F_totals[1][lllls] += ( springVectors->pos_new_y  / r ) * ( r - springlength) * ( -springConstant );
+			F_totals[2][lllls] +=( springVectors->pos_new_z  / r ) * ( r - springlength ) * ( -springConstant );
 
 F_totals[0][INDEX_NRs] +=-(  state_result_worm_ventral_small[INDEX_NRs]->vel_new_x - state_result_worm_ventral_small[lllls]->vel_new_x ) * frictionConstant;
  		F_totals[1][INDEX_NRs] += -( state_result_worm_ventral_small[INDEX_NRs]->vel_new_y- state_result_worm_ventral_small[lllls]->vel_new_y ) * frictionConstant;
@@ -1228,16 +1228,16 @@ F_totals[0][INDEX_NRs] +=-(  state_result_worm_ventral_small[INDEX_NRs]->vel_new
 		state_result_worm_ventral_small[INDEX_NRs]->vel_new_y = state_result_worm_ventral_small[INDEX_NRs]->vel_new_y*0.995 ;
 		state_result_worm_ventral_small[INDEX_NRs]->vel_new_z = state_result_worm_ventral_small[INDEX_NRs]->vel_new_z*0.995 ;
 
-if(state_result_worm_ventral_small[INDEX_NRs]->pos_new_y < -1)
+if(state_result_worm_ventral_small[INDEX_NRs]->pos_new_y < -4)
 			{
-			 state_result_worm_ventral_small[INDEX_NRs]->pos_new_y = -1;
-			 state_result_worm_ventral_small[INDEX_NRs]->vel_new_y = -state_result_worm_ventral_small[INDEX_NRs]->vel_new_y*0.00995;
+			 state_result_worm_ventral_small[INDEX_NRs]->pos_new_y = -4;
+			 state_result_worm_ventral_small[INDEX_NRs]->vel_new_y = -state_result_worm_ventral_small[INDEX_NRs]->vel_new_y*0.0995;
  
 			}	
-		if(state_result_worm_ventral_small[lllls]->pos_new_y < -1)
+		if(state_result_worm_ventral_small[lllls]->pos_new_y < -4)
 			{
-				 state_result_worm_ventral_small[lllls]->pos_new_y = -1;
-			 state_result_worm_ventral_small[lllls]->vel_new_y = -state_result_worm_ventral_small[lllls]->vel_new_y*0.00995;
+				 state_result_worm_ventral_small[lllls]->pos_new_y = -4;
+			 state_result_worm_ventral_small[lllls]->vel_new_y = -state_result_worm_ventral_small[lllls]->vel_new_y*0.0995;
  
 			}
 		}
@@ -1266,13 +1266,13 @@ if(lllls < SIZE_OBJECT)
  if( k <=totalneigbours[lllls])
 	{
 	  INDEX_NR =  (state_result_worm_ventral_feather[lllls][k].INDEX_NR);
- if(fabs(F_total[0][INDEX_NR]) > 21 )
+ if(fabs(F_total[0][INDEX_NR]) > 1  )
 	 				 	  F_total[0][INDEX_NR] =0;
  
-		 		 if(fabs(F_total[1][INDEX_NR])  > 21)
+		 		 if(fabs(F_total[1][INDEX_NR])  > 1 )
 						F_total[1][INDEX_NR] =0;
 
-			 	 if(fabs(F_total[2][INDEX_NR])  > 21)
+			 	 if(fabs(F_total[2][INDEX_NR])  > 1 )
 						F_total[2][INDEX_NR] =0;
 springVectors->pos_new_x = state_result_worm_ventral[INDEX_NR]->pos_new_x - state_result_worm_ventral_small[lllls]->pos_new_x;
 		springVectors->pos_new_y = state_result_worm_ventral[INDEX_NR]->pos_new_y - state_result_worm_ventral_small[lllls]->pos_new_y;
@@ -1281,15 +1281,15 @@ springVectors->pos_new_x = state_result_worm_ventral[INDEX_NR]->pos_new_x - stat
 
 		  r = length(state_result_worm_ventral[INDEX_NR],state_result_worm_ventral_small[lllls]);
 
-		if ( r != 0  &&   r < 0.25   && r > -0.25   )
+		if ( r != 0  &&   r <0.01 && r > -0.01   )
 		{			
 			F_total[0][INDEX_NR] +=( springVectors->pos_new_x  /  r ) * ( r - springlength ) * ( -springConstant );
 			F_total[1][INDEX_NR] += ( springVectors->pos_new_y /  r ) * ( r - springlength ) * ( -springConstant );
 			F_total[2][INDEX_NR] +=( springVectors->pos_new_z  /  r ) * ( r - springlength ) * ( -springConstant );
 	 
-			F_totals[0][lllls] +=( springVectors->pos_new_x  / r ) * ( r - springlength/5.0 ) * ( -springConstant );
-			F_totals[1][lllls] += ( springVectors->pos_new_y  / r ) * ( r - springlength/5.0) * ( -springConstant );
-			F_totals[2][lllls] +=( springVectors->pos_new_z  / r ) * ( r - springlength/5.0 ) * ( -springConstant );
+			F_totals[0][lllls] +=( springVectors->pos_new_x  / r ) * ( r - springlength ) * ( -springConstant );
+			F_totals[1][lllls] += ( springVectors->pos_new_y  / r ) * ( r - springlength) * ( -springConstant );
+			F_totals[2][lllls] +=( springVectors->pos_new_z  / r ) * ( r - springlength ) * ( -springConstant );
 
 F_total[0][INDEX_NR] +=-(  state_result_worm_ventral[INDEX_NR]->vel_new_x - state_result_worm_ventral_small[lllls]->vel_new_x ) * frictionConstant;
  		F_total[1][INDEX_NR] += -( state_result_worm_ventral[INDEX_NR]->vel_new_y- state_result_worm_ventral_small[lllls]->vel_new_y ) * frictionConstant;
@@ -1310,16 +1310,16 @@ F_total[0][INDEX_NR] +=-(  state_result_worm_ventral[INDEX_NR]->vel_new_x - stat
 		state_result_worm_ventral[INDEX_NR]->vel_new_y = state_result_worm_ventral[INDEX_NR]->vel_new_y*0.995 ;
 		state_result_worm_ventral[INDEX_NR]->vel_new_z = state_result_worm_ventral[INDEX_NR]->vel_new_z*0.995 ;
 
-if(state_result_worm_ventral[INDEX_NR]->pos_new_y < -1)
+if(state_result_worm_ventral[INDEX_NR]->pos_new_y < -4)
 			{
-			 state_result_worm_ventral[INDEX_NR]->pos_new_y = -1;
+			 state_result_worm_ventral[INDEX_NR]->pos_new_y = -4;
 			 state_result_worm_ventral[INDEX_NR]->vel_new_y = -state_result_worm_ventral[INDEX_NR]->vel_new_y*0.00995;
  
 			}	
-		if(state_result_worm_ventral_small[lllls]->pos_new_y < -1)
+		if(state_result_worm_ventral_small[lllls]->pos_new_y < -4)
 			{
-				 state_result_worm_ventral_small[lllls]->pos_new_y = -1;
-			 state_result_worm_ventral_small[lllls]->vel_new_y = -state_result_worm_ventral_small[lllls]->vel_new_y*0.00995;
+				 state_result_worm_ventral_small[lllls]->pos_new_y = -4;
+			 state_result_worm_ventral_small[lllls]->vel_new_y = -state_result_worm_ventral_small[lllls]->vel_new_y*0.0995;
  
 			}
 		}
@@ -1366,23 +1366,23 @@ INDEX_NRmores = state_result_worm_ventral_feathers[lllls][d].INDEX_NR;
 
  
 
-				 if(fabs(F_totals[0][INDEX_NRmores]) > 21 )
+				 if(fabs(F_totals[0][INDEX_NRmores]) > 1  )
 	 				  F_totals[0][INDEX_NRmores] =0;
  
-		 		 if(fabs(F_totals[1][INDEX_NRmores])  > 21)
+		 		 if(fabs(F_totals[1][INDEX_NRmores])  > 1 )
 					  F_totals[1][INDEX_NRmores] =0;
 
-			 	 if(fabs(F_totals[2][INDEX_NRmores])  > 21)
+			 	 if(fabs(F_totals[2][INDEX_NRmores])  > 1 )
 					  F_totals[2][INDEX_NRmores] =0;
 			
 
- 				if(fabs(F_totals[0][INDEX_NRs]) > 21 )
+ 				if(fabs(F_totals[0][INDEX_NRs]) > 1  )
 	 				  F_totals[0][INDEX_NRs] =0;
  
-		 		 if(fabs(F_totals[1][INDEX_NRs])  > 21)
+		 		 if(fabs(F_totals[1][INDEX_NRs])  > 1 )
 					  F_totals[1][INDEX_NRs] =0;
 
-			 	 if(fabs(F_totals[2][INDEX_NRs])  > 21)
+			 	 if(fabs(F_totals[2][INDEX_NRs])  > 1 )
 					  F_totals[2][INDEX_NRs] =0;
 			
 		springVectors->pos_new_x = state_result_worm_ventral_small[INDEX_NRs]->pos_new_x - state_result_worm_ventral_small[INDEX_NRmores]->pos_new_x;
@@ -1395,13 +1395,13 @@ INDEX_NRmores = state_result_worm_ventral_feathers[lllls][d].INDEX_NR;
 		if ( r != 0  &&  r < 1.25  && r > -1.25    )
 		{	
 	//	 printf("1totalneigbours[llll]  %d :: number %d :: index_____ = %d\n",totalneigbours[llll],llll,INDEX_NRmore);	
-			F_totals[0][INDEX_NRs] +=( springVectors->pos_new_x  /  r ) * ( r - springlength/5.0 ) * ( -springConstant );
-			F_totals[1][INDEX_NRs] += ( springVectors->pos_new_y /  r ) * ( r - springlength/5.0 ) * ( -springConstant );
-			F_totals[2][INDEX_NRs] +=( springVectors->pos_new_z  /  r ) * ( r - springlength/5.0 ) * ( -springConstant );
+			F_totals[0][INDEX_NRs] +=( springVectors->pos_new_x  /  r ) * ( r - springlength ) * ( -springConstant );
+			F_totals[1][INDEX_NRs] += ( springVectors->pos_new_y /  r ) * ( r - springlength ) * ( -springConstant );
+			F_totals[2][INDEX_NRs] +=( springVectors->pos_new_z  /  r ) * ( r - springlength ) * ( -springConstant );
 
-			F_totals[0][INDEX_NRmores] +=( springVectors->pos_new_x  / r ) * ( r - springlength/5.0 ) * ( -springConstant );
-			F_totals[1][INDEX_NRmores] += ( springVectors->pos_new_y  / r ) * ( r - springlength/5.0) * ( -springConstant );
-			F_totals[2][INDEX_NRmores] +=( springVectors->pos_new_z  / r ) * ( r - springlength/5.0 ) * ( -springConstant );
+			F_totals[0][INDEX_NRmores] +=( springVectors->pos_new_x  / r ) * ( r - springlength ) * ( -springConstant );
+			F_totals[1][INDEX_NRmores] += ( springVectors->pos_new_y  / r ) * ( r - springlength) * ( -springConstant );
+			F_totals[2][INDEX_NRmores] +=( springVectors->pos_new_z  / r ) * ( r - springlength ) * ( -springConstant );
 
 		F_totals[0][INDEX_NRs] +=-(  state_result_worm_ventral_small[INDEX_NRs]->vel_new_x - state_result_worm_ventral_small[INDEX_NRmores]->vel_new_x ) * frictionConstant;
  		F_totals[1][INDEX_NRs] += -( state_result_worm_ventral_small[INDEX_NRs]->vel_new_y- state_result_worm_ventral_small[INDEX_NRmores]->vel_new_y ) * frictionConstant;
@@ -1423,16 +1423,16 @@ INDEX_NRmores = state_result_worm_ventral_feathers[lllls][d].INDEX_NR;
 		state_result_worm_ventral_small[INDEX_NRs]->vel_new_y = state_result_worm_ventral_small[INDEX_NRs]->vel_new_y*0.995 ;
 		state_result_worm_ventral_small[INDEX_NRs]->vel_new_z = state_result_worm_ventral_small[INDEX_NRs]->vel_new_z*0.995 ;
 
-if(state_result_worm_ventral_small[INDEX_NRs]->pos_new_y < -1)
+if(state_result_worm_ventral_small[INDEX_NRs]->pos_new_y < -4)
 			{
-			 state_result_worm_ventral_small[INDEX_NRs]->pos_new_y = -1;
+			 state_result_worm_ventral_small[INDEX_NRs]->pos_new_y = -4;
 			 state_result_worm_ventral_small[INDEX_NRs]->vel_new_y = -state_result_worm_ventral_small[INDEX_NRs]->vel_new_y*0.00995;
  
 			}	
-		if(state_result_worm_ventral_small[INDEX_NRmores]->pos_new_y < -1)
+		if(state_result_worm_ventral_small[INDEX_NRmores]->pos_new_y < -4)
 			{
-				 state_result_worm_ventral_small[INDEX_NRmores]->pos_new_y = -1;
-			 state_result_worm_ventral_small[INDEX_NRmores]->vel_new_y = -state_result_worm_ventral_small[INDEX_NRmores]->vel_new_y*0.00995;
+				 state_result_worm_ventral_small[INDEX_NRmores]->pos_new_y = -4;
+			 state_result_worm_ventral_small[INDEX_NRmores]->vel_new_y = -state_result_worm_ventral_small[INDEX_NRmores]->vel_new_y*0.0995;
  
 			}
 		}
@@ -1461,13 +1461,13 @@ if(lllls < SIZE_OBJECT)
  if( k <=totalneigbours[lllls])
 	{
 	  INDEX_NRmore =  (state_result_worm_ventral_feather[lllls][k].INDEX_NR);
- if(fabs(F_total[0][INDEX_NRmore]) > 21 )
+ if(fabs(F_total[0][INDEX_NRmore]) > 1  )
 	 				 	  F_total[0][INDEX_NRmore] =0;
  
-		 		 if(fabs(F_total[1][INDEX_NRmore])  > 21)
+		 		 if(fabs(F_total[1][INDEX_NRmore])  > 1 )
 						F_total[1][INDEX_NRmore] =0;
 
-			 	 if(fabs(F_total[2][INDEX_NRmore])  > 21)
+			 	 if(fabs(F_total[2][INDEX_NRmore])  > 1 )
 						F_total[2][INDEX_NRmore] =0;
 springVectors->pos_new_x = state_result_worm_ventral[INDEX_NRmore]->pos_new_x - state_result_worm_ventral_small[INDEX_NRs]->pos_new_x;
 		springVectors->pos_new_y = state_result_worm_ventral[INDEX_NRmore]->pos_new_y - state_result_worm_ventral_small[INDEX_NRs]->pos_new_y;
@@ -1476,15 +1476,15 @@ springVectors->pos_new_x = state_result_worm_ventral[INDEX_NRmore]->pos_new_x - 
 
 		  r = length(state_result_worm_ventral[INDEX_NRmore],state_result_worm_ventral_small[INDEX_NRs]);
 
-		if ( r != 0  &&   r < 1.25   && r > -1.25   )
+		if ( r != 0  &&   r < 0.01 && r > -0.01    )
 		{			
 			F_total[0][INDEX_NRmore] +=( springVectors->pos_new_x  /  r ) * ( r - springlength ) * ( -springConstant );
 			F_total[1][INDEX_NRmore] += ( springVectors->pos_new_y /  r ) * ( r - springlength ) * ( -springConstant );
 			F_total[2][INDEX_NRmore] +=( springVectors->pos_new_z  /  r ) * ( r - springlength ) * ( -springConstant );
 	 
-			F_totals[0][INDEX_NRs] +=( springVectors->pos_new_x  / r ) * ( r - springlength/5.0 ) * ( -springConstant );
-			F_totals[1][INDEX_NRs] += ( springVectors->pos_new_y  / r ) * ( r - springlength/5.0) * ( -springConstant );
-			F_totals[2][INDEX_NRs] +=( springVectors->pos_new_z  / r ) * ( r - springlength/5.0 ) * ( -springConstant );
+			F_totals[0][INDEX_NRs] +=( springVectors->pos_new_x  / r ) * ( r - springlength  ) * ( -springConstant );
+			F_totals[1][INDEX_NRs] += ( springVectors->pos_new_y  / r ) * ( r - springlength ) * ( -springConstant );
+			F_totals[2][INDEX_NRs] +=( springVectors->pos_new_z  / r ) * ( r - springlength ) * ( -springConstant );
 
 F_total[0][INDEX_NRmore] +=-(  state_result_worm_ventral[INDEX_NRmore]->vel_new_x - state_result_worm_ventral_small[INDEX_NRs]->vel_new_x ) * frictionConstant;
  		F_total[1][INDEX_NRmore] += -( state_result_worm_ventral[INDEX_NRmore]->vel_new_y- state_result_worm_ventral_small[INDEX_NRs]->vel_new_y ) * frictionConstant;
@@ -1505,16 +1505,16 @@ F_total[0][INDEX_NRmore] +=-(  state_result_worm_ventral[INDEX_NRmore]->vel_new_
 		state_result_worm_ventral[INDEX_NRmore]->vel_new_y = state_result_worm_ventral[INDEX_NRmore]->vel_new_y*0.995 ;
 		state_result_worm_ventral[INDEX_NRmore]->vel_new_z = state_result_worm_ventral[INDEX_NRmore]->vel_new_z*0.995 ;
 
-if(state_result_worm_ventral[INDEX_NRmore]->pos_new_y < -1)
+if(state_result_worm_ventral[INDEX_NRmore]->pos_new_y < -4)
 			{
-			 state_result_worm_ventral[INDEX_NRmore]->pos_new_y = -1;
+			 state_result_worm_ventral[INDEX_NRmore]->pos_new_y = -4;
 			 state_result_worm_ventral[INDEX_NRmore]->vel_new_y = -state_result_worm_ventral[INDEX_NRmore]->vel_new_y*0.00995;
  
 			}	
-		if(state_result_worm_ventral_small[INDEX_NRs]->pos_new_y < -1)
+		if(state_result_worm_ventral_small[INDEX_NRs]->pos_new_y < -4)
 			{
-				 state_result_worm_ventral_small[INDEX_NRs]->pos_new_y = -1;
-			 state_result_worm_ventral_small[INDEX_NRs]->vel_new_y = -state_result_worm_ventral_small[INDEX_NRs]->vel_new_y*0.00995;
+				 state_result_worm_ventral_small[INDEX_NRs]->pos_new_y = -4;
+			 state_result_worm_ventral_small[INDEX_NRs]->vel_new_y = -state_result_worm_ventral_small[INDEX_NRs]->vel_new_y*0.0995;
  
 			}
 		}
@@ -1547,13 +1547,13 @@ if(state_result_worm_ventral[INDEX_NRmore]->pos_new_y < -1)
 //}
 		 
  }		
-				 if(fabs(F_totals[0][lllls]) > 21 )
+				 if(fabs(F_totals[0][lllls]) > 1  )
 	 				 F_totals[0][lllls] =0;
  
-		 		 if(fabs(F_totals[1][lllls])  > 21)
+		 		 if(fabs(F_totals[1][lllls])  > 1 )
 					 F_totals[1][lllls] =0;
 
-			 	 if(fabs(F_totals[2][lllls])  > 21)
+			 	 if(fabs(F_totals[2][lllls])  > 1 )
 					 F_totals[2][lllls] =0;
 			// printf("FORCE(x,y,z) = %.50f:%.50f%.50f \n", fabs(F_total[0][INDEX_NR]),fabs(F_total[1][llll]),fabs(F_total[2][INDEX_NRmore]));
 			
