@@ -7,6 +7,7 @@
 #include "noise.h"
 int WHAT_OBJECT;
 int WHAT_OBJECT_NOW;
+struct state_vector     ***  worm_ventral(struct state_vector     ***   next_state, int num ,int index, int what1, int what2);
 #define		RESOLUTION 1
 int TOTAL_OBJECTS = 0;
 static GLuint	texture;
@@ -170,7 +171,7 @@ void rates_dorsal ( double *t, double *f, double result[]   );
 void key(unsigned char key, int x, int y);
 int findnearestpoint(int points,struct state_vector *** worm , int num,int howmany);
 void display  (void);
-struct state_vector   *   worm_ventral(struct state_vector     *  next_state, int num );
+ 
 double length (struct state_vector *a,struct state_vector *b ) { return sqrtf ( b->pos_new_x*a->pos_new_x + b->pos_new_y*a->pos_new_y + b->pos_new_z*a->pos_new_z); }
 static double dist_sq( double *a1, double *a2, int dims ) {
   double dist_sq = 0, diff;
@@ -280,10 +281,10 @@ void taskworm(int lllll, int **totalneigbours__ ,struct state_vector *** feather
  llll = lllll;
 int k;
  
-for(k = 0; k <= totalneigbours__[lllll][WHAT_OBJECT]; k++)
+for(k = 0; k <= totalneigbours__[lllll][WHAT_OBJECT_NOW]; k++)
 {	// m*a = -k*s
  	//10*a= -k * 0.004 solve k
-
+////printf("taskworm 1\n");
 if(acc1once == 0)
 	{
 	if(fabs(acc1) > 0)
@@ -295,94 +296,97 @@ if(acc1once == 0)
 	}
 acc1once = 0;	
  
-	INDEX_NR =  (feather_result__[lllll][k][WHAT_OBJECT].INDEX_NR);
-	 
+	INDEX_NR =  (feather_result__[lllll][k][WHAT_OBJECT_NOW].INDEX_NR);
+	//printf("taskworm 2\n"); 
 //if(  INDEX_NR > 0 && INDEX_NR < 1000000  )
 //{
 	//if(state_result_worm_ventral[INDEX_NR]->force_sign != -1 && state_result_worm_ventral[INDEX_NR]->force_sign != 1 && INDEX_NR >0)
 	//{
 		 if(feather_once == FIRST  )
 		{	
+ //printf("taskworm 2.5\n");
+						 if(fabs(F_total_next_[0][INDEX_NR][WHAT_OBJECT_NOW]) >  6  )
+	 				 	  F_total_next_[0][INDEX_NR][WHAT_OBJECT_NOW] =0;
  
-						 if(fabs(F_total_next_[0][INDEX_NR][WHAT_OBJECT]) >  6  )
-	 				 	  F_total_next_[0][INDEX_NR][WHAT_OBJECT] =0;
- 
-		 		 if(fabs(F_total_next_[1][INDEX_NR][WHAT_OBJECT])  >  6 )
-						F_total_next_[1][INDEX_NR][WHAT_OBJECT] =0;
+		 		 if(fabs(F_total_next_[1][INDEX_NR][WHAT_OBJECT_NOW])  >  6 )
+						F_total_next_[1][INDEX_NR][WHAT_OBJECT_NOW] =0;
 
-			 	 if(fabs(F_total_next_[2][INDEX_NR][WHAT_OBJECT])  >  6 )
-						F_total_next_[2][INDEX_NR][WHAT_OBJECT] =0;
+			 	 if(fabs(F_total_next_[2][INDEX_NR][WHAT_OBJECT_NOW])  >  6 )
+						F_total_next_[2][INDEX_NR][WHAT_OBJECT_NOW] =0;
+ 
   //printf("2totalneigbours__[lllll]  %d :: number %d :: index_____ = %d\n",totalneigbours__[lllll],lllll,INDEX_NR);
-		springVector->pos_new_x = state_result__[INDEX_NR][WHAT_OBJECT][WHAT_OBJECT_NOW].pos_new_x - state_result__[lllll][WHAT_OBJECT][WHAT_OBJECT_NOW].pos_new_x;
-		springVector->pos_new_y = state_result__[INDEX_NR][WHAT_OBJECT][WHAT_OBJECT_NOW].pos_new_y - state_result__[lllll][WHAT_OBJECT][WHAT_OBJECT_NOW].pos_new_y;
-		springVector->pos_new_z = state_result__[INDEX_NR][WHAT_OBJECT][WHAT_OBJECT_NOW].pos_new_z - state_result__[lllll][WHAT_OBJECT][WHAT_OBJECT_NOW].pos_new_z;
+		springVector->pos_new_x = state_result__[INDEX_NR][WHAT_OBJECT_NOW][WHAT_OBJECT_NOW].pos_new_x - state_result__[lllll][WHAT_OBJECT_NOW][WHAT_OBJECT_NOW].pos_new_x;
+//printf("taskworm 2.8\n");
+		springVector->pos_new_y = state_result__[INDEX_NR][WHAT_OBJECT_NOW][WHAT_OBJECT_NOW].pos_new_y - state_result__[lllll][WHAT_OBJECT_NOW][WHAT_OBJECT_NOW].pos_new_y;
+		springVector->pos_new_z = state_result__[INDEX_NR][WHAT_OBJECT_NOW][WHAT_OBJECT_NOW].pos_new_z - state_result__[lllll][WHAT_OBJECT_NOW][WHAT_OBJECT_NOW].pos_new_z;
  
-
-		float r = length(state_result__[INDEX_NR][WHAT_OBJECT],state_result__[lllll][WHAT_OBJECT]);
+//printf("taskworm 3\n");
+		float r = length(state_result__[INDEX_NR][WHAT_OBJECT_NOW],state_result__[lllll][WHAT_OBJECT_NOW]);
  
 		if ( r != 0  &&r < 1.1  && r > -1.1   )
 		{
 	 		
-			F_total_next_[0][INDEX_NR][WHAT_OBJECT] +=( springVector->pos_new_x  /  r ) * ( r - springlength ) * ( -springConstant );
-			F_total_next_[1][INDEX_NR][WHAT_OBJECT] += ( springVector->pos_new_y /  r ) * ( r - springlength ) * ( -springConstant );
-			F_total_next_[2][INDEX_NR][WHAT_OBJECT] +=( springVector->pos_new_z  /  r ) * ( r - springlength ) * ( -springConstant );
+			F_total_next_[0][INDEX_NR][WHAT_OBJECT_NOW] +=( springVector->pos_new_x  /  r ) * ( r - springlength ) * ( -springConstant );
+			F_total_next_[1][INDEX_NR][WHAT_OBJECT_NOW] += ( springVector->pos_new_y /  r ) * ( r - springlength ) * ( -springConstant );
+			F_total_next_[2][INDEX_NR][WHAT_OBJECT_NOW] +=( springVector->pos_new_z  /  r ) * ( r - springlength ) * ( -springConstant );
 
-			F_total_next_[0][lllll][WHAT_OBJECT] +=( springVector->pos_new_x  / r ) * ( r - springlength ) * ( -springConstant );
-			F_total_next_[1][lllll][WHAT_OBJECT] += ( springVector->pos_new_y  / r ) * ( r - springlength) * ( -springConstant );
-			F_total_next_[2][lllll][WHAT_OBJECT] +=( springVector->pos_new_z  / r ) * ( r - springlength ) * ( -springConstant );
+			F_total_next_[0][lllll][WHAT_OBJECT_NOW] +=( springVector->pos_new_x  / r ) * ( r - springlength ) * ( -springConstant );
+			F_total_next_[1][lllll][WHAT_OBJECT_NOW] += ( springVector->pos_new_y  / r ) * ( r - springlength) * ( -springConstant );
+			F_total_next_[2][lllll][WHAT_OBJECT_NOW] +=( springVector->pos_new_z  / r ) * ( r - springlength ) * ( -springConstant );
 
-		F_total_next_[0][INDEX_NR][WHAT_OBJECT] +=-(  state_result__[INDEX_NR][WHAT_OBJECT][WHAT_OBJECT_NOW].vel_new_x - state_result__[lllll][WHAT_OBJECT][WHAT_OBJECT_NOW].vel_new_x ) * frictionConstant;
- 		F_total_next_[1][INDEX_NR][WHAT_OBJECT] += -( state_result__[INDEX_NR][WHAT_OBJECT][WHAT_OBJECT_NOW].vel_new_y- state_result__[lllll][WHAT_OBJECT][WHAT_OBJECT_NOW].vel_new_y ) * frictionConstant;
- 		F_total_next_[2][INDEX_NR][WHAT_OBJECT] += -(  state_result__[INDEX_NR][WHAT_OBJECT][WHAT_OBJECT_NOW].vel_new_z - state_result__[lllll ][WHAT_OBJECT][WHAT_OBJECT_NOW].vel_new_z ) * frictionConstant;
+		F_total_next_[0][INDEX_NR][WHAT_OBJECT_NOW] +=-(  state_result__[INDEX_NR][WHAT_OBJECT_NOW][WHAT_OBJECT_NOW].vel_new_x - state_result__[lllll][WHAT_OBJECT_NOW][WHAT_OBJECT_NOW].vel_new_x ) * frictionConstant;
+ 		F_total_next_[1][INDEX_NR][WHAT_OBJECT_NOW] += -( state_result__[INDEX_NR][WHAT_OBJECT_NOW][WHAT_OBJECT_NOW].vel_new_y- state_result__[lllll][WHAT_OBJECT_NOW][WHAT_OBJECT_NOW].vel_new_y ) * frictionConstant;
+ 		F_total_next_[2][INDEX_NR][WHAT_OBJECT_NOW] += -(  state_result__[INDEX_NR][WHAT_OBJECT_NOW][WHAT_OBJECT_NOW].vel_new_z - state_result__[lllll ][WHAT_OBJECT_NOW][WHAT_OBJECT_NOW].vel_new_z ) * frictionConstant;
 
 
-		F_total_next_[0][lllll][WHAT_OBJECT] +=-(  state_result__[INDEX_NR][WHAT_OBJECT][WHAT_OBJECT_NOW].vel_new_x - state_result__[lllll][WHAT_OBJECT][WHAT_OBJECT_NOW].vel_new_x ) * frictionConstant;
- 		F_total_next_[1][lllll][WHAT_OBJECT] += -( state_result__[INDEX_NR][WHAT_OBJECT][WHAT_OBJECT_NOW].vel_new_y- state_result__[lllll][WHAT_OBJECT][WHAT_OBJECT_NOW].vel_new_y ) * frictionConstant;
- 		F_total_next_[2][lllll][WHAT_OBJECT] += -(  state_result__[INDEX_NR][WHAT_OBJECT][WHAT_OBJECT_NOW].vel_new_z - state_result__[lllll ][WHAT_OBJECT][WHAT_OBJECT_NOW].vel_new_z ) * frictionConstant;
-		state_result__[lllll][WHAT_OBJECT][WHAT_OBJECT_NOW].vel_new_x = state_result__[lllll][WHAT_OBJECT][WHAT_OBJECT_NOW].vel_new_x*0.995 ;
+		F_total_next_[0][lllll][WHAT_OBJECT_NOW] +=-(  state_result__[INDEX_NR][WHAT_OBJECT_NOW][WHAT_OBJECT_NOW].vel_new_x - state_result__[lllll][WHAT_OBJECT_NOW][WHAT_OBJECT_NOW].vel_new_x ) * frictionConstant;
+ 		F_total_next_[1][lllll][WHAT_OBJECT_NOW] += -( state_result__[INDEX_NR][WHAT_OBJECT_NOW][WHAT_OBJECT_NOW].vel_new_y- state_result__[lllll][WHAT_OBJECT_NOW][WHAT_OBJECT_NOW].vel_new_y ) * frictionConstant;
+ 		F_total_next_[2][lllll][WHAT_OBJECT_NOW] += -(  state_result__[INDEX_NR][WHAT_OBJECT_NOW][WHAT_OBJECT_NOW].vel_new_z - state_result__[lllll ][WHAT_OBJECT_NOW][WHAT_OBJECT_NOW].vel_new_z ) * frictionConstant;
+		state_result__[lllll][WHAT_OBJECT_NOW][WHAT_OBJECT_NOW].vel_new_x = state_result__[lllll][WHAT_OBJECT_NOW][WHAT_OBJECT_NOW].vel_new_x*0.995 ;
 		
-		state_result__[lllll][WHAT_OBJECT][WHAT_OBJECT_NOW].vel_new_y = state_result__[lllll][WHAT_OBJECT][WHAT_OBJECT_NOW].vel_new_y*0.995 ;
+		state_result__[lllll][WHAT_OBJECT_NOW][WHAT_OBJECT_NOW].vel_new_y = state_result__[lllll][WHAT_OBJECT_NOW][WHAT_OBJECT_NOW].vel_new_y*0.995 ;
 
-		state_result__[lllll][WHAT_OBJECT][WHAT_OBJECT_NOW].vel_new_z = state_result__[lllll][WHAT_OBJECT][WHAT_OBJECT_NOW].vel_new_z*0.995 ;
+		state_result__[lllll][WHAT_OBJECT_NOW][WHAT_OBJECT_NOW].vel_new_z = state_result__[lllll][WHAT_OBJECT_NOW][WHAT_OBJECT_NOW].vel_new_z*0.995 ;
 
-		state_result__[INDEX_NR][WHAT_OBJECT][WHAT_OBJECT_NOW].vel_new_x = state_result__[INDEX_NR][WHAT_OBJECT][WHAT_OBJECT_NOW].vel_new_x*0.995 ;
+		state_result__[INDEX_NR][WHAT_OBJECT_NOW][WHAT_OBJECT_NOW].vel_new_x = state_result__[INDEX_NR][WHAT_OBJECT_NOW][WHAT_OBJECT_NOW].vel_new_x*0.995 ;
 		
-		state_result__[INDEX_NR][WHAT_OBJECT][WHAT_OBJECT_NOW].vel_new_y = state_result__[INDEX_NR][WHAT_OBJECT][WHAT_OBJECT_NOW].vel_new_y*0.995 ;
-		state_result__[INDEX_NR][WHAT_OBJECT][WHAT_OBJECT_NOW].vel_new_z = state_result__[INDEX_NR][WHAT_OBJECT][WHAT_OBJECT_NOW].vel_new_z*0.995 ;
+		state_result__[INDEX_NR][WHAT_OBJECT_NOW][WHAT_OBJECT_NOW].vel_new_y = state_result__[INDEX_NR][WHAT_OBJECT_NOW][WHAT_OBJECT_NOW].vel_new_y*0.995 ;
+		state_result__[INDEX_NR][WHAT_OBJECT_NOW][WHAT_OBJECT_NOW].vel_new_z = state_result__[INDEX_NR][WHAT_OBJECT_NOW][WHAT_OBJECT_NOW].vel_new_z*0.995 ;
 BIGONE = 1;
-		state_result__[INDEX_NR][WHAT_OBJECT][WHAT_OBJECT_NOW].force_sign =  -1;
-		state_result__[INDEX_NR][WHAT_OBJECT]    =  worm_ventral(  state_result__[INDEX_NR][WHAT_OBJECT] ,1) ;
+		state_result__[INDEX_NR][WHAT_OBJECT_NOW][WHAT_OBJECT_NOW].force_sign =  -1;
 
-		state_result__[lllll][WHAT_OBJECT][WHAT_OBJECT_NOW].force_sign =   1; ; 
-		state_result__[lllll][WHAT_OBJECT]    =  worm_ventral(  state_result__[lllll][WHAT_OBJECT] ,1);
+		state_result__     =  worm_ventral(  state_result__,1,INDEX_NR,WHAT_OBJECT,WHAT_OBJECT_NOW   ) ;
+
+		state_result__[lllll][WHAT_OBJECT_NOW][WHAT_OBJECT_NOW].force_sign =   1; ; 
+		state_result__     =  worm_ventral(  state_result__,1,lllll,WHAT_OBJECT,WHAT_OBJECT_NOW  );
 		}
 else
 {
  
-		state_result__[INDEX_NR][WHAT_OBJECT][WHAT_OBJECT_NOW].force_sign =  -1;
-		state_result__[INDEX_NR][WHAT_OBJECT]    =  worm_ventral(  state_result__[INDEX_NR][WHAT_OBJECT] ,1) ;
+		state_result__[INDEX_NR][WHAT_OBJECT_NOW][WHAT_OBJECT_NOW].force_sign =  -1;
+		state_result__     =  worm_ventral(  state_result__  ,1,INDEX_NR,WHAT_OBJECT,WHAT_OBJECT_NOW) ;
 
-		state_result__[lllll][WHAT_OBJECT][WHAT_OBJECT_NOW].force_sign =   1; ; 
-		state_result__[lllll][WHAT_OBJECT]    =  worm_ventral(  state_result__[lllll][WHAT_OBJECT] ,1);
+		state_result__[lllll][WHAT_OBJECT_NOW][WHAT_OBJECT_NOW].force_sign =   1; ; 
+		state_result__    =  worm_ventral(  state_result__,1 ,lllll,WHAT_OBJECT,WHAT_OBJECT_NOW   );
 
 }
 		
 
-
+//printf("taskworm 4\n");
 		
-if(state_result__[INDEX_NR][WHAT_OBJECT][WHAT_OBJECT_NOW].pos_new_y < -2)
+if(state_result__[INDEX_NR][WHAT_OBJECT_NOW][WHAT_OBJECT_NOW].pos_new_y < -2)
 			{
-			 state_result__[INDEX_NR][WHAT_OBJECT][WHAT_OBJECT_NOW].pos_new_y = -2;
-			 state_result__[INDEX_NR][WHAT_OBJECT][WHAT_OBJECT_NOW].vel_new_y = -state_result__[INDEX_NR][WHAT_OBJECT][WHAT_OBJECT_NOW].vel_new_y*0.00995;
+			 state_result__[INDEX_NR][WHAT_OBJECT_NOW][WHAT_OBJECT_NOW].pos_new_y = -2;
+			 state_result__[INDEX_NR][WHAT_OBJECT_NOW][WHAT_OBJECT_NOW].vel_new_y = -state_result__[INDEX_NR][WHAT_OBJECT_NOW][WHAT_OBJECT_NOW].vel_new_y*0.00995;
  
 			}	
-		if(state_result__[lllll][WHAT_OBJECT][WHAT_OBJECT_NOW].pos_new_y < -2)
+		if(state_result__[lllll][WHAT_OBJECT_NOW][WHAT_OBJECT_NOW].pos_new_y < -2)
 			{
-				 state_result__[lllll][WHAT_OBJECT][WHAT_OBJECT_NOW].pos_new_y = -2;
-			 state_result__[lllll][WHAT_OBJECT][WHAT_OBJECT_NOW].vel_new_y = -state_result__[lllll][WHAT_OBJECT][WHAT_OBJECT_NOW].vel_new_y*0.00995;
+				 state_result__[lllll][WHAT_OBJECT_NOW][WHAT_OBJECT_NOW].pos_new_y = -2;
+			 state_result__[lllll][WHAT_OBJECT_NOW][WHAT_OBJECT_NOW].vel_new_y = -state_result__[lllll][WHAT_OBJECT_NOW][WHAT_OBJECT_NOW].vel_new_y*0.00995;
  
 			}
-
+//printf("taskworm 5\n");
  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //interaktioner mellan 2 objekt!
 
@@ -424,7 +428,7 @@ if(d != s)
 springVector->pos_new_x = state_result__[INDEX_NRs][d][WHAT_OBJECT_NOW].pos_new_x - state_result__[lllll][s][WHAT_OBJECT_NOW].pos_new_x;
 		springVector->pos_new_y = state_result__[INDEX_NRs][d][WHAT_OBJECT_NOW].pos_new_y - state_result__[lllll][s][WHAT_OBJECT_NOW].pos_new_y;
 		springVector->pos_new_z = state_result__[INDEX_NRs][d][WHAT_OBJECT_NOW].pos_new_z - state_result__[lllll][s][WHAT_OBJECT_NOW].pos_new_z;
- 
+ //printf("taskworm 6\n");
 
 		  r = length(state_result__[INDEX_NRs][d],state_result__[lllll][s]);
 
@@ -433,7 +437,7 @@ springVector->pos_new_x = state_result__[INDEX_NRs][d][WHAT_OBJECT_NOW].pos_new_
 			F_totals_next_[0][INDEX_NRs][d] +=( springVector->pos_new_x  /  r ) * ( r - springlength ) * ( -springConstant );
 			F_totals_next_[1][INDEX_NRs][d] += ( springVector->pos_new_y /  r ) * ( r - springlength ) * ( -springConstant );
 			F_totals_next_[2][INDEX_NRs][d] +=( springVector->pos_new_z  /  r ) * ( r - springlength ) * ( -springConstant );
-	  printf("r = %f\n",r);
+	//  printf("r = %f\n",r);
 			F_total_next_[0][lllll][s] +=( springVector->pos_new_x  / r ) * ( r - springlength ) * ( -springConstant );
 			F_total_next_[1][lllll][s] += ( springVector->pos_new_y  / r ) * ( r - springlength) * ( -springConstant );
 			F_total_next_[2][lllll][s] +=( springVector->pos_new_z  / r ) * ( r - springlength ) * ( -springConstant );
@@ -442,7 +446,7 @@ F_totals_next_[0][INDEX_NRs][d] +=-(  state_result__[INDEX_NRs][d][WHAT_OBJECT_N
  		F_totals_next_[1][INDEX_NRs][d] += -( state_result__[INDEX_NRs][d][WHAT_OBJECT_NOW].vel_new_y- state_result__[lllll][s][WHAT_OBJECT_NOW].vel_new_y ) * frictionConstant;
  		F_totals_next_[2][INDEX_NRs][d] += -(  state_result__[INDEX_NRs][d][WHAT_OBJECT_NOW].vel_new_z - state_result__[lllll ][s][WHAT_OBJECT_NOW].vel_new_z ) * frictionConstant;
 
-
+//printf("taskworm 7\n");
 		F_total_next_[0][lllll][s] +=-(  state_result__[INDEX_NRs][d][WHAT_OBJECT_NOW].vel_new_x - state_result__[lllll][s][WHAT_OBJECT_NOW].vel_new_x ) * frictionConstant;
  		F_total_next_[1][lllll][s] += -( state_result__[INDEX_NRs][d][WHAT_OBJECT_NOW].vel_new_y- state_result__[lllll][s][WHAT_OBJECT_NOW].vel_new_y ) * frictionConstant;
  		F_total_next_[2][lllll][s] += -(  state_result__[INDEX_NRs][d][WHAT_OBJECT_NOW].vel_new_z - state_result__[lllll ][s][WHAT_OBJECT_NOW].vel_new_z ) * frictionConstant;
@@ -458,12 +462,15 @@ F_totals_next_[0][INDEX_NRs][d] +=-(  state_result__[INDEX_NRs][d][WHAT_OBJECT_N
 		state_result__[INDEX_NRs][d][WHAT_OBJECT_NOW].vel_new_z = state_result__[INDEX_NRs][d][WHAT_OBJECT_NOW].vel_new_z*0.995 ; 
 BIGONE = 0;
  WHAT_OBJECT_NOW = d;
+//printf("taskworm 8\n");
 		state_result__[INDEX_NRs][d][WHAT_OBJECT_NOW].force_sign =  -1;
-		state_result__[INDEX_NRs][d]    =  worm_ventral(  state_result__[INDEX_NRs][d] ,1) ;
+		state_result__    =  worm_ventral(  state_result__,1,INDEX_NRs,d,WHAT_OBJECT_NOW  ) ;
 BIGONE = 1;
- WHAT_OBJECT_NOW = WHAT_OBJECT;
+ WHAT_OBJECT_NOW = s;
 		state_result__[lllll][s][WHAT_OBJECT_NOW].force_sign =   1; ; 
-		state_result__[lllll][s]    =  worm_ventral(  state_result__[lllll][s] ,1);
+		state_result__     =  worm_ventral(  state_result__,1,lllll,s,WHAT_OBJECT_NOW  );
+ WHAT_OBJECT_NOW = WHAT_OBJECT;
+//printf("taskworm 9\n");
 		}
 else
 {
@@ -476,14 +483,17 @@ for(d =1 ; d < TOTAL_OBJECTS; d++)
 {
 if(d != s)
 {
+ //printf("taskworm 10\n");
  WHAT_OBJECT_NOW = d;
  BIGONE = 0;
 		state_result__[INDEX_NRs][d][WHAT_OBJECT_NOW].force_sign =  -1;
-		state_result__[INDEX_NRs][d]    =  worm_ventral(  state_result__[INDEX_NRs][d] ,1) ;
+		state_result__     =  worm_ventral(  state_result__,1,INDEX_NRs,d,WHAT_OBJECT_NOW  ) ;
 BIGONE = 1;
- WHAT_OBJECT_NOW = WHAT_OBJECT;
+ WHAT_OBJECT_NOW = s;
 		state_result__[lllll][s][WHAT_OBJECT_NOW].force_sign =   1; ; 
-		state_result__[lllll][s]    =  worm_ventral(  state_result__[lllll][s] ,1);
+		state_result__   =  worm_ventral(  state_result__ ,1,lllll,s  ,WHAT_OBJECT_NOW);
+ WHAT_OBJECT_NOW = WHAT_OBJECT;
+//printf("taskworm 11\n");
 
 }
 }
@@ -512,110 +522,110 @@ if(state_result__[INDEX_NRs][d][WHAT_OBJECT_NOW].pos_new_y < -2)
 }
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-	for(int d = 0; d <= totalneigbours__[lllll][WHAT_OBJECT]; d++)
+	for(int d = 0; d <= totalneigbours__[lllll][WHAT_OBJECT_NOW]; d++)
 	{	 
 		
-		if(d == k  )
-		  continue;
+	 
 
  
    // state_result_worm_ventral_feather[lllll][d].INDEX_NR = find_index_____(SIZE_OBJECT,state_result_worm_ventral_feather,lllll,d);
-INDEX_NRmore = feather_result__[lllll][d][WHAT_OBJECT].INDEX_NR;
+INDEX_NRmore = feather_result__[lllll][d][WHAT_OBJECT_NOW].INDEX_NR;
  
 
 		 
 
  
-
-				 if(fabs(F_total_next_[0][INDEX_NRmore][WHAT_OBJECT]) >  6  )
-	 				  F_total_next_[0][INDEX_NRmore][WHAT_OBJECT] =0;
+ //printf(" d=%d\n", d);
+				 if(fabs(F_total_next_[0][INDEX_NRmore][WHAT_OBJECT_NOW]) >  6  )
+	 				  F_total_next_[0][INDEX_NRmore][WHAT_OBJECT_NOW] =0;
  
-		 		 if(fabs(F_total_next_[1][INDEX_NRmore][WHAT_OBJECT])  >  6 )
-					  F_total_next_[1][INDEX_NRmore][WHAT_OBJECT] =0;
+		 		 if(fabs(F_total_next_[1][INDEX_NRmore][WHAT_OBJECT_NOW])  >  6 )
+					  F_total_next_[1][INDEX_NRmore][WHAT_OBJECT_NOW] =0;
 
-			 	 if(fabs(F_total_next_[2][INDEX_NRmore][WHAT_OBJECT])  >  6 )
-					  F_total_next_[2][INDEX_NRmore][WHAT_OBJECT] =0;
+			 	 if(fabs(F_total_next_[2][INDEX_NRmore][WHAT_OBJECT_NOW])  >  6 )
+					  F_total_next_[2][INDEX_NRmore][WHAT_OBJECT_NOW] =0;
 			
 
- 				if(fabs(F_total_next_[0][INDEX_NR][WHAT_OBJECT]) >  6  )
-	 				  F_total_next_[0][INDEX_NR][WHAT_OBJECT] =0;
+ 				if(fabs(F_total_next_[0][INDEX_NR][WHAT_OBJECT_NOW]) >  6  )
+	 				  F_total_next_[0][INDEX_NR][WHAT_OBJECT_NOW] =0;
  
-		 		 if(fabs(F_total_next_[1][INDEX_NR][WHAT_OBJECT])  >  6 )
-					  F_total_next_[1][INDEX_NR][WHAT_OBJECT] =0;
+		 		 if(fabs(F_total_next_[1][INDEX_NR][WHAT_OBJECT_NOW])  >  6 )
+					  F_total_next_[1][INDEX_NR][WHAT_OBJECT_NOW] =0;
 
-			 	 if(fabs(F_total_next_[2][INDEX_NR][WHAT_OBJECT])  >  6 )
-					  F_total_next_[2][INDEX_NR][WHAT_OBJECT] =0;
+			 	 if(fabs(F_total_next_[2][INDEX_NR][WHAT_OBJECT_NOW])  >  6 )
+					  F_total_next_[2][INDEX_NR][WHAT_OBJECT_NOW] =0;
 			
-		springVector->pos_new_x = state_result__[INDEX_NR][WHAT_OBJECT][WHAT_OBJECT_NOW].pos_new_x - state_result__[INDEX_NRmore][WHAT_OBJECT][WHAT_OBJECT_NOW].pos_new_x;
-		springVector->pos_new_y = state_result__[INDEX_NR][WHAT_OBJECT][WHAT_OBJECT_NOW].pos_new_y - state_result__[INDEX_NRmore][WHAT_OBJECT][WHAT_OBJECT_NOW].pos_new_y;
-		springVector->pos_new_z = state_result__[INDEX_NR][WHAT_OBJECT][WHAT_OBJECT_NOW].pos_new_z - state_result__[INDEX_NRmore][WHAT_OBJECT][WHAT_OBJECT_NOW].pos_new_z;
+		springVector->pos_new_x = state_result__[INDEX_NR][WHAT_OBJECT_NOW][WHAT_OBJECT_NOW].pos_new_x - state_result__[INDEX_NRmore][WHAT_OBJECT_NOW][WHAT_OBJECT_NOW].pos_new_x;
+		springVector->pos_new_y = state_result__[INDEX_NR][WHAT_OBJECT_NOW][WHAT_OBJECT_NOW].pos_new_y - state_result__[INDEX_NRmore][WHAT_OBJECT_NOW][WHAT_OBJECT_NOW].pos_new_y;
+		springVector->pos_new_z = state_result__[INDEX_NR][WHAT_OBJECT_NOW][WHAT_OBJECT_NOW].pos_new_z - state_result__[INDEX_NRmore][WHAT_OBJECT_NOW][WHAT_OBJECT_NOW].pos_new_z;
  			
-
-		float r = length(state_result__[INDEX_NR][WHAT_OBJECT],state_result__[INDEX_NRmore][WHAT_OBJECT]);
+//printf("taskworm 13\n");
+		float r = length(state_result__[INDEX_NR][WHAT_OBJECT_NOW],state_result__[INDEX_NRmore][WHAT_OBJECT_NOW]);
 
 		if ( r != 0 && r < 1.1  && r > -1.1    )
 		{	
 	//	 printf("1totalneigbours[lllll]  %d :: number %d :: index_____ = %d\n",totalneigbours[lllll],lllll,INDEX_NRmore);	
-			F_total_next_[0][INDEX_NR][WHAT_OBJECT] +=( springVector->pos_new_x  /  r ) * ( r - springlength ) * ( -springConstant );
-			F_total_next_[1][INDEX_NR][WHAT_OBJECT] += ( springVector->pos_new_y /  r ) * ( r - springlength ) * ( -springConstant );
-			F_total_next_[2][INDEX_NR][WHAT_OBJECT] +=( springVector->pos_new_z  /  r ) * ( r - springlength ) * ( -springConstant );
+			F_total_next_[0][INDEX_NR][WHAT_OBJECT_NOW] +=( springVector->pos_new_x  /  r ) * ( r - springlength ) * ( -springConstant );
+			F_total_next_[1][INDEX_NR][WHAT_OBJECT_NOW] += ( springVector->pos_new_y /  r ) * ( r - springlength ) * ( -springConstant );
+			F_total_next_[2][INDEX_NR][WHAT_OBJECT_NOW] +=( springVector->pos_new_z  /  r ) * ( r - springlength ) * ( -springConstant );
 
-			F_total_next_[0][INDEX_NRmore][WHAT_OBJECT] +=( springVector->pos_new_x  / r ) * ( r - springlength ) * ( -springConstant );
-			F_total_next_[1][INDEX_NRmore][WHAT_OBJECT] += ( springVector->pos_new_y  / r ) * ( r - springlength) * ( -springConstant );
-			F_total_next_[2][INDEX_NRmore][WHAT_OBJECT] +=( springVector->pos_new_z  / r ) * ( r - springlength ) * ( -springConstant );
+			F_total_next_[0][INDEX_NRmore][WHAT_OBJECT_NOW] +=( springVector->pos_new_x  / r ) * ( r - springlength ) * ( -springConstant );
+			F_total_next_[1][INDEX_NRmore][WHAT_OBJECT_NOW] += ( springVector->pos_new_y  / r ) * ( r - springlength) * ( -springConstant );
+			F_total_next_[2][INDEX_NRmore][WHAT_OBJECT_NOW] +=( springVector->pos_new_z  / r ) * ( r - springlength ) * ( -springConstant );
 
-		F_total_next_[0][INDEX_NR][WHAT_OBJECT] +=-(  state_result__[INDEX_NR][WHAT_OBJECT][WHAT_OBJECT_NOW].vel_new_x - state_result__[INDEX_NRmore][WHAT_OBJECT][WHAT_OBJECT_NOW].vel_new_x ) * frictionConstant;
- 		F_total_next_[1][INDEX_NR][WHAT_OBJECT] += -( state_result__[INDEX_NR][WHAT_OBJECT][WHAT_OBJECT_NOW].vel_new_y- state_result__[INDEX_NRmore][WHAT_OBJECT][WHAT_OBJECT_NOW].vel_new_y ) * frictionConstant;
- 		F_total_next_[2][INDEX_NR][WHAT_OBJECT] += -(  state_result__[INDEX_NR][WHAT_OBJECT][WHAT_OBJECT_NOW].vel_new_z - state_result__[INDEX_NRmore ][WHAT_OBJECT][WHAT_OBJECT_NOW].vel_new_z ) * frictionConstant;
+		F_total_next_[0][INDEX_NR][WHAT_OBJECT_NOW] +=-(  state_result__[INDEX_NR][WHAT_OBJECT_NOW][WHAT_OBJECT_NOW].vel_new_x - state_result__[INDEX_NRmore][WHAT_OBJECT_NOW][WHAT_OBJECT_NOW].vel_new_x ) * frictionConstant;
+ 		F_total_next_[1][INDEX_NR][WHAT_OBJECT_NOW] += -( state_result__[INDEX_NR][WHAT_OBJECT_NOW][WHAT_OBJECT_NOW].vel_new_y- state_result__[INDEX_NRmore][WHAT_OBJECT_NOW][WHAT_OBJECT_NOW].vel_new_y ) * frictionConstant;
+ 		F_total_next_[2][INDEX_NR][WHAT_OBJECT_NOW] += -(  state_result__[INDEX_NR][WHAT_OBJECT_NOW][WHAT_OBJECT_NOW].vel_new_z - state_result__[INDEX_NRmore ][WHAT_OBJECT_NOW][WHAT_OBJECT_NOW].vel_new_z ) * frictionConstant;
 
 
-		F_total_next_[0][INDEX_NRmore][WHAT_OBJECT] +=-(  state_result__[INDEX_NR][WHAT_OBJECT][WHAT_OBJECT_NOW].vel_new_x - state_result__[INDEX_NRmore][WHAT_OBJECT][WHAT_OBJECT_NOW].vel_new_x ) * frictionConstant;
- 		F_total_next_[1][INDEX_NRmore][WHAT_OBJECT] += -( state_result__[INDEX_NR][WHAT_OBJECT][WHAT_OBJECT_NOW].vel_new_y- state_result__[INDEX_NRmore][WHAT_OBJECT][WHAT_OBJECT_NOW].vel_new_y ) * frictionConstant;
- 		F_total_next_[2][INDEX_NRmore][WHAT_OBJECT] += -(  state_result__[INDEX_NR][WHAT_OBJECT][WHAT_OBJECT_NOW].vel_new_z - state_result__[INDEX_NRmore ][WHAT_OBJECT][WHAT_OBJECT_NOW].vel_new_z ) * frictionConstant;
+		F_total_next_[0][INDEX_NRmore][WHAT_OBJECT_NOW] +=-(  state_result__[INDEX_NR][WHAT_OBJECT_NOW][WHAT_OBJECT_NOW].vel_new_x - state_result__[INDEX_NRmore][WHAT_OBJECT_NOW][WHAT_OBJECT_NOW].vel_new_x ) * frictionConstant;
+ 		F_total_next_[1][INDEX_NRmore][WHAT_OBJECT_NOW] += -( state_result__[INDEX_NR][WHAT_OBJECT_NOW][WHAT_OBJECT_NOW].vel_new_y- state_result__[INDEX_NRmore][WHAT_OBJECT_NOW][WHAT_OBJECT_NOW].vel_new_y ) * frictionConstant;
+ 		F_total_next_[2][INDEX_NRmore][WHAT_OBJECT_NOW] += -(  state_result__[INDEX_NR][WHAT_OBJECT_NOW][WHAT_OBJECT_NOW].vel_new_z - state_result__[INDEX_NRmore ][WHAT_OBJECT_NOW][WHAT_OBJECT_NOW].vel_new_z ) * frictionConstant;
 
-		state_result__[INDEX_NRmore][WHAT_OBJECT][WHAT_OBJECT_NOW].vel_new_x = state_result__[INDEX_NRmore][WHAT_OBJECT][WHAT_OBJECT_NOW].vel_new_x*0.995 ;
+		state_result__[INDEX_NRmore][WHAT_OBJECT_NOW][WHAT_OBJECT_NOW].vel_new_x = state_result__[INDEX_NRmore][WHAT_OBJECT_NOW][WHAT_OBJECT_NOW].vel_new_x*0.995 ;
+		//printf("taskworm 14\n");
+		state_result__[INDEX_NRmore][WHAT_OBJECT_NOW][WHAT_OBJECT_NOW].vel_new_y = state_result__[INDEX_NRmore][WHAT_OBJECT_NOW][WHAT_OBJECT_NOW].vel_new_y*0.995 ;
+
+		state_result__[INDEX_NRmore][WHAT_OBJECT_NOW][WHAT_OBJECT_NOW].vel_new_z = state_result__[INDEX_NRmore][WHAT_OBJECT_NOW][WHAT_OBJECT_NOW].vel_new_z*0.995 ;
+
+		state_result__[INDEX_NR][WHAT_OBJECT_NOW][WHAT_OBJECT_NOW].vel_new_x = state_result__[INDEX_NR][WHAT_OBJECT_NOW][WHAT_OBJECT_NOW].vel_new_x*0.995 ;
 		
-		state_result__[INDEX_NRmore][WHAT_OBJECT][WHAT_OBJECT_NOW].vel_new_y = state_result__[INDEX_NRmore][WHAT_OBJECT][WHAT_OBJECT_NOW].vel_new_y*0.995 ;
-
-		state_result__[INDEX_NRmore][WHAT_OBJECT][WHAT_OBJECT_NOW].vel_new_z = state_result__[INDEX_NRmore][WHAT_OBJECT][WHAT_OBJECT_NOW].vel_new_z*0.995 ;
-
-		state_result__[INDEX_NR][WHAT_OBJECT][WHAT_OBJECT_NOW].vel_new_x = state_result__[INDEX_NR][WHAT_OBJECT][WHAT_OBJECT_NOW].vel_new_x*0.995 ;
-		
-		state_result__[INDEX_NR][WHAT_OBJECT][WHAT_OBJECT_NOW].vel_new_y = state_result__[INDEX_NR][WHAT_OBJECT][WHAT_OBJECT_NOW].vel_new_y*0.995 ;
-		state_result__[INDEX_NR][WHAT_OBJECT][WHAT_OBJECT_NOW].vel_new_z = state_result__[INDEX_NR][WHAT_OBJECT][WHAT_OBJECT_NOW].vel_new_z*0.995 ;
+		state_result__[INDEX_NR][WHAT_OBJECT_NOW][WHAT_OBJECT_NOW].vel_new_y = state_result__[INDEX_NR][WHAT_OBJECT_NOW][WHAT_OBJECT_NOW].vel_new_y*0.995 ;
+		state_result__[INDEX_NR][WHAT_OBJECT_NOW][WHAT_OBJECT_NOW].vel_new_z = state_result__[INDEX_NR][WHAT_OBJECT_NOW][WHAT_OBJECT_NOW].vel_new_z*0.995 ;
 BIGONE = 1;
 
-		state_result__[INDEX_NR][WHAT_OBJECT][WHAT_OBJECT_NOW].force_sign =  -1;
-		state_result__[INDEX_NR][WHAT_OBJECT]    =  worm_ventral(  state_result__[INDEX_NR][WHAT_OBJECT] ,1) ;
+		state_result__[INDEX_NR][WHAT_OBJECT_NOW][WHAT_OBJECT_NOW].force_sign =  -1;
+		state_result__     =  worm_ventral(  state_result__,1,INDEX_NR,WHAT_OBJECT,WHAT_OBJECT_NOW  ) ;
+// printf("taskworm 15\n");
+		state_result__[INDEX_NRmore][WHAT_OBJECT_NOW][WHAT_OBJECT_NOW].force_sign =   1; ; 
+		state_result__    =  worm_ventral(  state_result__,1,INDEX_NRmore,WHAT_OBJECT,WHAT_OBJECT_NOW );
 
-		state_result__[INDEX_NRmore][WHAT_OBJECT][WHAT_OBJECT_NOW].force_sign =   1; ; 
-		state_result__[INDEX_NRmore][WHAT_OBJECT]    =  worm_ventral(  state_result__[INDEX_NRmore][WHAT_OBJECT] ,1);
 		}
 else
 {
  BIGONE = 1;
 
-		state_result__[INDEX_NR][WHAT_OBJECT][WHAT_OBJECT_NOW].force_sign =  -1;
-		state_result__[INDEX_NR][WHAT_OBJECT]    =  worm_ventral(  state_result__[INDEX_NR][WHAT_OBJECT] ,1) ;
-
-		state_result__[INDEX_NRmore][WHAT_OBJECT][WHAT_OBJECT_NOW].force_sign =   1; ; 
-		state_result__[INDEX_NRmore][WHAT_OBJECT]    =  worm_ventral(  state_result__[INDEX_NRmore][WHAT_OBJECT] ,1);
+		state_result__[INDEX_NR][WHAT_OBJECT_NOW][WHAT_OBJECT_NOW].force_sign =  -1;
+		state_result__     =  worm_ventral(  state_result__,1,INDEX_NR,WHAT_OBJECT,WHAT_OBJECT_NOW   ) ;
+ //printf("taskworm 16\n");
+		state_result__[INDEX_NRmore][WHAT_OBJECT_NOW][WHAT_OBJECT_NOW].force_sign =   1; ; 
+		state_result__    =  worm_ventral(  state_result__,1,INDEX_NRmore,WHAT_OBJECT,WHAT_OBJECT_NOW );
 
 }
 
 
 
-
-if(state_result__[INDEX_NR][WHAT_OBJECT][WHAT_OBJECT_NOW].pos_new_y < -2)
+//printf("taskworm 17\n");
+if(state_result__[INDEX_NR][WHAT_OBJECT_NOW][WHAT_OBJECT_NOW].pos_new_y < -2)
 			{
-			 state_result__[INDEX_NR][WHAT_OBJECT][WHAT_OBJECT_NOW].pos_new_y = -2;
-			 state_result__[INDEX_NR][WHAT_OBJECT][WHAT_OBJECT_NOW].vel_new_y = -state_result__[INDEX_NR][WHAT_OBJECT][WHAT_OBJECT_NOW].vel_new_y*0.00995;
+			 state_result__[INDEX_NR][WHAT_OBJECT_NOW][WHAT_OBJECT_NOW].pos_new_y = -2;
+			 state_result__[INDEX_NR][WHAT_OBJECT_NOW][WHAT_OBJECT_NOW].vel_new_y = -state_result__[INDEX_NR][WHAT_OBJECT_NOW][WHAT_OBJECT_NOW].vel_new_y*0.00995;
  
 			}	
-		if(state_result__[INDEX_NRmore][WHAT_OBJECT][WHAT_OBJECT_NOW].pos_new_y < -2)
+		if(state_result__[INDEX_NRmore][WHAT_OBJECT_NOW][WHAT_OBJECT_NOW].pos_new_y < -2)
 			{
-				 state_result__[INDEX_NRmore][WHAT_OBJECT][WHAT_OBJECT_NOW].pos_new_y = -2;
-			 state_result__[INDEX_NRmore][WHAT_OBJECT][WHAT_OBJECT_NOW].vel_new_y = -state_result__[INDEX_NRmore][WHAT_OBJECT][WHAT_OBJECT_NOW].vel_new_y*0.00995;
+				 state_result__[INDEX_NRmore][WHAT_OBJECT_NOW][WHAT_OBJECT_NOW].pos_new_y = -2;
+			 state_result__[INDEX_NRmore][WHAT_OBJECT_NOW][WHAT_OBJECT_NOW].vel_new_y = -state_result__[INDEX_NRmore][WHAT_OBJECT_NOW][WHAT_OBJECT_NOW].vel_new_y*0.00995;
  
 			}
 	//	 printf("f[0] = %.10f:%.10f%.10f \n", state_result__[INDEX_NRmore][WHAT_OBJECT_NOW].pos_new_x,state_result__[INDEX_NRmore][WHAT_OBJECT_NOW].pos_new_y,state_result__[INDEX_NRmore][WHAT_OBJECT_NOW].pos_new_z);
@@ -631,7 +641,7 @@ if(state_result__[INDEX_NR][WHAT_OBJECT][WHAT_OBJECT_NOW].pos_new_y < -2)
 
 
 
-
+//printf("taskworm 18\n");
 if(lllll < SIZE_OBJECTs)
 {
  int s;
@@ -658,7 +668,7 @@ INDEX_NRmores = feather_result__[lllll][k][d].INDEX_NR;
 					  F_total_next_[2][lllll][s] =0;
 
 
-
+//printf("taskworm 19\n");
 			if(fabs(F_totals_next_[0][INDEX_NRmores][d]) >  6  )
 	 				  F_totals_next_[0][INDEX_NRmores][d] =0;
  
@@ -672,7 +682,7 @@ INDEX_NRmores = feather_result__[lllll][k][d].INDEX_NR;
 springVector->pos_new_x = state_result__[INDEX_NR][s][WHAT_OBJECT_NOW].pos_new_x - state_result__[INDEX_NRmores][d][WHAT_OBJECT_NOW].pos_new_x;
 		springVector->pos_new_y = state_result__[INDEX_NR][s][WHAT_OBJECT_NOW].pos_new_y - state_result__[INDEX_NRmores][d][WHAT_OBJECT_NOW].pos_new_y;
 		springVector->pos_new_z = state_result__[INDEX_NR][s][WHAT_OBJECT_NOW].pos_new_z - state_result__[INDEX_NRmores][d][WHAT_OBJECT_NOW].pos_new_z;
- 			
+ 	//printf("taskworm 20\n");		
 
 		float r = length(state_result__[INDEX_NR][s],state_result__[INDEX_NRmores][d]);
 
@@ -691,7 +701,7 @@ springVector->pos_new_x = state_result__[INDEX_NR][s][WHAT_OBJECT_NOW].pos_new_x
  		F_total_next_[1][INDEX_NR][s] += -( state_result__[INDEX_NR][s][WHAT_OBJECT_NOW].vel_new_y- state_result__[INDEX_NRmores][d][WHAT_OBJECT_NOW].vel_new_y ) * frictionConstant;
  		F_total_next_[2][INDEX_NR][s] += -(  state_result__[INDEX_NR][s][WHAT_OBJECT_NOW].vel_new_z - state_result__[INDEX_NRmores ][d][WHAT_OBJECT_NOW].vel_new_z ) * frictionConstant;
 
-
+//printf("taskworm 21\n");
 		F_totals_next_[0][INDEX_NRmores][d] +=-(  state_result__[INDEX_NR][s][WHAT_OBJECT_NOW].vel_new_x - state_result__[INDEX_NRmores][d][WHAT_OBJECT_NOW].vel_new_x ) * frictionConstant;
  		F_totals_next_[1][INDEX_NRmores][d] += -( state_result__[INDEX_NR][s][WHAT_OBJECT_NOW].vel_new_y- state_result__[INDEX_NRmores][d][WHAT_OBJECT_NOW].vel_new_y ) * frictionConstant;
  		F_totals_next_[2][INDEX_NRmores][d] += -(  state_result__[INDEX_NR][s][WHAT_OBJECT_NOW].vel_new_z - state_result__[INDEX_NRmores ][d][WHAT_OBJECT_NOW].vel_new_z ) * frictionConstant;
@@ -699,7 +709,7 @@ springVector->pos_new_x = state_result__[INDEX_NR][s][WHAT_OBJECT_NOW].pos_new_x
 	 	state_result__[INDEX_NRmores][d][WHAT_OBJECT_NOW].vel_new_x = state_result__[INDEX_NRmores][d][WHAT_OBJECT_NOW].vel_new_x*0.995 ;
 		
 		state_result__[INDEX_NRmores][d][WHAT_OBJECT_NOW].vel_new_y = state_result__[INDEX_NRmores][d][WHAT_OBJECT_NOW].vel_new_y*0.995 ;
-
+//printf("taskworm 22\n");
 		state_result__[INDEX_NRmores][d][WHAT_OBJECT_NOW].vel_new_z = state_result__[INDEX_NRmores][d][WHAT_OBJECT_NOW].vel_new_z*0.995 ;
 
 		state_result__[INDEX_NR][s][WHAT_OBJECT_NOW].vel_new_x = state_result__[INDEX_NR][s][WHAT_OBJECT_NOW].vel_new_x*0.995 ;
@@ -708,14 +718,15 @@ springVector->pos_new_x = state_result__[INDEX_NR][s][WHAT_OBJECT_NOW].pos_new_x
 		state_result__[INDEX_NR][s][WHAT_OBJECT_NOW].vel_new_z = state_result__[INDEX_NR][s][WHAT_OBJECT_NOW].vel_new_z*0.995 ; 
 BIGONE = 1;
 
- WHAT_OBJECT_NOW = WHAT_OBJECT;
+ WHAT_OBJECT_NOW = s;
 		state_result__[INDEX_NR][s][WHAT_OBJECT_NOW].force_sign =  -1;
-		state_result__[INDEX_NR][s]    =  worm_ventral(  state_result__[INDEX_NR][s] ,1) ;
+		state_result__   =  worm_ventral(  state_result__,1,INDEX_NR,s,WHAT_OBJECT_NOW  ) ;
 BIGONE = 0;
  WHAT_OBJECT_NOW = d;
 		state_result__[INDEX_NRmores][d][WHAT_OBJECT_NOW].force_sign =   1; ; 
-		state_result__[INDEX_NRmores][d]    =  worm_ventral(  state_result__[INDEX_NRmores][d] ,1);
+		state_result__  =  worm_ventral(  state_result__ ,1,INDEX_NRmores,d,WHAT_OBJECT_NOW );
  WHAT_OBJECT_NOW =WHAT_OBJECT;
+//printf("taskworm 23\n");
 		}
 }
 else
@@ -732,11 +743,11 @@ if(d != s)
  BIGONE = 1;
  WHAT_OBJECT_NOW = WHAT_OBJECT;
 		state_result__[INDEX_NR][s][WHAT_OBJECT_NOW].force_sign =  -1;
-		state_result__[INDEX_NR][s]    =  worm_ventral(  state_result__[INDEX_NR][s] ,1) ;
+		state_result__    =  worm_ventral(  state_result__,1,INDEX_NR,s,WHAT_OBJECT_NOW) ;
 BIGONE = 0;
  WHAT_OBJECT_NOW = d;
 		state_result__[INDEX_NRmores][d][WHAT_OBJECT_NOW].force_sign =   1; ; 
-		state_result__[INDEX_NRmores][d]    =  worm_ventral(  state_result__[INDEX_NRmores][d] ,1);
+		state_result__   =  worm_ventral(  state_result__,1,INDEX_NRmores,d ,WHAT_OBJECT_NOW);
  WHAT_OBJECT_NOW =WHAT_OBJECT;
 
 }
@@ -744,7 +755,7 @@ BIGONE = 0;
 }
 }
 
-
+//printf("taskworm 24\n");
 if(state_result__[INDEX_NR][s][WHAT_OBJECT_NOW].pos_new_y < -2)
 			{
 			 state_result__[INDEX_NR][s][WHAT_OBJECT_NOW].pos_new_y = -2;
@@ -772,29 +783,29 @@ if(state_result__[INDEX_NR][s][WHAT_OBJECT_NOW].pos_new_y < -2)
 //}
 		 
  }		
-
-		 if(fabs(F_total_next_[0][lllll][WHAT_OBJECT]) >  6  )
-	 				 F_total_next_[0][lllll][WHAT_OBJECT] =0;
+//printf("taskworm 25\n");
+		 if(fabs(F_total_next_[0][lllll][WHAT_OBJECT_NOW]) >  6  )
+	 				 F_total_next_[0][lllll][WHAT_OBJECT_NOW] =0;
  
-		 		 if(fabs(F_total_next_[1][lllll][WHAT_OBJECT])  >  6 )
-					 F_total_next_[1][lllll][WHAT_OBJECT] =0;
+		 		 if(fabs(F_total_next_[1][lllll][WHAT_OBJECT_NOW])  >  6 )
+					 F_total_next_[1][lllll][WHAT_OBJECT_NOW] =0;
 
-			 	 if(fabs(F_total_next_[2][lllll][WHAT_OBJECT])  >  6 )
-					 F_total_next_[2][lllll][WHAT_OBJECT] =0;
+			 	 if(fabs(F_total_next_[2][lllll][WHAT_OBJECT_NOW])  >  6 )
+					 F_total_next_[2][lllll][WHAT_OBJECT_NOW] =0;
 
 
-				 if(fabs(F_totals_next_[0][lllll][WHAT_OBJECT]) >  6  )
-	 				 F_totals_next_[0][lllll][WHAT_OBJECT] =0;
+				 if(fabs(F_totals_next_[0][lllll][WHAT_OBJECT_NOW]) >  6  )
+	 				 F_totals_next_[0][lllll][WHAT_OBJECT_NOW] =0;
  
-		 		 if(fabs(F_totals_next_[1][lllll][WHAT_OBJECT])  >  6 )
-					 F_totals_next_[1][lllll][WHAT_OBJECT] =0;
+		 		 if(fabs(F_totals_next_[1][lllll][WHAT_OBJECT_NOW])  >  6 )
+					 F_totals_next_[1][lllll][WHAT_OBJECT_NOW] =0;
 
-			 	 if(fabs(F_totals_next_[2][lllll][WHAT_OBJECT])  >  6 )
-					 F_totals_next_[2][lllll][WHAT_OBJECT] =0;
-			 printf("FORCE(x,y,z) = %.50f:%.50f%.50f \n", fabs(F_totals_next_[0][INDEX_NRs][WHAT_OBJECT]),fabs(F_totals_next_[1][lllll][WHAT_OBJECT]),fabs(F_totals_next_[2][INDEX_NRmores][WHAT_OBJECT]));
-
- printf("FORCE(x,y,z) = %.50f:%.50f%.50f \n", fabs(F_total_next_[0][INDEX_NR][WHAT_OBJECT]),fabs(F_total_next_[1][lllll][WHAT_OBJECT]),fabs(F_total_next_[2][INDEX_NRmore][WHAT_OBJECT]));
-			
+			 	 if(fabs(F_totals_next_[2][lllll][WHAT_OBJECT_NOW])  >  6 )
+					 F_totals_next_[2][lllll][WHAT_OBJECT_NOW] =0;
+			// printf("FORCE(x,y,z) = %.50f:%.50f%.50f \n", fabs(F_totals_next_[0][INDEX_NRs][WHAT_OBJECT_NOW]),fabs(F_totals_next_[1][lllll][WHAT_OBJECT_NOW]),fabs(F_totals_next_[2][INDEX_NRmores][WHAT_OBJECT_NOW]));
+//printf("taskworm 26\n");
+ //printf("FORCE(x,y,z) = %.50f:%.50f%.50f \n", fabs(F_total_next_[0][INDEX_NR][WHAT_OBJECT_NOW]),fabs(F_total_next_[1][lllll][WHAT_OBJECT_NOW]),fabs(F_total_next_[2][INDEX_NRmore][WHAT_OBJECT_NOW]));
+	
 		//	if(lllll >= SIZE_OBJECT -1  )
 			//{
 				//feather_once= WORK;
@@ -815,7 +826,7 @@ int find_index_____(int NUM, struct state_vector  ***real  ,int num,int k )
 int ll = 0;
  	while(ll < NUM)
 	{
-		if(feather_result[num][k][WHAT_OBJECT].pos_new_x ==real[ll][WHAT_OBJECT][WHAT_OBJECT_NOW].pos_new_x && feather_result[num][k][WHAT_OBJECT].pos_new_y ==real[ll][WHAT_OBJECT][WHAT_OBJECT_NOW].pos_new_y && feather_result[num][k][WHAT_OBJECT].pos_new_z ==real[ll][WHAT_OBJECT][WHAT_OBJECT_NOW].pos_new_z)
+		if(feather_result[num][k][WHAT_OBJECT_NOW].pos_new_x ==real[ll][WHAT_OBJECT_NOW][WHAT_OBJECT_NOW].pos_new_x && feather_result[num][k][WHAT_OBJECT_NOW].pos_new_y ==real[ll][WHAT_OBJECT_NOW][WHAT_OBJECT_NOW].pos_new_y && feather_result[num][k][WHAT_OBJECT_NOW].pos_new_z ==real[ll][WHAT_OBJECT_NOW][WHAT_OBJECT_NOW].pos_new_z)
 		{
 			//printf("found index_____ @ %d \n", ll);
 			return ll;
@@ -873,7 +884,7 @@ presults = kd_nearest_range( ptree, pt, radius );
  feather_result[num][0][WHAT_OBJECT_NOW].totaln = kd_res_size(presults) ;
 
 //state_result_worm_dorsal_feather[num][0].totaln = kd_res_size(presults) ;
-// printf( "found %d results:\n", kd_res_size(presults) );
+  printf( "found %d results:\n", kd_res_size(presults) );
 int feather_count = 0;
 //printf(" state_result_worm_ventral_feather[llll][0].totaln %d ::%d\n",  state_result_worm_ventral_feather[num][0].totaln,num);
 while( !kd_res_end( presults ) ) {
@@ -1039,20 +1050,20 @@ int main (int argc, char **argv)
 loadOBJ__("sphere.obj"); //61856 //61856 //13108_Eastern_Hognose_Snake_v1_L3  61856
  totalneigbours =(int*)malloc(sizeof(int*)*SIZE_OBJECT*32);
 
-F_total_next = arr3dAlloc_(SIZE_OBJECT*2,312,10);
-F_totals_next  = arr3dAlloc_(SIZE_OBJECT*2,312,10);
+F_total_next = arr3dAlloc_(SIZE_OBJECT*1,44,10);
+F_totals_next  = arr3dAlloc_(SIZE_OBJECT*1,44,10);
 
 for(int i=0; i<SIZE_OBJECT*1; i++)
 totalneigbours[i] = (int*)malloc(sizeof(int)*32);
 
 
-springVector = malloc(SIZE_OBJECT*1);
-springVectors = malloc(SIZE_OBJECTs*1);
+springVector = malloc(SIZE_OBJECT*11);
+springVectors = malloc(SIZE_OBJECTs*11);
 //*feather_result  = (struct state_vector*)malloc(sizeof(struct state_vector*)*SIZE_OBJECT*4);
 //state_result_worm_ventral_feathers = (struct state_vector*)malloc(sizeof(struct state_vector*)*SIZE_OBJECTs*4);
 //*state_result   =(struct state_vector*)malloc(sizeof(struct state_vector*)*SIZE_OBJECT*32);
-feather_result = arr3dAlloc(SIZE_OBJECT*2,312,10);
-state_result = arr3dAlloc(SIZE_OBJECT*2,312,10);
+feather_result = arr3dAlloc(SIZE_OBJECT ,44,10);
+state_result = arr3dAlloc(SIZE_OBJECT ,44,10);
 //state_result_worm_ventral_small =(struct state_vector*)malloc(sizeof(struct state_vector*)*SIZE_OBJECTs*32);
 
  int i,j,k;
@@ -1102,7 +1113,7 @@ if(initonce==1)
  TOTAL_OBJECTS = 1;
 	int ll;
 WHAT_OBJECT_NOW = 0;
-	for(ll = 0; ll < SIZE_OBJECT  ; ll++)
+	for(ll = 0; ll < SIZE_OBJECT-1  ; ll++)
 	{
 		  v= (Vec3 *)(V + 3*(KvvVENTALA[ll]-1));
          	  state_result[ll][WHAT_OBJECT_NOW][WHAT_OBJECT_NOW].pos_new_x = v->x ;
@@ -1132,7 +1143,7 @@ TOTAL_OBJECTS++;
 WHAT_OBJECT_NOW = 1;
 printf("done ! \n");
 loadOBJ__("sphere.obj"); //61856 //61856 //13108_Eastern_Hognose_Snake_v1_L3  61856	 
-	for(ll = 0; ll < SIZE_OBJECTs  ; ll++)
+	for(ll = 0; ll < SIZE_OBJECTs-1  ; ll++)
 	{
 		  v= (Vec3 *)(V + 3*(KvvVENTALA[ll]-1));
  
@@ -1154,7 +1165,7 @@ ptreeonce_[1] = 1;
 	for(ll = 0; ll < SIZE_OBJECTs-1     ; ll++)
 	{ 
 		
- 	 	 findnearestpoint(SIZE_OBJECTs-1  ,state_result ,ll,1 );
+ 	 	  findnearestpoint(SIZE_OBJECTs-1  ,state_result ,ll,1 );
 	}
  
 	initonce = 0;
@@ -1271,7 +1282,7 @@ glutMainLoop();
 
 }
 
-struct state_vector   *   worm_ventral(struct state_vector     *  next_state, int num )
+struct state_vector     ***  worm_ventral(struct state_vector     ***   next_state, int num ,int index, int what1, int what2)
 {
 	double f0[6];
 	double f0_result[6];
@@ -1281,29 +1292,29 @@ struct state_vector   *   worm_ventral(struct state_vector     *  next_state, in
  	double tburn = 1.0;
 	double tf[6] = {tburn,tburn,tburn,tburn,tburn,tburn};
 
-	z[0] =  next_state->pos_new_x;
-	z[1] =  next_state->pos_new_y;
-	z[2] = next_state->pos_new_z;
-	z[3] =  next_state->vel_new_x;
-	z[4] =  next_state->vel_new_y;
-	z[5] = next_state->vel_new_z;
+	z[0] =  next_state[index][what1][what2].pos_new_x;
+	z[1] =  next_state[index][what1][what2].pos_new_y;
+	z[2] = next_state[index][what1][what2].pos_new_z;
+	z[3] =  next_state[index][what1][what2].vel_new_x;
+	z[4] =  next_state[index][what1][what2].vel_new_y;
+	z[5] = next_state[index][what1][what2].vel_new_z;
 
-	f0[0] = next_state->pos_new_x;
-	f0[1] =next_state->pos_new_y;
-	f0[2] =next_state->pos_new_z;
-	f0[3] =next_state->vel_new_x;
-	f0[4] =next_state->vel_new_y;
-	f0[5] = next_state->vel_new_z;
+	f0[0] = next_state[index][what1][what2].pos_new_x;
+	f0[1] =next_state[index][what1][what2].pos_new_y;
+	f0[2] =next_state[index][what1][what2].pos_new_z;
+	f0[3] =next_state[index][what1][what2].vel_new_x;
+	f0[4] =next_state[index][what1][what2].vel_new_y;
+	f0[5] = next_state[index][what1][what2].vel_new_z;
  
 	rk45(rates_dorsal, t0, f0,f0_result, tf,z,6, 1  );
 
-	next_state->pos_new_x = f0[0];
-	next_state->pos_new_y = f0[1];
-	next_state->pos_new_z = f0[2];
+	next_state[index][what1][what2].pos_new_x = f0[0];
+	next_state[index][what1][what2].pos_new_y = f0[1];
+	next_state[index][what1][what2].pos_new_z = f0[2];
 
-	next_state->vel_new_x = f0[3];
-	next_state->vel_new_y = f0[4];
-	next_state->vel_new_z = f0[5];
+	next_state[index][what1][what2].vel_new_x = f0[3];
+	next_state[index][what1][what2].vel_new_y = f0[4];
+	next_state[index][what1][what2].vel_new_z = f0[5];
 
 	return   next_state ;
 }
@@ -1860,6 +1871,7 @@ glutSwapBuffers();
 
 void rates_dorsal ( double *t, double *f, double result[]   )
 {
+
 // printf("f[0] = %.10f:%.10f%.10f \n", f[0],f[1],f[2]);
 if(BIGONE == 1)
 {
