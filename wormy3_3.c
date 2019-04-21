@@ -17,7 +17,7 @@ float acc1;
 float acc2;
 int INDEX_NRmore;
 #define SIZE_OBJECT 3840 //126976
-#define HOW_MANY_FLUIDS 1
+#define HOW_MANY_FLUIDS 3
 #define HOWMANY HOW_MANY_FLUIDS
 float springlength =  0.004/4.0;
 #define AIR_FRICTION 0.9959999
@@ -171,7 +171,7 @@ void taskworm(int howmanyfluids )
 {
 howmanyfluids_g =howmanyfluids;
 int k;
-for(k = 0; k <= totalneigbours[llll][howmanyfluids]; k++)
+for(k = 0; k <= totalneigbours[llll][0]; k++)
 {	// m*a = -k*s
  	//10*a= -k * 0.004 solve k
 if(acc1once == 0)
@@ -252,7 +252,7 @@ F_total[0][INDEX_NR][howmanyfluids] +=-(  state_result_worm_ventral[INDEX_NR][ho
 
  
 
-	for(int d = 0; d <= totalneigbours[llll][howmanyfluids]; d++)
+	for(int d = 0; d <= totalneigbours[llll][0]; d++)
 	{	 
 		
 		if(d == k  )
@@ -332,6 +332,7 @@ INDEX_NRmore = state_result_worm_ventral_feather[llll][d].INDEX_NR;
 
 		state_result_worm_ventral[INDEX_NRmore][howmanyfluids]->force_sign =   1; ; 
 		state_result_worm_ventral[INDEX_NRmore][howmanyfluids]    =  worm_ventral(  state_result_worm_ventral[INDEX_NRmore][howmanyfluids] ,1);
+
 	//	 printf("f[0] = %.10f:%.10f%.10f \n", state_result_worm_ventral[INDEX_NRmore]->pos_new_x,state_result_worm_ventral[INDEX_NRmore]->pos_new_y,state_result_worm_ventral[INDEX_NRmore]->pos_new_z);
 
 
@@ -510,10 +511,10 @@ for(int kk = 0; kk < HOW_MANY_FLUIDS  ; kk++)
 	for(ll = 0; ll < SIZE_OBJECT  ; ll++)
 	{
 		  v= (Vec3 *)(V + 3*(KvvVENTALA[ll]-1));
-         	  state_result_worm_ventral[ll][kk]->pos_new_x = v->x ;
+         	  state_result_worm_ventral[ll][kk]->pos_new_x = v->x+kk*10 ;
  
  	          state_result_worm_ventral[ll][kk]->pos_new_y = v->y ;
- 		  state_result_worm_ventral[ll][kk]->pos_new_z = v->z ;
+ 		  state_result_worm_ventral[ll][kk]->pos_new_z = v->z +kk*10;
  
  	  	  state_result_worm_ventral[ll][kk]->vel_new_x =   1e-6 ;
  		  state_result_worm_ventral[ll][kk]->vel_new_y =  1e-6 ;
@@ -535,7 +536,7 @@ init_mpgeg();
 
 GLint glut_display;
 
-glutInitWindowSize (1920,1080);
+glutInitWindowSize (1080,1920);
 glutCreateWindow ("wormy");
 
 int mainMenu;
@@ -683,7 +684,7 @@ void display  (void){
 		  {
 taskworm(kk);
 glPushMatrix();
-glScalef(52,52,52);
+glScalef(25,25,25);
   glTranslatef(state_result_worm_ventral[ll][kk]->pos_new_x, state_result_worm_ventral[ll][kk]->pos_new_y,state_result_worm_ventral[ll][kk]->pos_new_z);
  glutSolidSphere(0.1,29,29  );
 /*glBegin(GL_TRIANGLES);
@@ -736,6 +737,7 @@ glutSwapBuffers();
 void rates_dorsal ( double *t, double *f, double result[]   )
 {
 // printf("f[0] = %.10f:%.10f%.10f \n", f[0],f[1],f[2]);
+ 
 if(state_result_worm_ventral[llll][howmanyfluids_g]->force_sign == 1)
 {
     	result[0] =             f[3]/100.0;
