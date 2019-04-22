@@ -11,32 +11,34 @@
 #include <pthread.h>
 #include "system.h"
 #include "kdtree.h"
-#define NUM_THREADS 5
-#include <stdbool.h>
 #include <jpeglib.h>
 #include <complex.h>
 #include <jerror.h>
+#define NUM_THREADS 5
+int KvvVENTALA2[400000 ];
 int pipe = 0;
+#include <stdbool.h>
+extern int KvvVENTAL2;
+  struct state_vector  ** wall_info ; 
 double  neighbourV_[10000*2][10000] ;
  double acc2_fluid[3][4000 ][4000] ;
 double water_radius =0.002;
+int alloc_once = 1;
 double density =   1000.0;
 double viscous_constant = 1.6735;
 float acc1;
 float acc2;
 int INDEX_NRmore;
 #define SIZE_OBJECT 3840 //126976
-#define HOW_MANY_FLUIDS 1
+#define HOW_MANY_FLUIDS 3
 #define HOWMANY HOW_MANY_FLUIDS
 float springlength =  0.004/4.0;
-#define AIR_FRICTION 0.99599959
+#define AIR_FRICTION 0.9959999
 #define FIRST 1
 #define WORK 0
 float fovy = 45.0;
 float dNear = 100;
 float dFar = 2000;
-int alloc_once = 1;
-  struct state_vector  ** wall_info ; 
 double F_total[3][SIZE_OBJECT*104][HOW_MANY_FLUIDS] ;
 int totalneigbours[SIZE_OBJECT*104][HOW_MANY_FLUIDS] ;
 float     vertexpoint_g_ventral[SIZE_OBJECT][3];
@@ -221,7 +223,7 @@ if(  INDEX_NR > 0 && INDEX_NR < 1000000  )
 
 		float r = length(state_result_worm_ventral[INDEX_NR][howmanyfluids],state_result_worm_ventral[llll][howmanyfluids]);
 
-		if ( r != 0  &&   r < 50 )
+		if ( r != 0  &&   r < 50  )
 		{			
 			F_total[0][INDEX_NR][howmanyfluids] +=( springVector->pos_new_x  /  r ) * ( r - springlength ) * ( -springConstant );
 			F_total[1][INDEX_NR][howmanyfluids] += ( springVector->pos_new_y /  r ) * ( r - springlength ) * ( -springConstant );
@@ -239,16 +241,16 @@ F_total[0][INDEX_NR][howmanyfluids] +=-(  state_result_worm_ventral[INDEX_NR][ho
 		F_total[0][llll][howmanyfluids] +=-(  state_result_worm_ventral[INDEX_NR][howmanyfluids]->vel_new_x - state_result_worm_ventral[llll][howmanyfluids]->vel_new_x ) * frictionConstant;
  		F_total[1][llll][howmanyfluids] += -( state_result_worm_ventral[INDEX_NR][howmanyfluids]->vel_new_y- state_result_worm_ventral[llll][howmanyfluids]->vel_new_y ) * frictionConstant;
  		F_total[2][llll][howmanyfluids] += -(  state_result_worm_ventral[INDEX_NR][howmanyfluids]->vel_new_z - state_result_worm_ventral[llll ][howmanyfluids]->vel_new_z ) * frictionConstant;
- 	state_result_worm_ventral[llll][howmanyfluids]->vel_new_x = state_result_worm_ventral[llll][howmanyfluids]->vel_new_x*0.9995 ;
+		state_result_worm_ventral[llll][howmanyfluids]->vel_new_x = state_result_worm_ventral[llll][howmanyfluids]->vel_new_x*0.995 ;
 		
-		state_result_worm_ventral[llll][howmanyfluids]->vel_new_y = state_result_worm_ventral[llll][howmanyfluids]->vel_new_y*0.9995 ;
+		state_result_worm_ventral[llll][howmanyfluids]->vel_new_y = state_result_worm_ventral[llll][howmanyfluids]->vel_new_y*0.995 ;
 
-		state_result_worm_ventral[llll][howmanyfluids]->vel_new_z = state_result_worm_ventral[llll][howmanyfluids]->vel_new_z*0.9995 ;
+		state_result_worm_ventral[llll][howmanyfluids]->vel_new_z = state_result_worm_ventral[llll][howmanyfluids]->vel_new_z*0.995 ;
 
-		state_result_worm_ventral[INDEX_NR][howmanyfluids]->vel_new_x = state_result_worm_ventral[INDEX_NR][howmanyfluids]->vel_new_x*0.9995 ;
+		state_result_worm_ventral[INDEX_NR][howmanyfluids]->vel_new_x = state_result_worm_ventral[INDEX_NR][howmanyfluids]->vel_new_x*0.995 ;
 		
-		state_result_worm_ventral[INDEX_NR][howmanyfluids]->vel_new_y = state_result_worm_ventral[INDEX_NR][howmanyfluids]->vel_new_y*0.9995 ;
-		state_result_worm_ventral[INDEX_NR][howmanyfluids]->vel_new_z = state_result_worm_ventral[INDEX_NR][howmanyfluids]->vel_new_z*0.9995 ; 
+		state_result_worm_ventral[INDEX_NR][howmanyfluids]->vel_new_y = state_result_worm_ventral[INDEX_NR][howmanyfluids]->vel_new_y*0.995 ;
+		state_result_worm_ventral[INDEX_NR][howmanyfluids]->vel_new_z = state_result_worm_ventral[INDEX_NR][howmanyfluids]->vel_new_z*0.995 ;
 		}
 
 		
@@ -324,16 +326,16 @@ INDEX_NRmore = state_result_worm_ventral_feather[llll][d].INDEX_NR;
  		F_total[1][INDEX_NRmore][howmanyfluids] += -( state_result_worm_ventral[INDEX_NR][howmanyfluids]->vel_new_y- state_result_worm_ventral[INDEX_NRmore][howmanyfluids]->vel_new_y ) * frictionConstant;
  		F_total[2][INDEX_NRmore][howmanyfluids] += -(  state_result_worm_ventral[INDEX_NR][howmanyfluids]->vel_new_z - state_result_worm_ventral[INDEX_NRmore ][howmanyfluids]->vel_new_z ) * frictionConstant;
 
-		 state_result_worm_ventral[INDEX_NRmore][howmanyfluids]->vel_new_x = state_result_worm_ventral[INDEX_NRmore][howmanyfluids]->vel_new_x*0.9995 ;
+		state_result_worm_ventral[INDEX_NRmore][howmanyfluids]->vel_new_x = state_result_worm_ventral[INDEX_NRmore][howmanyfluids]->vel_new_x*0.995 ;
 		
-		state_result_worm_ventral[INDEX_NRmore][howmanyfluids]->vel_new_y = state_result_worm_ventral[INDEX_NRmore][howmanyfluids]->vel_new_y*0.9995 ;
+		state_result_worm_ventral[INDEX_NRmore][howmanyfluids]->vel_new_y = state_result_worm_ventral[INDEX_NRmore][howmanyfluids]->vel_new_y*0.995 ;
 
-		state_result_worm_ventral[INDEX_NRmore][howmanyfluids]->vel_new_z = state_result_worm_ventral[INDEX_NRmore][howmanyfluids]->vel_new_z*0.9995 ;
+		state_result_worm_ventral[INDEX_NRmore][howmanyfluids]->vel_new_z = state_result_worm_ventral[INDEX_NRmore][howmanyfluids]->vel_new_z*0.995 ;
 
-		state_result_worm_ventral[INDEX_NR][howmanyfluids]->vel_new_x = state_result_worm_ventral[INDEX_NR][howmanyfluids]->vel_new_x*0.9995 ;
+		state_result_worm_ventral[INDEX_NR][howmanyfluids]->vel_new_x = state_result_worm_ventral[INDEX_NR][howmanyfluids]->vel_new_x*0.995 ;
 		
-		state_result_worm_ventral[INDEX_NR][howmanyfluids]->vel_new_y = state_result_worm_ventral[INDEX_NR][howmanyfluids]->vel_new_y*0.9995 ;
-		state_result_worm_ventral[INDEX_NR][howmanyfluids]->vel_new_z = state_result_worm_ventral[INDEX_NR][howmanyfluids]->vel_new_z*0.9995 ; 
+		state_result_worm_ventral[INDEX_NR][howmanyfluids]->vel_new_y = state_result_worm_ventral[INDEX_NR][howmanyfluids]->vel_new_y*0.995 ;
+		state_result_worm_ventral[INDEX_NR][howmanyfluids]->vel_new_z = state_result_worm_ventral[INDEX_NR][howmanyfluids]->vel_new_z*0.995 ;
 		}
 
 
@@ -454,7 +456,7 @@ while( !kd_res_end( presults ) ) {
 	int k;
  
    
-  INDEX = find_index_____(SIZE_OBJECT/4,state_result_worm_ventral,num,feather_count,kk);
+  INDEX = find_index_____(SIZE_OBJECT,state_result_worm_ventral,num,feather_count,kk);
  // printf("INDEX = %d \n", INDEX);
   state_result_worm_ventral_feather[num][feather_count].INDEX_NR = INDEX;
   feather_count++;
@@ -473,50 +475,8 @@ while( !kd_res_end( presults ) ) {
 
   return 0;
 }
- int		load_texture (const char * filename,
-			      unsigned char * dest,
-			      const int format,
-			      const unsigned int size)
-{
-  FILE *fd;
-  struct jpeg_decompress_struct cinfo;
-  struct jpeg_error_mgr jerr;
-  unsigned char * line;
+ 
 
-  cinfo.err = jpeg_std_error (&jerr);
-  jpeg_create_decompress (&cinfo);
-
-  if (0 == (fd = fopen(filename, "rb")))
-    return 1;
-
-  jpeg_stdio_src (&cinfo, fd);
-  jpeg_read_header (&cinfo, TRUE);
-  if ((cinfo.image_width != size) || (cinfo.image_height != size))
-    return 1;
-
-  if (GL_RGB == format)
-    {
-      if (cinfo.out_color_space == JCS_GRAYSCALE)
-	return 1;
-    }
-  else
-    if (cinfo.out_color_space != JCS_GRAYSCALE)
-      return 1;
-
-  jpeg_start_decompress (&cinfo);
-
-  while (cinfo.output_scanline < cinfo.output_height)
-    {
-      line = dest +
-	(GL_RGB == format ? 3 * size : size) * cinfo.output_scanline;
-      jpeg_read_scanlines (&cinfo, &line, 1);
-    }
-  jpeg_finish_decompress (&cinfo);
-  jpeg_destroy_decompress (&cinfo);
-  return 0;
-}
-
-int KvvVENTALA2[400000 ];
 int first_run = 1;
 int initonce =1;
 extern int KvvVENTAL ;
@@ -545,7 +505,8 @@ for(i = 0; i < SIZE_OBJECT; i++){
   }
 }
 
-
+ 
+printf("done ! \n");
  
 for(int i=0; i<SIZE_OBJECT*1; i++)
 	state_result_worm_ventral_feather[i] = (struct state_vector*)malloc(sizeof(struct state_vector)*32);
@@ -565,16 +526,12 @@ for(int kk = 0; kk < HOW_MANY_FLUIDS  ; kk++)
 		  v= (Vec3 *)(V + 3*(KvvVENTALA[ll]-1));
          	  state_result_worm_ventral[ll][kk]->pos_new_x = v->x+kk*10 ;
  
- 	          state_result_worm_ventral[ll][kk]->pos_new_y = v->y+5 ;
+ 	          state_result_worm_ventral[ll][kk]->pos_new_y = v->y ;
  		  state_result_worm_ventral[ll][kk]->pos_new_z = v->z +kk*10;
  
  	  	  state_result_worm_ventral[ll][kk]->vel_new_x =   1e-6 ;
  		  state_result_worm_ventral[ll][kk]->vel_new_y =  1e-6 ;
  		  state_result_worm_ventral[ll][kk]->vel_new_z =  1e-5 ;
-
-
-		  state_result_worm_ventral[ll][kk]->pressure = 0.1;		
-	          state_result_worm_ventral[ll][kk]->height = 1;
 	}
 }
  
@@ -586,23 +543,25 @@ for(int kk = 0; kk < HOW_MANY_FLUIDS  ; kk++)
 	initonce = 0;
 }
 
- wall_info = (struct state_vector*)malloc(sizeof(struct state_vector*)*3840*4);
+pipe = loadOBJ__big("ico.obj");
+ wall_info = (struct state_vector*)malloc(sizeof(struct state_vector*)*KvvVENTAL2*4);
 
  
 
-for(int i=0; i<3840*1; i++)
+for(int i=0; i<KvvVENTAL2*1; i++)
 	wall_info[i] = (struct state_vector*)malloc(sizeof(struct state_vector)*32);
  
 
  
 	 
-	  pipe = loadOBJ__big("sphere.obj");  
+	  
+ 
 	printf("done ! \n");
  
 	Vec3 *v ;
  
 	int ll;
-	for(ll = 0; ll < 3840  ; ll++)
+	for(ll = 0; ll < KvvVENTAL2  ; ll++)
 	{
 		  v= (Vec3 *)(V2 + 3*(KvvVENTALA2[ll]-1));
          	  wall_info[ll]->pos_new_x = v->x ;
@@ -626,52 +585,46 @@ GLint glut_display;
 glutInitWindowSize (1080,1920);
 glutCreateWindow ("wormy");
 
-static GLuint	texture;
 int mainMenu;
 const GLubyte *str;
 str = glGetString (GL_EXTENSIONS);
 
+glEnable(GL_NORMALIZE);
+glEnable(GL_DEPTH_TEST);
+glMatrixMode(GL_PROJECTION);
+glLoadIdentity();
+glMatrixMode(GL_MODELVIEW);
 
+glEnable(GL_LIGHTING);
+glEnable(GL_LIGHT0);
+glEnable(GL_NORMALIZE);
+glEnable(GL_COLOR_MATERIAL);
 
+glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+dirLight = (Light*)malloc(sizeof(Light));
+dirLight->setPosition_light = setPosition_light;
+dirLight->setAmbient_light = setAmbient_light;
+dirLight->setDifusse_light = setDifusse_light;
+dirLight->setSpecular_light = setSpecular_light;
  
-  	unsigned char total_texture[4 * 256 * 256];
-  	unsigned char alpha_texture[256 * 256];
-  	unsigned char caustic_texture[3 * 256 * 256];
+dirLight->setPosition_light(100,100, 800);
+dirLight->setAmbient_light(0, 0, 0);
+dirLight->setDifusse_light(1, 1, 1);
+dirLight->setSpecular_light(0.995f, 0.1f, 0.88f);
  
-
- 	InitNoise ();
- 
-  	glClearColor (0, 0, 0,0);
- 
-  	glEnable (GL_BLEND);
-  	glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-  	glPolygonMode (GL_FRONT_AND_BACK, GL_FILL);
-  	glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
-    	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-
-  	/* Texture loading  */
-  	glGenTextures (1, &texture);
-  	if (load_texture ("alpha.jpg", alpha_texture, GL_ALPHA, 256) != 0 ||
-        load_texture ("reflection.jpg", caustic_texture, GL_RGB, 256) != 0)
-        return 1;
- 	 for (i = 0; i < 256 * 256; i++)
-    	{
-     		 total_texture[4 * i] = caustic_texture[3 * i];
-     		 total_texture[4 * i + 1] = caustic_texture[3 * i + 1];
-     		 total_texture[4 * i + 2] = caustic_texture[3 * i + 2];
-     		 total_texture[4 * i + 3] = alpha_texture[i];
-  	  }
- 	  glBindTexture (GL_TEXTURE_2D, texture);
-  	  gluBuild2DMipmaps (GL_TEXTURE_2D, GL_RGBA, 256, 256, GL_RGBA,
-	  GL_UNSIGNED_BYTE,  total_texture);
-  	  glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-  	  glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
- 	  glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
- 	  glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-  	  glEnable (GL_TEXTURE_GEN_S);
-	  glEnable (GL_TEXTURE_GEN_T);
-  	  glTexGeni (GL_S, GL_TEXTURE_GEN_MODE, GL_SPHERE_MAP);
- 	  glTexGeni (GL_T, GL_TEXTURE_GEN_MODE, GL_SPHERE_MAP);
+material =(Material*)malloc(sizeof(Material));
+material->setAmbient_material =setAmbient_material;
+material->setDifusse_material = setDifusse_material;
+material->setSpecular_material =setSpecular_material;
+material->setShininess_material = setShininess_material;
+material->setAmbient_material(0, 0, 1, 1);
+material->setDifusse_material(0.5f, 0.1f, 0.995f, 1.0f/50.0f);
+material->setSpecular_material(0.01f, 0.01f, 0.01f, 1.0f/50.0f);
+material->setShininess_material(128);
+glLightfv(GL_LIGHT0, GL_POSITION, dirLight->pos);
+glLightfv(GL_LIGHT0, GL_AMBIENT,   dirLight->ambient);
+glLightfv(GL_LIGHT0, GL_SPECULAR,  dirLight->specular);
+glLightfv(GL_LIGHT0, GL_DIFFUSE,   dirLight->difusse);  
 
 
 glLightModelfv(GL_LIGHT_MODEL_AMBIENT, global_ambient);  
@@ -771,52 +724,31 @@ void display  (void){
     glRotatef(rotationY+320,0,1,0);
 
     glMultMatrixf(lightRotation);
-
-    glPushMatrix();
-    glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
-
-    glCallList(pipe);
-    glPopMatrix();
  for(int kk = 0; kk <   HOW_MANY_FLUIDS; kk++)  
 		  {
    for(int ll = 0; ll <   SIZE_OBJECT/4 ; ll++)  
 		  {
 
-
-     calc_fluid_acceleration(ll,kk);
-
-     calc_fluid_velocity(ll,kk);
-taskworm(kk);
-
 int INDEX_NR___ =  (state_result_worm_ventral_feather[ll][kk].INDEX_NR);
- 
-glPushMatrix();
-glScalef(25,25,25);
-  glTranslatef(state_result_worm_ventral[INDEX_NR___][howmanyfluids_g]->pos_new_x, state_result_worm_ventral[INDEX_NR___][howmanyfluids_g]->pos_new_y,state_result_worm_ventral[INDEX_NR___][howmanyfluids_g]->pos_new_z);
- glutSolidSphere(0.2,29,29  );
- glutPostRedisplay();
-glPopMatrix();
- 
- 
- 
+      calc_fluid_acceleration(ll,kk);
+INDEX_NR___ = ll;
+      calc_fluid_velocity(ll,kk);
 
-
-}
-
-}
- /*for(int kk = 0; kk <   HOW_MANY_FLUIDS; kk++)  
-		  {
-   for(int ll = 0; ll <   SIZE_OBJECT ; ll++)  
-		  {
-
-if(state_result_worm_ventral[llll][howmanyfluids_g]->force_sign == 1)
-{
- 
-/*
+taskworm(kk);
 glPushMatrix();
 glScalef(25,25,25);
   glTranslatef(state_result_worm_ventral[ll][kk]->pos_new_x, state_result_worm_ventral[ll][kk]->pos_new_y,state_result_worm_ventral[ll][kk]->pos_new_z);
- glutSolidSphere(0.2,29,29  ); */
+ glutSolidSphere(0.1,29,29  );
+
+
+	glPolygonMode (GL_FRONT_AND_BACK, GL_LINE);
+glPushMatrix();
+     glColor3f(255,255,255);     // Red
+glScalef(25,25,25);
+  glTranslatef(wall_info[ll]->pos_new_x, wall_info[ll]->pos_new_y,wall_info[ll]->pos_new_z);
+ glutSolidSphere(0.003,29,29  );
+ glutPostRedisplay();
+glPopMatrix();
 /*glBegin(GL_TRIANGLES);
      glColor3f(state_result_worm_ventral[ll]->pos_new_x, state_result_worm_ventral[ll]->pos_new_y, state_result_worm_ventral[ll]->pos_new_z);     // Red
       glVertex3f(0, 1.0f/50.0f, 0.0f);
@@ -851,12 +783,12 @@ glScalef(25,25,25);
 	glEnd(); */ 	
  	
  
-// glPopMatrix();
-
-//}
-//}*/
+ glPopMatrix();
+ glutPostRedisplay();
+}
+}
 display_mpeg();
-// glutPostRedisplay();
+
 glutSwapBuffers();
 
 }
@@ -866,29 +798,47 @@ glutSwapBuffers();
 
 void rates_dorsal ( double *t, double *f, double result[]   )
 {
- //printf("f[0] = %.10f:%.10f%.10f \n", f[0],f[1],f[2]);
+// printf("f[0] = %.10f:%.10f%.10f \n", f[0],f[1],f[2]);
  
- 
+if(state_result_worm_ventral[llll][howmanyfluids_g]->force_sign == 1)
+{
     	result[0] =             f[3]/100.0;
     	result[1] =             f[4]/100.0;
     	result[2] =             f[5]/100.0;
   
-	result[3] = (F_total[0][llll][howmanyfluids_g]+acc2_fluid[0][llll][howmanyfluids_g]/1.0)/(40000.0   );
-	result[4] = (F_total[1][llll][howmanyfluids_g] +acc2_fluid[1][llll][howmanyfluids_g]/1.0-392.8   )/(40000.0   );
-	result[5] = (F_total[2][llll][howmanyfluids_g] +acc2_fluid[2][llll][howmanyfluids_g]/1.0)/(40000.0); 
+	result[3] = (F_total[0][llll][howmanyfluids_g]+acc2_fluid[0][llll][howmanyfluids_g])/(40000.0   );
+	result[4] = (F_total[1][llll][howmanyfluids_g] +acc2_fluid[1][llll][howmanyfluids_g]  )/(40000.0   );
+	result[5] = (F_total[2][llll][howmanyfluids_g] +acc2_fluid[2][llll][howmanyfluids_g])/(40000.0); 
+
  
+}
+else if(state_result_worm_ventral[INDEX_NR][howmanyfluids_g]->force_sign == -1)
+{
+    result[0] =             f[3]/100.0;
+    result[1] =             f[4]/100.0;
+    result[2] =             f[5]/100.0;
+  
+    result[3] = -(F_total[0][INDEX_NR][howmanyfluids_g]+acc2_fluid[0][INDEX_NR][howmanyfluids_g])/(40000.0  );
+    result[4] = -(F_total[1][INDEX_NR][howmanyfluids_g]  +acc2_fluid[1][INDEX_NR][howmanyfluids_g]) /(40000.0) ;
+    result[5] = -(F_total[2][INDEX_NR][howmanyfluids_g] +acc2_fluid[2][INDEX_NR][howmanyfluids_g])/(40000.0  ); //522
  
+
+}
+else if(state_result_worm_ventral[INDEX_NRmore][howmanyfluids_g]->force_sign == 1)
+{
+    	result[0] =             f[3]/100.0;
+    	result[1] =             f[4]/100.0;
+    	result[2] =             f[5]/100.0;
+  
+	result[3] = (F_total[0][INDEX_NRmore][howmanyfluids_g]+acc2_fluid[0][INDEX_NRmore][howmanyfluids_g])/(400.0   );
+	result[4] = (F_total[1][INDEX_NRmore][howmanyfluids_g] -9.8 +acc2_fluid[1][INDEX_NRmore][howmanyfluids_g] )/(400.0   );
+	result[5] = (F_total[2][INDEX_NRmore][howmanyfluids_g] +acc2_fluid[2][INDEX_NRmore][howmanyfluids_g])/(400.0); 
+
  
- 
- 
+}
   acc1 = sqrtf(pow(result[3],2.0) + pow(result[4],2.0)+pow(result[5],2.0));
 //printf("acc1 = %.10f \n", acc1);
 }
-
-
-
-
-
 
 
 
@@ -984,8 +934,8 @@ void calc_fluid_acceleration(int ll, int j)
 	//printf(" %f %f  %f \n",     acc2_fluid[0][ll][j] ,    acc2_fluid[1][ll][j] ,    acc2_fluid[2][ll][j] );
 
 }
-
-void findnearestpoint_3_points(int points , int num,double r_collision, double **vvv,int ll, int j )
+int alloc_once_2 =1;
+void findnearestpoint_3_points(int points , int num,double r_collision, struct state_vector **vvv,int ll, int j )
 {
 	int i, num_pts ;
  
@@ -993,22 +943,23 @@ void findnearestpoint_3_points(int points , int num,double r_collision, double *
 	struct kdres *presults;
 	double pos[3], dist;
 	double pt[3] = { state_result_worm_ventral[ll][j]->pos_new_x,state_result_worm_ventral[ll][j]->pos_new_y, state_result_worm_ventral[ll][j]->pos_new_y };
-	double radius = 25;
+	double radius = r_collision;
  
-	num_pts =SIZE_OBJECT;
+	num_pts =points;
 
  	void *ptree_____;
 
- 	if(alloc_once == 1)
+ 	if(alloc_once == 1 || alloc_once_2 == 1)
 	{
 		ptree_____ = kd_create( 3 );
  
   		for( i=0; i<points; i++ ) {   
 		     //   printf("target node at (%.3f, %.3f, %.3f) \n", wall_info[i]->pos_new_x, wall_info[i]->pos_new_y,wall_info[i]->pos_new_z);
-    			assert( 0 == kd_insert3( ptree_____, wall_info[i]->pos_new_x, wall_info[i]->pos_new_y, wall_info[i]->pos_new_z, NULL ) );
+    			assert( 0 == kd_insert3( ptree_____, vvv[i]->pos_new_x, vvv[i]->pos_new_y, vvv[i]->pos_new_z, NULL ) );
 
 	}
 		alloc_once = 0;
+alloc_once_2 = 0;
 	}
  
  
@@ -1019,7 +970,7 @@ void findnearestpoint_3_points(int points , int num,double r_collision, double *
 
  
 	//state_result_worm_dorsal_feather[num]->totaln = kd_res_size(presults) ;
- 	// printf( "found %d results:\n", kd_res_size(presults) );
+  //printf( "found %d results:\n", kd_res_size(presults) );
 
  
         int vc = 0;
@@ -1064,17 +1015,16 @@ void findnearestpoint_3_points(int points , int num,double r_collision, double *
 
 void calc_fluid_velocity(int ll, int j)
 {
-
+int vn = ll;
 	double distance_from_origin = sqrtf(powf( state_result_worm_ventral[ll][j]->pos_new_x - 0 ,2.0) +  powf( state_result_worm_ventral[ll][j]->pos_new_y -0 ,2.0)  + 		powf( state_result_worm_ventral[ll][j]->pos_new_z -0 ,2.0  ));
  
 //if(( distance_from_origin) > 65)
 //{
 
-	for(int vn = 0; vn < 3840; vn++)
-	{
+ 
 
-		if(j == vn)
-			continue;
+ 
+		 
 
 		//need 3 points	
  
@@ -1094,7 +1044,7 @@ void calc_fluid_velocity(int ll, int j)
 
 
 		 
-		if( fabs(xxxx) > 0 &&  fabs(xxxx) < 0.1)
+		if( fabs(xxxx) > 0 &&  fabs(xxxx) <1)
 		{
  
 			double u_perpv[3];
@@ -1107,7 +1057,7 @@ void calc_fluid_velocity(int ll, int j)
 
   
 		
-			findnearestpoint_3_points(2000,   vn, 100, NULL ,ll,j);
+			findnearestpoint_3_points(KvvVENTAL2/8   ,   vn, 11, wall_info ,ll,j);
  
 			double aa[] = {state_result_worm_ventral[ll][j]->pos_new_x,state_result_worm_ventral[ll][j]->pos_new_y,state_result_worm_ventral[ll][j]->pos_new_z};
 			double bb[] = {neighbourV_[1][0],neighbourV_[1][1],neighbourV_[1][2]};
@@ -1139,18 +1089,18 @@ void calc_fluid_velocity(int ll, int j)
 			printf("w_parv[0]  =%.10f\n", w_parv[0] );
 			printf("normal[0]  =%.10f\n", normal[0] );
 			printf("neighbourV[0][1]  =%.10f\n", neighbourV_[0][1]); 
-
+ 
 			//v′ = f w − r u
-			double r =0.7;
-			double frictionforce = 10;
+			double r =0.851;
+			double frictionforce = 123.00000001;
 			state_result_worm_ventral[ll][j]->vel_new_x = frictionforce*w_parv[0] - r*u_perpv[0];
 			state_result_worm_ventral[ll][j]->vel_new_y = frictionforce*w_parv[1] - r*u_perpv[1];
 			state_result_worm_ventral[ll][j]->vel_new_z = frictionforce*w_parv[2] - r*u_perpv[2];
 		 
- 		//	state_result_worm_ventral[ll][j] = mass_motion( mass_motion_state[what_k] ,1,0);
+ 		//	state_result_worm_ventral[ll][j] = mass_motion( mass_motion_state[howmanyfluids_g] ,1,0);
  		 	taskworm(j);
 //
-
+ glutPostRedisplay();
 			free(dotprod_v_n);
 			free(dotprod_n_n);
  			free(normal);
@@ -1160,6 +1110,113 @@ void calc_fluid_velocity(int ll, int j)
 
 			return;
 		}
-	}
+	 
 }
 
+
+
+
+
+
+void calc_fluid_velocity_drops_reflect(int ll, int j)
+{
+
+ 
+ 
+//if(( distance_from_origin) > 65)
+//{
+for(int n = 0; n < SIZE_OBJECT; n++)
+	{
+	for(int k = 0; k < HOW_MANY_FLUIDS; k++)
+	{
+
+		if(j == k)
+			continue;
+
+		//need 3 points	
+ 
+		double sqrtthis = powf( state_result_worm_ventral[ll][j]->pos_new_x - state_result_worm_ventral[n][k]->pos_new_x ,2.0) +  powf( state_result_worm_ventral[ll][j]->pos_new_y - 	state_result_worm_ventral[n][j]->pos_new_y,2.0)  + powf( state_result_worm_ventral[ll][j]->pos_new_z - state_result_worm_ventral[n][j]->pos_new_z ,2.0  );
+ 
+		double xxxx=  (sqrtthis ); 
+  		complex zzzz;
+ 
+
+ 		 if((sqrtthis)  < 0)
+	  	{
+ 			zzzz = csqrt(sqrtthis);
+		  	xxxx = creal(zzzz);
+		}
+		else if ((sqrtthis)  > 0)	  
+			xxxx = sqrtf(sqrtthis ); 
+
+
+		 
+		if( fabs(xxxx) > 0 &&  fabs(xxxx) <0.1)
+		{
+ 
+			double u_perpv[3];
+			double w_parv[3]; 
+			double * normal = malloc(100) ;
+			double * dotprod_v_n= malloc(100) ;
+			double * dotprod_n_n= malloc(100) ;
+			double * vel = malloc(100);
+
+
+  
+		
+			findnearestpoint_3_points(KvvVENTAL/8    ,   k, 11, state_result_worm_ventral ,ll,j);
+ 
+			double aa[] = {state_result_worm_ventral[ll][j]->pos_new_x,state_result_worm_ventral[ll][j]->pos_new_y,state_result_worm_ventral[ll][j]->pos_new_z};
+			double bb[] = {neighbourV_[1][0],neighbourV_[1][1],neighbourV_[1][2]};
+			double cc[] = {neighbourV_[2][0],neighbourV_[2][1],neighbourV_[2][2]};
+	 
+
+			calculate_normal(aa ,bb ,cc ,normal);
+
+
+			vel[0] =  state_result_worm_ventral[ll][j]->vel_new_x ;
+			vel[1] = state_result_worm_ventral[ll][j]->vel_new_y;
+			vel[2] =state_result_worm_ventral[ll][j]->vel_new_z;
+
+ 			dot(   vel ,  normal, dotprod_v_n);
+			dot( normal, normal, dotprod_n_n);
+
+			//u_perpv = (v · n / n · n) n
+			u_perpv[0] = (dotprod_v_n[0]/dotprod_n_n[0])*normal[0];
+			u_perpv[1] = (dotprod_v_n[1]/dotprod_n_n[1])*normal[1];
+			u_perpv[2] = (dotprod_v_n[2]/dotprod_n_n[2])*normal[2];
+
+
+			w_parv[0] = vel[0] - u_perpv[0]  ;
+			w_parv[1] = vel[1] - u_perpv[1]  ;
+			w_parv[2] = vel[2] - u_perpv[2]  ;
+ 
+			printf("vel[0]   =%.10f \n", vel[0] );
+			printf("u_perpv[0]   =%.10f \n", u_perpv[0] );
+			printf("w_parv[0]  =%.10f\n", w_parv[0] );
+			printf("normal[0]  =%.10f\n", normal[0] );
+			printf("neighbourV[0][1]  =%.10f\n", neighbourV_[0][1]); 
+ 
+			//v′ = f w − r u
+			double r =0.851;
+			double frictionforce = 123.00000001;
+			state_result_worm_ventral[ll][j]->vel_new_x = frictionforce*w_parv[0] - r*u_perpv[0];
+			state_result_worm_ventral[ll][j]->vel_new_y = frictionforce*w_parv[1] - r*u_perpv[1];
+			state_result_worm_ventral[ll][j]->vel_new_z = frictionforce*w_parv[2] - r*u_perpv[2];
+		 
+ 		//	state_result_worm_ventral[ll][j] = mass_motion( mass_motion_state[howmanyfluids_g] ,1,0);
+ 		 	taskworm(j);
+//
+ glutPostRedisplay();
+			free(dotprod_v_n);
+			free(dotprod_n_n);
+ 			free(normal);
+ 			free(vel);
+			alloc_once_2 = 1;
+
+
+			return;
+		}
+	}
+}
+}
