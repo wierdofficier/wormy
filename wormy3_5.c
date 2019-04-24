@@ -75,7 +75,7 @@ extern int KvvVENTAL2;
   struct state_vector  ** wall_info ; 
 double  neighbourV_[10000*2][10000] ;
  double acc2_fluid[3][4000 ][4000] ;
-double water_radius = .02;
+double water_radius = 222.02;
 int alloc_once = 1;
 double density =   1000.0;
 double viscous_constant = 1.6735;
@@ -85,7 +85,7 @@ int INDEX_NRmore;
 #define SIZE_OBJECT 1984 //126976
 #define HOW_MANY_FLUIDS 1
 #define HOWMANY HOW_MANY_FLUIDS
-float springlength =   .04/4.0;
+float springlength =   .5/1.0;
 #define AIR_FRICTION 0.9959999
 #define FIRST 1
 #define WORK 0
@@ -1056,11 +1056,10 @@ void calc_fluid_acceleration(int ll, int j)
 	double gMASS;
  
 
-	if(pressure_once ==1)
-	{
+	 
 		state_result_worm_ventral[ll][j]->pressure =  ((  -1234+0)*mass_fluid_element/(M_PI*pow(water_radius,2.0)));
-		pressure_once =0;
-	}
+	 
+	 
 	
 
 	double sqrtme = state_result_worm_ventral[ll][j]->pressure/density;
@@ -1136,16 +1135,40 @@ assert( 0 == kd_insert3( ptree_____wall,  wall_info[i]->pos_new_x, wall_info[i]-
  
 	//state_result_worm_dorsal_feather[num]->totaln = kd_res_size(presults) ;
 // printf( "found %d results:\n", kd_res_size(presults) );
+
+
+
 presults = kd_nearest_range( ptree_____wall, pt, radius );
  	// printf("bugg1\n");
 double result = kd_res_size(presults) ;
 
-
-for(int n = 0; n < 1000; n++)
+if(result < 5)
+	{
+for(int n = 0; n < 300 ; n++)
 {
-	radius=radius*1.005;
+	radius=radius*1.002;
  
-	if(result < 100)
+	if(result < 15)
+	{
+ 		result = kd_res_size(presults) ;
+		if(result> 2)
+			break;
+	}
+    	kd_res_free( presults );
+	presults = kd_nearest_range( ptree_____wall, pt, radius );
+//printf( " #1 found %d results:\n", kd_res_size(presults) );
+
+
+}
+}
+ 
+ if(result > 5   )
+	{
+for(int n = 0; n < 300   ; n++)
+{
+	radius=radius*0.998;
+ 
+	if(result < 15)
 	{
  		result = kd_res_size(presults) ;
 		if(result> 2)
@@ -1156,7 +1179,9 @@ for(int n = 0; n < 1000; n++)
 //printf( " #1 found %d results:\n", kd_res_size(presults) );
  //printf("bugg1\n");
  }
- 
+ }
+
+presults2 = kd_nearest_range( ptree_____wall, pt, radius );
  
         int vc = 0;
     //  printf("source node at (%.3f, %.3f, %.3f) \n", pt[0], pt[1],pt[2]);
@@ -1204,17 +1229,17 @@ else if(what == 0)
 
 
 
-
 presults = kd_nearest_range( ptree_____, pt, radius );
  	// printf("bugg1\n");
 double result = kd_res_size(presults) ;
 
-
-for(int n = 0; n < 1000; n++)
+if(result < 5)
+	{
+for(int n = 0; n < 300 ; n++)
 {
-	radius=radius*1.005;
+	radius=radius*1.002;
  
-	if(result < 100)
+	if(result < 15)
 	{
  		result = kd_res_size(presults) ;
 		if(result> 2)
@@ -1226,11 +1251,26 @@ for(int n = 0; n < 1000; n++)
 
 
 }
-
+}
  
+ if(result > 5   )
+	{
+for(int n = 0; n < 300   ; n++)
+{
+	radius=radius*0.998;
  
-
-presults2 = kd_nearest_range( ptree_____, pt, radius );
+	if(result < 15)
+	{
+ 		result = kd_res_size(presults) ;
+		if(result> 2)
+			break;
+	}
+    	kd_res_free( presults );
+	presults = kd_nearest_range( ptree_____, pt, radius );
+//printf( " #1 found %d results:\n", kd_res_size(presults) );
+ //printf("bugg1\n");
+ }
+ }
 	// printf( "found %d results:\n", kd_res_size(presults2) );
 	//state_result_worm_dorsal_feather[num]->totaln = kd_res_size(presults) ;
 // printf( "found %d results:\n", kd_res_size(presults) );
@@ -1238,9 +1278,9 @@ presults2 = kd_nearest_range( ptree_____, pt, radius );
  
         int vc = 0;
     //  printf("source node at (%.3f, %.3f, %.3f) \n", pt[0], pt[1],pt[2]);
-        while( !kd_res_end( presults2 ) ) {
+        while( !kd_res_end( presults ) ) {
    
-		pch = (char*)kd_res_item( presults2, pos ); 
+		pch = (char*)kd_res_item( presults, pos ); 
     		//dist = sqrt( dist_sq( pt, pos, 3 ) );
 
 		 // if(worm[num]->pos_new_x != pos[0])
@@ -1264,14 +1304,14 @@ presults2 = kd_nearest_range( ptree_____, pt, radius );
 			break;
 		
  vc++;
-   		 kd_res_next( presults2 );
+   		 kd_res_next( presults );
  	 
  
     	  }
     
 
    vc = 0;
-  kd_res_free( presults2 );
+  
   kd_res_free( presults );
 kd_free( ptree_____ );
 
