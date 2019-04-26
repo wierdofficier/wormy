@@ -38,7 +38,7 @@ double viscous_constant = 1.6735;
 float acc1;
 float acc2;
 int INDEX_NRmore;
-#define SIZE_OBJECT 3840 //126976
+#define SIZE_OBJECT 1984 //126976
 #define HOW_MANY_FLUIDS 1
 #define HOWMANY HOW_MANY_FLUIDS
 float springlength =  0.004/4.0;
@@ -252,7 +252,7 @@ acc1once = 0;
 	// printf("1totalneigbours[llll]  %d :: number %d :: index_____ = %d\n",totalneigbours[llll],llll,INDEX_NR);
 	INDEX_NR =  (state_result_worm_ventral_feather[llll][k].INDEX_NR);
 	
-if(  INDEX_NR > 0 && INDEX_NR < 1000000  )
+if(  INDEX_NR > 0  )
 {
 	//if(state_result_worm_ventral[INDEX_NR][howmanyfluids]->force_sign != -1 && state_result_worm_ventral[INDEX_NR][howmanyfluids]->force_sign != 1 && INDEX_NR >0)
 	//{
@@ -542,7 +542,7 @@ int main (int argc, char **argv)
 { 
 
  int i,j,k;
-loadOBJ__("klot2_.obj"); //61856 //61856 //13108_Eastern_Hognose_Snake_v1_L3  61856
+loadOBJ__("sub2.obj"); //61856 //61856 //13108_Eastern_Hognose_Snake_v1_L3  61856
  
 springVector = malloc(SIZE_OBJECT*1);
 state_result_worm_ventral_feather = (struct state_vector*)malloc(sizeof(struct state_vector*)*SIZE_OBJECT*4);
@@ -852,16 +852,16 @@ int kk = 0;
 		  {
 taskworm(kk,ll);
 int INDEX_NR___ =  (state_result_worm_ventral_feather[ll][kk].INDEX_NR);
-       calc_fluid_acceleration(INDEX_NR___,kk);
-INDEX_NR___ = ll;
+
+ 
       calc_fluid_velocity(INDEX_NR___,kk);
 
-
+       calc_fluid_acceleration(INDEX_NR___,kk);
 glPushMatrix();
 glScalef(25,25,25);
   glTranslatef(state_result_worm_ventral[INDEX_NR___][kk]->pos_new_x-0, -state_result_worm_ventral[INDEX_NR___][kk]->pos_new_y+0,state_result_worm_ventral[INDEX_NR___][kk]->pos_new_z);
  // vDrawScene(state_result_worm_ventral,INDEX_NR___,kk);
-   glutSolidSphere(0.1,29,29  );
+   glutSolidSphere(0.1,15,15  );
 glPopMatrix();
 
 	 glPolygonMode (GL_FRONT_AND_BACK, GL_LINE);
@@ -933,7 +933,7 @@ if(state_result_worm_ventral[llll][howmanyfluids_g]->force_sign == 1)
     	result[2] =             f[5]/200.0;
   
 	result[3] = (F_total[0][llll][howmanyfluids_g]+acc2_fluid[0][llll][howmanyfluids_g])/(4000.0   );
-	result[4] = (F_total[1][llll][howmanyfluids_g] +acc2_fluid[1][llll][howmanyfluids_g] -39.8 )/(4000.0   );
+	result[4] = (F_total[1][llll][howmanyfluids_g] +acc2_fluid[1][llll][howmanyfluids_g] - 9.8 )/(4000.0   );
 	result[5] = (F_total[2][llll][howmanyfluids_g] +acc2_fluid[2][llll][howmanyfluids_g])/(4000.0); 
 
  
@@ -945,7 +945,7 @@ else if(state_result_worm_ventral[INDEX_NR][howmanyfluids_g]->force_sign == -1)
     result[2] =             f[5]/200.0;
   
     result[3] = -(F_total[0][INDEX_NR][howmanyfluids_g]+acc2_fluid[0][INDEX_NR][howmanyfluids_g])/(4000.0  );
-    result[4] = -(F_total[1][INDEX_NR][howmanyfluids_g]  +acc2_fluid[1][INDEX_NR][howmanyfluids_g]-39.8) /(4000.0) ;
+    result[4] = -(F_total[1][INDEX_NR][howmanyfluids_g]  +acc2_fluid[1][INDEX_NR][howmanyfluids_g]- 9.8) /(4000.0) ;
     result[5] = -(F_total[2][INDEX_NR][howmanyfluids_g] +acc2_fluid[2][INDEX_NR][howmanyfluids_g])/(4000.0  ); //522
  
 
@@ -957,7 +957,7 @@ else if(state_result_worm_ventral[INDEX_NRmore][howmanyfluids_g]->force_sign == 
     	result[2] =             f[5]/200.0;
   
 	result[3] = (F_total[0][INDEX_NRmore][howmanyfluids_g]+acc2_fluid[0][INDEX_NRmore][howmanyfluids_g])/(4000.0   );
-	result[4] = (F_total[1][INDEX_NRmore][howmanyfluids_g]  +acc2_fluid[1][INDEX_NRmore][howmanyfluids_g]-39.8 )/(4000.0   );
+	result[4] = (F_total[1][INDEX_NRmore][howmanyfluids_g]  +acc2_fluid[1][INDEX_NRmore][howmanyfluids_g]- 9.8 )/(4000.0   );
 	result[5] = (F_total[2][INDEX_NRmore][howmanyfluids_g] +acc2_fluid[2][INDEX_NRmore][howmanyfluids_g])/(4000.0); 
 
  
