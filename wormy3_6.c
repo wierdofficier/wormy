@@ -1148,27 +1148,27 @@ for(int n = 0; n < 1000; n++)
 
 }
 }
-double DECREASER = 0.997;
+double DECREASER = 0.975;
 if(result > 1000)
 {
-for(int n = 0; n < 10000; n++)
+for(int n = 0; n < 1000 ; n++)
 {
 	radius=radius*DECREASER;
   		result = kd_res_size(presults) ;
 	if(result < 200  )
 	{
 
-	 DECREASER = 0.99991;
-			radius=radius*DECREASER;	 
+	 //DECREASER = 0.99991;
+	//		radius=radius*DECREASER;	 
 	}
 
-	if(result > 2 && result < 20)
+	if(result > 2 && result < 1234)
 	break;
     	kd_res_free( presults );
 	presults = kd_nearest_range( ptree_____, pt, radius );
-  printf( " #0 found %d results:\n", kd_res_size(presults) );
-
-
+ // printf( " #0 found %d results: %f \n", kd_res_size(presults) ,DECREASER);
+if(DECREASER < 1.000)
+DECREASER = DECREASER*1.00004;
 }
 }
  	/* print out all the points found in results */
@@ -1203,6 +1203,8 @@ if(vc % 4 == 0)
 		//  if(worm[num]->pos_new_z != pos[2])
    		neighbourV_[vcc][2]  = pos[2];
 vcc++;
+if(vcc > 2)
+break;
 	 }
    		
  		// INDEX = find_index_____(SIZE_OBJECT,worm,num,feather_count);
@@ -1401,7 +1403,7 @@ int vn = ll;
 			state_result_worm_ventral[ll][j]->vel_new_z = frictionforce*w_parv[2] - r*u_perpv[2];
 		 
  		//	state_result_worm_ventral[ll][j] = mass_motion( mass_motion_state[howmanyfluids_g] ,1,0);
-		 
+		 //if(isnan(normal[0]) == 0)
  		 	taskworm(j,ll);
 
 				printf("vel[0]   =%.10f \n", vel[0] );
