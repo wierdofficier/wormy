@@ -38,7 +38,7 @@ double viscous_constant = 1.6735;
 float acc1;
 float acc2;
 int INDEX_NRmore;
-#define SIZE_OBJECT 1984 //126976
+#define SIZE_OBJECT 240 //126976
 #define HOW_MANY_FLUIDS 1
 #define HOWMANY HOW_MANY_FLUIDS
 float springlength =  0.004/4.0;
@@ -541,8 +541,8 @@ extern float* V2;
 int main (int argc, char **argv)
 { 
 
- int i,j,k;
-loadOBJ__("sub2.obj"); //61856 //61856 //13108_Eastern_Hognose_Snake_v1_L3  61856
+ int i,j,k; //glColor3f (1.0, 1.0, 0.0)
+loadOBJ__("omy.obj"); //61856 //61856 //13108_Eastern_Hognose_Snake_v1_L3  61856
  
 springVector = malloc(SIZE_OBJECT*1);
 state_result_worm_ventral_feather = (struct state_vector*)malloc(sizeof(struct state_vector*)*SIZE_OBJECT*4);
@@ -858,6 +858,7 @@ int INDEX_NR___ =  (state_result_worm_ventral_feather[ll][kk].INDEX_NR);
 
        calc_fluid_acceleration(INDEX_NR___,kk);
 glPushMatrix();
+glColor3f (1.0, 1.0, 0.0);
 glScalef(25,25,25);
   glTranslatef(state_result_worm_ventral[INDEX_NR___][kk]->pos_new_x-0, -state_result_worm_ventral[INDEX_NR___][kk]->pos_new_y+0,state_result_worm_ventral[INDEX_NR___][kk]->pos_new_z);
  // vDrawScene(state_result_worm_ventral,INDEX_NR___,kk);
@@ -1267,7 +1268,7 @@ int vn = ll;
 
  
 
- for(int n = 0; n < KvvVENTAL2; n++)
+ for(int n = 0; n < KvvVENTAL; n++)
 	{
 		 
 
@@ -1302,7 +1303,7 @@ int vn = ll;
 
   
 		
-			findnearestpoint_3_points(KvvVENTAL2/8    ,   n, 6.0, wall_info ,ll,j);
+			findnearestpoint_3_points(KvvVENTAL/8    ,   n, 0.05, wall_info ,ll,j);
  
 			double aa[] = {state_result_worm_ventral[ll][j]->pos_new_x,state_result_worm_ventral[ll][j]->pos_new_y,state_result_worm_ventral[ll][j]->pos_new_z};
 			double bb[] = {neighbourV_[1][0],neighbourV_[1][1],neighbourV_[1][2]};
