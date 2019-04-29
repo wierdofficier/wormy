@@ -20,6 +20,14 @@
 #include <jerror.h>
 #include "noise.h"
 int c_m = 0;
+int once_pos =1;
+int INDEX_p[100000];
+double time_particle[100000];
+double dist__first[100000];
+double posdiff[2][10000];
+double veldiff[2][10000];
+double dist__next[100000];
+int time_activate[100000]  ;
 int total_molekules_nearby  = 1;
 double Area_tube;
 	double mass_fluid_element;
@@ -597,7 +605,7 @@ if(initonce==1)
 
 for(int kk = 0; kk < HOW_MANY_FLUIDS  ; kk++)
 	{
-	for(ll = 0; ll < SIZE_OBJECT  ; ll+=122    )
+	for(ll = 0; ll < SIZE_OBJECT  ; ll+=1    )
 	{
 		  v= (Vec3 *)(V + 3*(KvvVENTALA[ll]-1));
          	  state_result_worm_ventral[c_m][kk]->pos_new_x = v->x+kk*10 ;
@@ -871,10 +879,12 @@ glTranslatef(1.0, 0.0, 0.0);
 int kk = 0;
    for(int ll = 0; ll <  c_m; ll++)  
 		  {
-taskworm(kk,ll);
-int INDEX_NR___ =  (state_result_worm_ventral_feather[ll][kk].INDEX_NR);
 
- 
+
+
+int INDEX_NR___ = ll;// (state_result_worm_ventral_feather[ll][kk].INDEX_NR);
+
+ taskworm(kk,INDEX_NR___);
       calc_fluid_velocity(INDEX_NR___,kk);
  
 	
@@ -883,7 +893,41 @@ int INDEX_NR___ =  (state_result_worm_ventral_feather[ll][kk].INDEX_NR);
 //findnearestpoint_3_points_water_pressure(c_m     ,   ll,fabs(xxxx) , NULL ,ll,kk);
 
        calc_fluid_acceleration(INDEX_NR___,kk);
+/*if(once_pos == 1)
+{
+double distance_from_origin = sqrtf(powf( state_result_worm_ventral[ll][kk]->pos_new_x - 0 ,2.0) +  powf( state_result_worm_ventral[ll][kk]->pos_new_y -0 ,2.0)  + 		powf( state_result_worm_ventral[ll][kk]->pos_new_z -0 ,2.0  ));
 
+double velocity_from_origin = sqrtf(powf( state_result_worm_ventral[ll][kk]->vel_new_x - 0 ,2.0) +  powf( state_result_worm_ventral[ll][kk]->vel_new_y -0 ,2.0)  + 		powf( state_result_worm_ventral[ll][kk]->vel_new_z -0 ,2.0  ));
+
+ posdiff[0][INDEX_p[ll]] = distance_from_origin; 
+ veldiff[0][INDEX_p[ll]]= velocity_from_origin;
+  
+once_pos = 0;
+}
+else if(once_pos == 0)
+{
+double distance_from_origin = sqrtf(powf( state_result_worm_ventral[ll][kk]->pos_new_x - 0 ,2.0) +  powf( state_result_worm_ventral[ll][kk]->pos_new_y -0 ,2.0)  + 		powf( state_result_worm_ventral[ll][kk]->pos_new_z -0 ,2.0  ));
+
+double velocity_from_origin = sqrtf(powf( state_result_worm_ventral[ll][kk]->vel_new_x - 0 ,2.0) +  powf( state_result_worm_ventral[ll][kk]->vel_new_y -0 ,2.0)  + 		powf( state_result_worm_ventral[ll][kk]->vel_new_z -0 ,2.0  ));
+
+veldiff[1][INDEX_p[ll]]= velocity_from_origin;
+posdiff[1][INDEX_p[ll]] =distance_from_origin;
+
+ 
+once_pos= 1;
+time_activate[INDEX_p[ll]] = 1;
+}
+
+if(time_activate[INDEX_p[ll]] == 1)
+{
+
+
+
+
+
+//time_particle[INDEX_p[ll]] = ((posdiff[0][INDEX_p[ll]] -posdiff[1][INDEX_p[ll]])/( veldiff[0][INDEX_p[ll]] - veldiff[1][INDEX_p[ll]]));
+
+}*/
 glPushMatrix();
 glColor3f(1.0f, 0.5f, 1.0f);
 	 glPolygonMode (GL_FRONT_AND_BACK, GL_FILL);
@@ -1254,10 +1298,13 @@ free(pt);
 
 double tdiff[100000] ;
 double ratiotime[100000];
-int INDEX_p[100000];
+
 double totaltime[100000];
+double disttime[100000];
  double time__[100000];
 	void *ptree_______[100000];
+int INIT_ALLOCATE = 1;
+
 
 void findnearestpoint_3_points_water_pressure(int points , int num,double r_collision, double **vvv,int ll, int j )
 {
@@ -1273,35 +1320,43 @@ void findnearestpoint_3_points_water_pressure(int points , int num,double r_coll
  
 	num_pts =SIZE_OBJECT;
 
- 
-
-  if(tdiff[INDEX_p[ll]] > ratiotime[INDEX_p[ll]] )
+  if(tdiff[ll] > ratiotime[ll]  || INIT_ALLOCATE == 1  )
 {
-		ptree_______[INDEX_p[ll]] = kd_create( 3 );
- 
-  		for( i=0; i<points; i++ ) {   
-			      //  printf("target node at number %d \n", i);
-    			assert( 0 == kd_insert3( ptree_______[INDEX_p[ll]], state_result_worm_ventral[i][j]->pos_new_x, state_result_worm_ventral[i][j]->pos_new_y, state_result_worm_ventral[i][j]->pos_new_z, NULL ) );
+		
 
- 
+  		for( i=0; i<points; i++ ) {   
+		//  if(tdiff[i] > ratiotime[i] )
+		 // {
+			ptree_______[i] = kd_create( 3 );
+			      //  printf("target node at number %d \n", i);
+
+    			assert( 0 == kd_insert3( ptree_______[i], state_result_worm_ventral[i][j]->pos_new_x, state_result_worm_ventral[i][j]->pos_new_y, state_result_worm_ventral[i][j]->pos_new_z, NULL ) );
+tdiff[i]= 0;
+ // }
 	 }
+INIT_ALLOCATE = 0;
 
 	}
 else
 {
 
-tdiff[INDEX_p[ll]]++;
+tdiff[ll]+=0.0001;
+return;
 }
  
- 
-	presults = kd_nearest_range( ptree_______[INDEX_p[ll]], pt, radius );
+if(ptree_______[ll] == NULL)
+{
+ptree_______[ll] = kd_create( 3 );
+    			assert( 0 == kd_insert3( ptree_______[ll], state_result_worm_ventral[ll][j]->pos_new_x, state_result_worm_ventral[ll][j]->pos_new_y, state_result_worm_ventral[ll][j]->pos_new_z,NULL ) );
+ }
+	presults = kd_nearest_range( ptree_______[ll], pt, radius );
  
   	/* print out all the points found in results */
  // printf( "found %d results:\n", kd_res_size(presults) );
 
  
 	//state_result_worm_dorsal_feather[num]->totaln = kd_res_size(presults) ;
- 	  //printf( "found %d results:\n", kd_res_size(presults) );
+ 	 printf( "found %d results:\n", kd_res_size(presults) );
 
  
 
@@ -1317,12 +1372,23 @@ total_molekules_nearby = kd_res_size(presults);
  		// printf( "node at (%.3f, %.3f, %.3f) is %.3f away   \n", 
  		//    pos[0], pos[1], pos[2], dist  );
 
-                   INDEX_p[ll]  = find_index(c_m,state_result_worm_ventral,num,total_molekules_nearby,j);
-		 vel  = sqrtf(powf( state_result_worm_ventral[ll][j]->pos_new_x - state_result_worm_ventral[INDEX_p[ll]][j]->pos_new_x ,2.0) +  powf( state_result_worm_ventral[ll][j]->pos_new_y - 	state_result_worm_ventral[INDEX_p[ll]][j]->pos_new_y ,2.0)  + powf( state_result_worm_ventral[ll][j]->pos_new_z - state_result_worm_ventral[INDEX_p[ll]][j]->pos_new_z ,2.0  ));
+                 int INDEX___ = find_index(c_m,state_result_worm_ventral,ll,total_molekules_nearby,j);
+
+		totalneigbours[ll][j] =total_molekules_nearby;
+
+  //INDEX___ = find_index_____(c_m,state_result_worm_ventral,ll,vc,0);
+ // printf("INDEX = %d \n", INDEX);
+  //state_result_worm_ventral_feather[ll][vc].INDEX_NR = INDEX___;
+  //state_result_worm_ventral_feather[ll][vc].INDEX_NR = INDEX___;
+ 
+		 vel  = sqrtf(powf( state_result_worm_ventral[ll][j]->vel_new_x - state_result_worm_ventral[INDEX___][j]->vel_new_x ,2.0) +  powf( state_result_worm_ventral[ll][j]->vel_new_y - 	state_result_worm_ventral[INDEX___][j]->vel_new_y ,2.0)  + powf( state_result_worm_ventral[ll][j]->vel_new_z - state_result_worm_ventral[INDEX___][j]->vel_new_z ,2.0  ));
 		
 		// velt = sqrt( dist_sq( velt, pos, 3 ) );
 		 time__[vc] = (r_collision - dist)/vel;
 		totaltime[vc] = 	r_collision/vel;
+
+
+		disttime[vc] = 	dist/vel;
  //printf("destination node at (%.3f, %.3f, %.3f) \n", pos[0], pos[1],pos[2]);
   		//totalneigbours[num] = state_result_worm_ventral[num]->totaln;
 		// if(worm[num]->pos_new_x != pos[0])
@@ -1332,43 +1398,49 @@ total_molekules_nearby = kd_res_size(presults);
   		 neighbourV_water[vc][1]  = pos[1];
 		//  if(worm[num]->pos_new_z != pos[2])
    		 neighbourV_water[vc][2]  = pos[2];
-	 
+
+
+
+
    		vc++;
+
  		// INDEX = find_index_____(SIZE_OBJECT,worm,num,feather_count);
  		 //near_vector[num][feather_count].INDEX_NR = INDEX;
-	 	if(vc > 2)
-			break;
+	 	//if(vc > 2)
+		//	break;
 		
  
    		 kd_res_next( presults );
  	 
  
     	  }
-printf("time[0] = %f ::totaltime %f\n", time__[0],totaltime[0]);
+//printf("time[0] = %f ::totaltime %f\n", time__[0],totaltime[0]);
      for(int g = 1; g < total_molekules_nearby; ++g)
     {
        // Change < to > if you want to find the smallest element
        if(time__[0] > time__[g])
            time__[0] = time__[g];
     }
-	     for(int g = 1; g < total_molekules_nearby; ++g)
-    {
+//	     for(int g = 1; g < total_molekules_nearby; ++g)
+  //  {
        // Change < to > if you want to find the smallest element
-       if(totaltime[0] > totaltime[g])
-           totaltime[0] = totaltime[g];
-    }
+   //   if(totaltime[0] > totaltime[g])
+    //       totaltime[0] = totaltime[g];
+  //  }
 
-printf("time[0] = %f ::totaltime  %f:: ratio %f\n", time__[0],totaltime[0],totaltime[0]/ time__[0]);
+printf("time[0] = %f \n", time__[0] );
 
 
-ratiotime[INDEX_p[ll]] = totaltime[0]/ time__[0];
+ratiotime[ll] =   time__[0];
 	 
   // vc = 0;
    kd_res_free( presults );
-  if(tdiff[INDEX_p[ll]] > ratiotime[INDEX_p[ll]] )
-{
-   kd_free( ptree_______[INDEX_p[ll]] );
+ for( i=0; i<points; i++ ) {   
+
+ if(tdiff[i] == 0)
+   kd_free( ptree_______[i] );
 }
+ 
 }
 
 
@@ -1664,7 +1736,7 @@ void calc_fluid_velocity_drops_reflect(int ll, int j)
 		 */
 	//	if( fabs(xxxx) > 0 &&  fabs(xxxx) <0.7)
 	//	{
- 		findnearestpoint_3_points_water_pressure(c_m     ,   ll,0.2 , NULL ,ll,j);
+ 		findnearestpoint_3_points_water_pressure(c_m     ,   ll,0.05 , NULL ,ll,j);
 			/*double u_perpv[3];
 			double w_parv[3]; 
 			double * normal = malloc(10) ;
