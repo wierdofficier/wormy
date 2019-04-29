@@ -857,10 +857,10 @@ glTexGeni (GL_T, GL_TEXTURE_GEN_MODE, GL_SPHERE_MAP);
 
 cool_once = 0;
 }
-   glClearColor (1, 1, 1, 0);
+   //glClearColor (1, 1, 1, 0);
 glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-   glClearColor (1, 1, 1, 0);
+   //glClearColor (1, 1, 1, 0);
     glEnable(GL_TEXTURE_2D);
     glEnable(GL_COLOR_MATERIAL);
 glMatrixMode(GL_PROJECTION);
@@ -869,7 +869,7 @@ glLoadIdentity();
 glFrustum(-1.0, 1.0, -1.0, 1.0, 3.0, 25900.0);
 glMatrixMode(GL_MODELVIEW);
 glLoadIdentity();
-gluLookAt(cameraEye[0]+0, cameraEye[1]+250, cameraEye[2]+250  , cameraLookAt[0], cameraLookAt[1], cameraLookAt[2], cameraUp[0], cameraUp[1], cameraUp[2]);
+gluLookAt(cameraEye[0]+0, cameraEye[1]+150, cameraEye[2]+150  , cameraLookAt[0], cameraLookAt[1], cameraLookAt[2], cameraUp[0], cameraUp[1], cameraUp[2]);
 glTranslatef(1.0, 0.0, 0.0);
 
 //glRotatef(rotationX,1,0,0);
@@ -929,12 +929,12 @@ if(time_activate[INDEX_p[ll]] == 1)
 
 }*/
 glPushMatrix();
-glColor3f(1.0f, 0.5f, 1.0f);
+glColor3f(1.5f, 1.5f, 1.5f);
 	 glPolygonMode (GL_FRONT_AND_BACK, GL_FILL);
- glScalef(27,27,27);
+ glScalef(25,25,25);
   glTranslatef(state_result_worm_ventral[INDEX_NR___][kk]->pos_new_x-0,  state_result_worm_ventral[INDEX_NR___][kk]->pos_new_y+0,state_result_worm_ventral[INDEX_NR___][kk]->pos_new_z);
  // vDrawScene(state_result_worm_ventral,INDEX_NR___,kk);
-    glutSolidSphere(0.125,50,50  );
+    glutSolidSphere(0.07,20,20  );
 // glCallList(pipe);
 glPopMatrix();
 
@@ -980,14 +980,14 @@ glPushMatrix();
  glutPostRedisplay();
 //}
 }
-   for(int ll = 0; ll <  KvvVENTAL2; ll+=10233  )  
+   for(int ll = 0; ll <  KvvVENTAL2; ll+=1000  )  
 		  {
 glPushMatrix();
-glScalef(27,27,27);
+glScalef(25,25,25);
   glTranslatef(wall_info[ll]->pos_new_x, wall_info[ll]->pos_new_y,wall_info[ll]->pos_new_z);
 
 
- glutSolidSphere(0.005,12,12  );
+ glutSolidSphere(0.03,12,12  );
  glutPostRedisplay();
 glPopMatrix(); 
 }
@@ -1572,7 +1572,7 @@ void calc_fluid_velocity(int ll, int j)
 int vn = ll;
 	double distance_from_origin = sqrtf(powf( state_result_worm_ventral[ll][j]->pos_new_x - 0 ,2.0) +  powf( state_result_worm_ventral[ll][j]->pos_new_y -0 ,2.0)  + 		powf( state_result_worm_ventral[ll][j]->pos_new_z -0 ,2.0  ));
  
- if(( distance_from_origin) > 12 && distance_from_origin < 13)
+ if(( distance_from_origin) > 12.4 && distance_from_origin < 13)
  {
 
  
