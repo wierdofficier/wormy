@@ -455,6 +455,21 @@ int ll = 0;
 	}
 }
 
+
+
+int find_index (int NUM, struct state_vector **real[]  ,int num,int k, int howm )
+{
+int ll = 0;
+ 	while(ll < NUM)
+	{
+		if(state_result_worm_ventral[num][k]->pos_new_x ==real[ll][howm]->pos_new_x && state_result_worm_ventral[num][k]->pos_new_y ==real[ll][howm]->pos_new_y && 		state_result_worm_ventral[num][k]->pos_new_z ==real[ll][howm]->pos_new_z)
+		{
+			// printf("found index_____ @ %d \n", ll);
+			return ll;
+		}
+	ll++;
+	}
+}
 void *ptree;
   
 int ptreeonce = 1;
@@ -582,7 +597,7 @@ if(initonce==1)
 
 for(int kk = 0; kk < HOW_MANY_FLUIDS  ; kk++)
 	{
-	for(ll = 0; ll < SIZE_OBJECT  ; ll+=1000  )
+	for(ll = 0; ll < SIZE_OBJECT  ; ll+=122    )
 	{
 		  v= (Vec3 *)(V + 3*(KvvVENTALA[ll]-1));
          	  state_result_worm_ventral[c_m][kk]->pos_new_x = v->x+kk*10 ;
@@ -834,9 +849,10 @@ glTexGeni (GL_T, GL_TEXTURE_GEN_MODE, GL_SPHERE_MAP);
 
 cool_once = 0;
 }
+   glClearColor (1, 1, 1, 0);
 glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-   //glClearColor (1, 1, 1, 0);
+   glClearColor (1, 1, 1, 0);
     glEnable(GL_TEXTURE_2D);
     glEnable(GL_COLOR_MATERIAL);
 glMatrixMode(GL_PROJECTION);
@@ -845,8 +861,11 @@ glLoadIdentity();
 glFrustum(-1.0, 1.0, -1.0, 1.0, 3.0, 25900.0);
 glMatrixMode(GL_MODELVIEW);
 glLoadIdentity();
-gluLookAt(cameraEye[0]+0, cameraEye[1]+253, cameraEye[2]+223  , cameraLookAt[0], cameraLookAt[1], cameraLookAt[2], cameraUp[0], cameraUp[1], cameraUp[2]);
+gluLookAt(cameraEye[0]+0, cameraEye[1]+250, cameraEye[2]+250  , cameraLookAt[0], cameraLookAt[1], cameraLookAt[2], cameraUp[0], cameraUp[1], cameraUp[2]);
 glTranslatef(1.0, 0.0, 0.0);
+
+//glRotatef(rotationX,1,0,0);
+//glRotatef(rotationY+90,0,1,0);
  //for(int kk = 0; kk <   HOW_MANY_FLUIDS; kk++)  
 	//	  {
 int kk = 0;
@@ -866,12 +885,12 @@ int INDEX_NR___ =  (state_result_worm_ventral_feather[ll][kk].INDEX_NR);
        calc_fluid_acceleration(INDEX_NR___,kk);
 
 glPushMatrix();
-glColor3f(1.0f, 255.0f, 0.0f);
+glColor3f(1.0f, 0.5f, 1.0f);
 	 glPolygonMode (GL_FRONT_AND_BACK, GL_FILL);
  glScalef(27,27,27);
   glTranslatef(state_result_worm_ventral[INDEX_NR___][kk]->pos_new_x-0,  state_result_worm_ventral[INDEX_NR___][kk]->pos_new_y+0,state_result_worm_ventral[INDEX_NR___][kk]->pos_new_z);
  // vDrawScene(state_result_worm_ventral,INDEX_NR___,kk);
-    glutSolidSphere(0.35,25,25  );
+    glutSolidSphere(0.125,50,50  );
 // glCallList(pipe);
 glPopMatrix();
 
@@ -917,7 +936,7 @@ glPushMatrix();
  glutPostRedisplay();
 //}
 }
-   for(int ll = 0; ll <  1; ll+=1)  
+   for(int ll = 0; ll <  KvvVENTAL2; ll+=10233  )  
 		  {
 glPushMatrix();
 glScalef(27,27,27);
@@ -1233,42 +1252,52 @@ free(pt);
 
 }
 
-
-
-
-
-
+double tdiff[100000] ;
+double ratiotime[100000];
+int INDEX_p[100000];
+double totaltime[100000];
+ double time__[100000];
+	void *ptree_______[100000];
 
 void findnearestpoint_3_points_water_pressure(int points , int num,double r_collision, double **vvv,int ll, int j )
 {
 	int i, num_pts ;
- 
+
 	char  *pch;
 	struct kdres *presults;
-	double pos[3], dist;
+	
+	double pos[3], dist,vel;
 	double pt[3] = { state_result_worm_ventral[ll][j]->pos_new_x,state_result_worm_ventral[ll][j]->pos_new_y, state_result_worm_ventral[ll][j]->pos_new_z };
+	double velt[3] = { state_result_worm_ventral[ll][j]->vel_new_x,state_result_worm_ventral[ll][j]->vel_new_y, state_result_worm_ventral[ll][j]->vel_new_z };
 	double radius = r_collision;
  
 	num_pts =SIZE_OBJECT;
 
- 	void *ptree_______;
+ 
 
-  
-		ptree_______ = kd_create( 3 );
+  if(tdiff[INDEX_p[ll]] > ratiotime[INDEX_p[ll]] )
+{
+		ptree_______[INDEX_p[ll]] = kd_create( 3 );
  
   		for( i=0; i<points; i++ ) {   
-			//       printf("target node at (%.3f, %.3f, %.3f) \n", wall_info[i]->pos_new_x, wall_info[i]->pos_new_y,wall_info[i]->pos_new_z);
-    			assert( 0 == kd_insert3( ptree_______, state_result_worm_ventral[i][j]->pos_new_x, state_result_worm_ventral[i][j]->pos_new_y, state_result_worm_ventral[i][j]->pos_new_z, NULL ) );
+			      //  printf("target node at number %d \n", i);
+    			assert( 0 == kd_insert3( ptree_______[INDEX_p[ll]], state_result_worm_ventral[i][j]->pos_new_x, state_result_worm_ventral[i][j]->pos_new_y, state_result_worm_ventral[i][j]->pos_new_z, NULL ) );
 
  
-	 
+	 }
+
 	}
+else
+{
+
+tdiff[INDEX_p[ll]]++;
+}
  
  
-	presults = kd_nearest_range( ptree_______, pt, radius );
+	presults = kd_nearest_range( ptree_______[INDEX_p[ll]], pt, radius );
  
   	/* print out all the points found in results */
-	//  printf( "found %d results:\n", kd_res_size(presults) );
+ // printf( "found %d results:\n", kd_res_size(presults) );
 
  
 	//state_result_worm_dorsal_feather[num]->totaln = kd_res_size(presults) ;
@@ -1277,17 +1306,23 @@ void findnearestpoint_3_points_water_pressure(int points , int num,double r_coll
  
 
 total_molekules_nearby = kd_res_size(presults);
-      /*  int vc = 0;
-    //   printf("source node at (%.3f, %.3f, %.3f) \n", pt[0], pt[1],pt[2]);
+        int vc = 0;
+  // printf("source node at (%.3f, %.3f, %.3f) \n", pt[0], pt[1],pt[2]);
         while( !kd_res_end( presults ) ) {
    
 		pch = (char*)kd_res_item( presults, pos ); 
-    		//dist = sqrt( dist_sq( pt, pos, 3 ) );
+    		 dist = sqrt( dist_sq( pt, pos, 3 ) );
 
 		 // if(worm[num]->pos_new_x != pos[0])
- 		 // printf( "node at (%.3f, %.3f, %.3f) is %.3f away   \n", 
- 		 //    pos[0], pos[1], pos[2], dist  );
-	
+ 		// printf( "node at (%.3f, %.3f, %.3f) is %.3f away   \n", 
+ 		//    pos[0], pos[1], pos[2], dist  );
+
+                   INDEX_p[ll]  = find_index(c_m,state_result_worm_ventral,num,total_molekules_nearby,j);
+		 vel  = sqrtf(powf( state_result_worm_ventral[ll][j]->pos_new_x - state_result_worm_ventral[INDEX_p[ll]][j]->pos_new_x ,2.0) +  powf( state_result_worm_ventral[ll][j]->pos_new_y - 	state_result_worm_ventral[INDEX_p[ll]][j]->pos_new_y ,2.0)  + powf( state_result_worm_ventral[ll][j]->pos_new_z - state_result_worm_ventral[INDEX_p[ll]][j]->pos_new_z ,2.0  ));
+		
+		// velt = sqrt( dist_sq( velt, pos, 3 ) );
+		 time__[vc] = (r_collision - dist)/vel;
+		totaltime[vc] = 	r_collision/vel;
  //printf("destination node at (%.3f, %.3f, %.3f) \n", pos[0], pos[1],pos[2]);
   		//totalneigbours[num] = state_result_worm_ventral[num]->totaln;
 		// if(worm[num]->pos_new_x != pos[0])
@@ -1309,12 +1344,31 @@ total_molekules_nearby = kd_res_size(presults);
  	 
  
     	  }
-    */
+printf("time[0] = %f ::totaltime %f\n", time__[0],totaltime[0]);
+     for(int g = 1; g < total_molekules_nearby; ++g)
+    {
+       // Change < to > if you want to find the smallest element
+       if(time__[0] > time__[g])
+           time__[0] = time__[g];
+    }
+	     for(int g = 1; g < total_molekules_nearby; ++g)
+    {
+       // Change < to > if you want to find the smallest element
+       if(totaltime[0] > totaltime[g])
+           totaltime[0] = totaltime[g];
+    }
 
+printf("time[0] = %f ::totaltime  %f:: ratio %f\n", time__[0],totaltime[0],totaltime[0]/ time__[0]);
+
+
+ratiotime[INDEX_p[ll]] = totaltime[0]/ time__[0];
+	 
   // vc = 0;
    kd_res_free( presults );
-   kd_free( ptree_______ );
-
+  if(tdiff[INDEX_p[ll]] > ratiotime[INDEX_p[ll]] )
+{
+   kd_free( ptree_______[INDEX_p[ll]] );
+}
 }
 
 
@@ -1610,7 +1664,7 @@ void calc_fluid_velocity_drops_reflect(int ll, int j)
 		 */
 	//	if( fabs(xxxx) > 0 &&  fabs(xxxx) <0.7)
 	//	{
- 		findnearestpoint_3_points_water_pressure(c_m     ,   ll,0.7 , NULL ,ll,j);
+ 		findnearestpoint_3_points_water_pressure(c_m     ,   ll,0.2 , NULL ,ll,j);
 			/*double u_perpv[3];
 			double w_parv[3]; 
 			double * normal = malloc(10) ;
