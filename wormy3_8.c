@@ -21,6 +21,7 @@
 #include "noise.h"
 int c_m = 0;
 int once_pos =1;
+int k_flappers = 0;
 int INDEX_p[100000];
 double time_particle[100000];
 double dist__first[100000];
@@ -40,11 +41,11 @@ int pipe = 0;
 #include <stdbool.h>
 extern int KvvVENTAL2;
   struct state_vector  ** wall_info ; 
-double  neighbourV_[10000*2][10000] ;
+double  neighbourV_[600000*2][11] ;
 double  neighbourV_m[1000][100] ;
 double  neighbourV_water[1000][100] ;
- double acc2_fluid[3][4000 ][4000] ;
-double water_radius =0.0000502;
+ double acc2_fluid[3][600000 ][12][10] ;
+double water_radius =0.00005;
 int alloc_once = 1;
 double density =   1000.0;
 double viscous_constant = 1.6735;
@@ -61,12 +62,12 @@ float springlength =  9.4/1.0;
 float fovy = 45.0;
 float dNear = 100;
 float dFar = 2000;
-double F_total[3][SIZE_OBJECT*2][HOW_MANY_FLUIDS] ;
+double F_total[3][SIZE_OBJECT*2][HOW_MANY_FLUIDS][10] ;
 int totalneigbours[SIZE_OBJECT*2][HOW_MANY_FLUIDS] ;
 float     vertexpoint_g_ventral[SIZE_OBJECT][3];
 struct state_vector * springVector;
-struct state_vector ** state_result_worm_ventral_feather;
-struct state_vector ** reall;
+struct state_vector *** state_result_worm_ventral_feather;
+struct state_vector *** reall;
 struct state_vector  *** state_result_worm_ventral ;
 extern int KvvVENTALA[SIZE_OBJECT*8];
 int llll = 0;
@@ -97,10 +98,10 @@ float rotationY=0.0;
 
 void rates_dorsal ( double *t, double *f, double result[]   );
 void key(unsigned char key, int x, int y);
-int findnearestpoint(int points,struct state_vector *** worm , int num,int howmany,int kk);
+int findnearestpoint(int points,struct state_vector   *   worm , int num,int howmany,int kk, int xxx);
 void display  (void);
-struct state_vector   *   worm_ventral(struct state_vector     *  next_state, int num );
-double length (struct state_vector *a,struct state_vector *b ) { return sqrtf ( b->pos_new_x*a->pos_new_x + b->pos_new_y*a->pos_new_y + b->pos_new_z*a->pos_new_z); }
+struct state_vector       worm_ventral(struct state_vector       next_state, int num );
+double length (struct state_vector  a,struct state_vector  b ) { return sqrtf ( b.pos_new_x*a.pos_new_x + b.pos_new_y*a.pos_new_y + b.pos_new_z*a.pos_new_z); }
 static double dist_sq( double *a1, double *a2, int dims ) {
   double dist_sq = 0, diff;
   while( --dims >= 0 ) {
@@ -245,16 +246,17 @@ void reshape(int w, int h){
 } 
 int howmanyfluids_g;
 int acc1once= 1;
-void taskworm(int howmanyfluids, int kkkkkkkk )
+void taskworm(int howmanyfluids, int kkkkkkkk, int xxx )
 {
 llll = kkkkkkkk;
 howmanyfluids_g =howmanyfluids;
-int k;
+k_flappers = xxx;
+int k = xxx;
 
-findnearestpoint_3_points_water_pressure(c_m      ,   llll, .065 , NULL ,llll,howmanyfluids);
+findnearestpoint_3_points_water_pressure(c_m      ,   llll, .065 , NULL ,llll,howmanyfluids,xxx);
  //findnearestpoint(c_m  ,state_result_worm_ventral,llll,1,0 );
-for(k = 0; k <= totalneigbours[llll][0]; k++)
-{	// m*a = -k*s
+//for(k = 0; k <= totalneigbours[llll][howmanyfluids_g]; k++)
+//{	// m*a = -k*s
  	//10*a= -k * 0.004 solve k
 if(acc1once == 0)
 	{
@@ -267,74 +269,74 @@ if(acc1once == 0)
 	}
 acc1once = 0;	
 	// printf("1totalneigbours[llll]  %d :: number %d :: index_____ = %d\n",totalneigbours[llll],llll,INDEX_NR);
-	INDEX_NR =  (state_result_worm_ventral_feather[llll][k].INDEX_NR);
+	INDEX_NR =   state_result_worm_ventral_feather[llll][k][howmanyfluids].INDEX_NR ;
 	
 if(  INDEX_NR > 0  )
 {
-	//if(state_result_worm_ventral[INDEX_NR][howmanyfluids]->force_sign != -1 && state_result_worm_ventral[INDEX_NR][howmanyfluids]->force_sign != 1 && INDEX_NR >0)
+	//if(state_result_worm_ventral[INDEX_NR][k][howmanyfluids].force_sign != -1 && state_result_worm_ventral[INDEX_NR][k][howmanyfluids].force_sign != 1 && INDEX_NR >0)
 	//{
 		 if(feather_once == FIRST && INDEX_NR > 0)
 		{	
 
-						 if(fabs(F_total[0][INDEX_NR][howmanyfluids]) > 21 )
-	 				 	  F_total[0][INDEX_NR][howmanyfluids] =0;
+						 if(fabs(F_total[0][INDEX_NR][howmanyfluids][k]) > 21 )
+	 				 	  F_total[0][INDEX_NR][howmanyfluids][k] =0;
  
-		 		 if(fabs(F_total[1][INDEX_NR][howmanyfluids])  > 21)
-						F_total[1][INDEX_NR][howmanyfluids] =0;
+		 		 if(fabs(F_total[1][INDEX_NR][howmanyfluids][k])  > 21)
+						F_total[1][INDEX_NR][howmanyfluids][k] =0;
 
-			 	 if(fabs(F_total[2][INDEX_NR][howmanyfluids])  > 21)
-						F_total[2][INDEX_NR][howmanyfluids] =0;
+			 	 if(fabs(F_total[2][INDEX_NR][howmanyfluids][k])  > 21)
+						F_total[2][INDEX_NR][howmanyfluids][k] =0;
   //printf("2totalneigbours[llll]  %d :: number %d :: index_____ = %d\n",totalneigbours[llll],llll,INDEX_NR);
-		springVector->pos_new_x = state_result_worm_ventral[INDEX_NR][howmanyfluids]->pos_new_x - state_result_worm_ventral[llll][howmanyfluids]->pos_new_x;
-		springVector->pos_new_y = state_result_worm_ventral[INDEX_NR][howmanyfluids]->pos_new_y - state_result_worm_ventral[llll][howmanyfluids]->pos_new_y;
-		springVector->pos_new_z = state_result_worm_ventral[INDEX_NR][howmanyfluids]->pos_new_z - state_result_worm_ventral[llll][howmanyfluids]->pos_new_z;
+		springVector->pos_new_x = state_result_worm_ventral[INDEX_NR][k][howmanyfluids].pos_new_x - state_result_worm_ventral[llll][k][howmanyfluids].pos_new_x;
+		springVector->pos_new_y = state_result_worm_ventral[INDEX_NR][k][howmanyfluids].pos_new_y - state_result_worm_ventral[llll][k][howmanyfluids].pos_new_y;
+		springVector->pos_new_z = state_result_worm_ventral[INDEX_NR][k][howmanyfluids].pos_new_z - state_result_worm_ventral[llll][k][howmanyfluids].pos_new_z;
  
 
-		float r = length(state_result_worm_ventral[INDEX_NR][howmanyfluids],state_result_worm_ventral[llll][howmanyfluids]);
+		float r = length(state_result_worm_ventral[INDEX_NR][k][howmanyfluids],state_result_worm_ventral[llll][k][howmanyfluids]);
 
-		if ( r != 0  &&   r < 50  )
+		if ( r != 0  &&   r < 40  )
 		{			
-			F_total[0][INDEX_NR][howmanyfluids] +=( springVector->pos_new_x  /  r ) * ( r - springlength ) * ( -springConstant );
-			F_total[1][INDEX_NR][howmanyfluids] += ( springVector->pos_new_y /  r ) * ( r - springlength ) * ( -springConstant );
-			F_total[2][INDEX_NR][howmanyfluids] +=( springVector->pos_new_z  /  r ) * ( r - springlength ) * ( -springConstant );
+			F_total[0][INDEX_NR][howmanyfluids][k] +=( springVector->pos_new_x  /  r ) * ( r - springlength ) * ( -springConstant );
+			F_total[1][INDEX_NR][howmanyfluids][k] += ( springVector->pos_new_y /  r ) * ( r - springlength ) * ( -springConstant );
+			F_total[2][INDEX_NR][howmanyfluids][k] +=( springVector->pos_new_z  /  r ) * ( r - springlength ) * ( -springConstant );
 
-			F_total[0][llll][howmanyfluids] +=( springVector->pos_new_x  / r ) * ( r - springlength ) * ( -springConstant );
-			F_total[1][llll][howmanyfluids] += ( springVector->pos_new_y  / r ) * ( r - springlength) * ( -springConstant );
-			F_total[2][llll][howmanyfluids] +=( springVector->pos_new_z  / r ) * ( r - springlength ) * ( -springConstant );
+			F_total[0][llll][howmanyfluids][k] +=( springVector->pos_new_x  / r ) * ( r - springlength ) * ( -springConstant );
+			F_total[1][llll][howmanyfluids][k] += ( springVector->pos_new_y  / r ) * ( r - springlength) * ( -springConstant );
+			F_total[2][llll][howmanyfluids][k] +=( springVector->pos_new_z  / r ) * ( r - springlength ) * ( -springConstant );
 
-F_total[0][INDEX_NR][howmanyfluids] +=-(  state_result_worm_ventral[INDEX_NR][howmanyfluids]->vel_new_x - state_result_worm_ventral[llll][howmanyfluids]->vel_new_x ) * frictionConstant;
- 		F_total[1][INDEX_NR][howmanyfluids] += -( state_result_worm_ventral[INDEX_NR][howmanyfluids]->vel_new_y- state_result_worm_ventral[llll][howmanyfluids]->vel_new_y ) * frictionConstant;
- 		F_total[2][INDEX_NR][howmanyfluids] += -(  state_result_worm_ventral[INDEX_NR][howmanyfluids]->vel_new_z - state_result_worm_ventral[llll ][howmanyfluids]->vel_new_z ) * frictionConstant;
+F_total[0][INDEX_NR][howmanyfluids][k] +=-(  state_result_worm_ventral[INDEX_NR][k][howmanyfluids].vel_new_x - state_result_worm_ventral[llll][k][howmanyfluids].vel_new_x ) * frictionConstant;
+ 		F_total[1][INDEX_NR][howmanyfluids][k] += -( state_result_worm_ventral[INDEX_NR][k][howmanyfluids].vel_new_y- state_result_worm_ventral[llll][k][howmanyfluids].vel_new_y ) * frictionConstant;
+ 		F_total[2][INDEX_NR][howmanyfluids][k] += -(  state_result_worm_ventral[INDEX_NR][k][howmanyfluids].vel_new_z - state_result_worm_ventral[llll ][k][howmanyfluids].vel_new_z ) * frictionConstant;
 
 
-		F_total[0][llll][howmanyfluids] +=-(  state_result_worm_ventral[INDEX_NR][howmanyfluids]->vel_new_x - state_result_worm_ventral[llll][howmanyfluids]->vel_new_x ) * frictionConstant;
- 		F_total[1][llll][howmanyfluids] += -( state_result_worm_ventral[INDEX_NR][howmanyfluids]->vel_new_y- state_result_worm_ventral[llll][howmanyfluids]->vel_new_y ) * frictionConstant;
- 		F_total[2][llll][howmanyfluids] += -(  state_result_worm_ventral[INDEX_NR][howmanyfluids]->vel_new_z - state_result_worm_ventral[llll ][howmanyfluids]->vel_new_z ) * frictionConstant;
-	 	state_result_worm_ventral[llll][howmanyfluids]->vel_new_x = state_result_worm_ventral[llll][howmanyfluids]->vel_new_x*0.995 ;
+		F_total[0][llll][howmanyfluids][k] +=-(  state_result_worm_ventral[INDEX_NR][k][howmanyfluids].vel_new_x - state_result_worm_ventral[llll][k][howmanyfluids].vel_new_x ) * frictionConstant;
+ 		F_total[1][llll][howmanyfluids][k] += -( state_result_worm_ventral[INDEX_NR][k][howmanyfluids].vel_new_y- state_result_worm_ventral[llll][k][howmanyfluids].vel_new_y ) * frictionConstant;
+ 		F_total[2][llll][howmanyfluids][k] += -(  state_result_worm_ventral[INDEX_NR][k][howmanyfluids].vel_new_z - state_result_worm_ventral[llll ][k][howmanyfluids].vel_new_z ) * frictionConstant;
+	 	state_result_worm_ventral[llll][k][howmanyfluids].vel_new_x = state_result_worm_ventral[llll][k][howmanyfluids].vel_new_x*0.995 ;
 		
-		state_result_worm_ventral[llll][howmanyfluids]->vel_new_y = state_result_worm_ventral[llll][howmanyfluids]->vel_new_y*0.995 ;
+		state_result_worm_ventral[llll][k][howmanyfluids].vel_new_y = state_result_worm_ventral[llll][k][howmanyfluids].vel_new_y*0.995 ;
 
-		state_result_worm_ventral[llll][howmanyfluids]->vel_new_z = state_result_worm_ventral[llll][howmanyfluids]->vel_new_z*0.995 ;
+		state_result_worm_ventral[llll][k][howmanyfluids].vel_new_z = state_result_worm_ventral[llll][k][howmanyfluids].vel_new_z*0.995 ;
 
-		state_result_worm_ventral[INDEX_NR][howmanyfluids]->vel_new_x = state_result_worm_ventral[INDEX_NR][howmanyfluids]->vel_new_x*0.995 ;
+		state_result_worm_ventral[INDEX_NR][k][howmanyfluids].vel_new_x = state_result_worm_ventral[INDEX_NR][k][howmanyfluids].vel_new_x*0.995 ;
 		
-		state_result_worm_ventral[INDEX_NR][howmanyfluids]->vel_new_y = state_result_worm_ventral[INDEX_NR][howmanyfluids]->vel_new_y*0.995 ;
-		state_result_worm_ventral[INDEX_NR][howmanyfluids]->vel_new_z = state_result_worm_ventral[INDEX_NR][howmanyfluids]->vel_new_z*0.995 ; 
+		state_result_worm_ventral[INDEX_NR][k][howmanyfluids].vel_new_y = state_result_worm_ventral[INDEX_NR][k][howmanyfluids].vel_new_y*0.995 ;
+		state_result_worm_ventral[INDEX_NR][k][howmanyfluids].vel_new_z = state_result_worm_ventral[INDEX_NR][k][howmanyfluids].vel_new_z*0.995 ; 
 		}
 
 		
 
-		state_result_worm_ventral[INDEX_NR][howmanyfluids]->force_sign =  -1;
-		state_result_worm_ventral[INDEX_NR][howmanyfluids]    =  worm_ventral(  state_result_worm_ventral[INDEX_NR][howmanyfluids] ,1) ;
+		state_result_worm_ventral[INDEX_NR][k][howmanyfluids].force_sign =  -1;
+		state_result_worm_ventral[INDEX_NR][k][howmanyfluids]    =  worm_ventral(   state_result_worm_ventral[INDEX_NR][k][howmanyfluids] ,1) ;
 
-		state_result_worm_ventral[llll][howmanyfluids]->force_sign =   1; ; 
-		state_result_worm_ventral[llll][howmanyfluids]    =  worm_ventral(  state_result_worm_ventral[llll][howmanyfluids] ,1);
+		state_result_worm_ventral[llll][k][howmanyfluids].force_sign =   1; ; 
+		state_result_worm_ventral[llll][k][howmanyfluids]    =  worm_ventral(   state_result_worm_ventral[llll][k][howmanyfluids] ,1);
 		
 
 
  
 
-	for(int d = 0; d <= totalneigbours[llll][0]; d++)
+	for(int d = 0; d <= totalneigbours[llll][howmanyfluids]; d++)
 	{	 
 		
 		if(d == k  )
@@ -342,78 +344,78 @@ F_total[0][INDEX_NR][howmanyfluids] +=-(  state_result_worm_ventral[INDEX_NR][ho
 
  
    // state_result_worm_ventral_feather[llll][d].INDEX_NR = find_index_____(SIZE_OBJECT,state_result_worm_ventral_feather,llll,d);
-INDEX_NRmore = state_result_worm_ventral_feather[llll][d].INDEX_NR;
+INDEX_NRmore = state_result_worm_ventral_feather[llll][d][howmanyfluids].INDEX_NR;
  
 
 		 
 
  
 
-				 if(fabs(F_total[0][INDEX_NRmore][howmanyfluids]) > 21 )
-	 				  F_total[0][INDEX_NRmore][howmanyfluids] =0;
+				 if(fabs(F_total[0][INDEX_NRmore][howmanyfluids][k]) > 21 )
+	 				  F_total[0][INDEX_NRmore][howmanyfluids][k] =0;
  
-		 		 if(fabs(F_total[1][INDEX_NRmore][howmanyfluids])  > 21)
-					  F_total[1][INDEX_NRmore][howmanyfluids] =0;
+		 		 if(fabs(F_total[1][INDEX_NRmore][howmanyfluids][k])  > 21)
+					  F_total[1][INDEX_NRmore][howmanyfluids][k] =0;
 
-			 	 if(fabs(F_total[2][INDEX_NRmore][howmanyfluids])  > 21)
-					  F_total[2][INDEX_NRmore][howmanyfluids] =0;
+			 	 if(fabs(F_total[2][INDEX_NRmore][howmanyfluids][k])  > 21)
+					  F_total[2][INDEX_NRmore][howmanyfluids][k] =0;
 			
 
- 				if(fabs(F_total[0][INDEX_NR][howmanyfluids]) > 21 )
-	 				  F_total[0][INDEX_NR][howmanyfluids] =0;
+ 				if(fabs(F_total[0][INDEX_NR][howmanyfluids][k]) > 21 )
+	 				  F_total[0][INDEX_NR][howmanyfluids][k] =0;
  
-		 		 if(fabs(F_total[1][INDEX_NR][howmanyfluids])  > 21)
-					  F_total[1][INDEX_NR][howmanyfluids] =0;
+		 		 if(fabs(F_total[1][INDEX_NR][howmanyfluids][k])  > 21)
+					  F_total[1][INDEX_NR][howmanyfluids][k] =0;
 
-			 	 if(fabs(F_total[2][INDEX_NR][howmanyfluids])  > 21)
-					  F_total[2][INDEX_NR][howmanyfluids] =0;
+			 	 if(fabs(F_total[2][INDEX_NR][howmanyfluids][k])  > 21)
+					  F_total[2][INDEX_NR][howmanyfluids][k] =0;
 			
-		springVector->pos_new_x = state_result_worm_ventral[INDEX_NR][howmanyfluids]->pos_new_x - state_result_worm_ventral[INDEX_NRmore][howmanyfluids]->pos_new_x;
-		springVector->pos_new_y = state_result_worm_ventral[INDEX_NR][howmanyfluids]->pos_new_y - state_result_worm_ventral[INDEX_NRmore][howmanyfluids]->pos_new_y;
-		springVector->pos_new_z = state_result_worm_ventral[INDEX_NR][howmanyfluids]->pos_new_z - state_result_worm_ventral[INDEX_NRmore][howmanyfluids]->pos_new_z;
+		springVector->pos_new_x = state_result_worm_ventral[INDEX_NR][k][howmanyfluids].pos_new_x - state_result_worm_ventral[INDEX_NRmore][k][howmanyfluids].pos_new_x;
+		springVector->pos_new_y = state_result_worm_ventral[INDEX_NR][k][howmanyfluids].pos_new_y - state_result_worm_ventral[INDEX_NRmore][k][howmanyfluids].pos_new_y;
+		springVector->pos_new_z = state_result_worm_ventral[INDEX_NR][k][howmanyfluids].pos_new_z - state_result_worm_ventral[INDEX_NRmore][k][howmanyfluids].pos_new_z;
  			
 
-		float r = length(state_result_worm_ventral[INDEX_NR][howmanyfluids],state_result_worm_ventral[INDEX_NRmore][howmanyfluids]);
+		float r = length(state_result_worm_ventral[INDEX_NR][k][howmanyfluids],state_result_worm_ventral[INDEX_NRmore][k][howmanyfluids]);
 
-		if ( r != 0  &&   r < 50    )
+		if ( r != 0  &&   r < 40    )
 		{	
 	//	 printf("1totalneigbours[llll]  %d :: number %d :: index_____ = %d\n",totalneigbours[llll],llll,INDEX_NRmore);	
-			F_total[0][INDEX_NR][howmanyfluids] +=( springVector->pos_new_x  /  r ) * ( r - springlength ) * ( -springConstant );
-			F_total[1][INDEX_NR][howmanyfluids] += ( springVector->pos_new_y /  r ) * ( r - springlength ) * ( -springConstant );
-			F_total[2][INDEX_NR][howmanyfluids] +=( springVector->pos_new_z  /  r ) * ( r - springlength ) * ( -springConstant );
+			F_total[0][INDEX_NR][howmanyfluids][k] +=( springVector->pos_new_x  /  r ) * ( r - springlength ) * ( -springConstant );
+			F_total[1][INDEX_NR][howmanyfluids][k] += ( springVector->pos_new_y /  r ) * ( r - springlength ) * ( -springConstant );
+			F_total[2][INDEX_NR][howmanyfluids][k] +=( springVector->pos_new_z  /  r ) * ( r - springlength ) * ( -springConstant );
 
-			F_total[0][INDEX_NRmore][howmanyfluids] +=( springVector->pos_new_x  / r ) * ( r - springlength ) * ( -springConstant );
-			F_total[1][INDEX_NRmore][howmanyfluids] += ( springVector->pos_new_y  / r ) * ( r - springlength) * ( -springConstant );
-			F_total[2][INDEX_NRmore][howmanyfluids] +=( springVector->pos_new_z  / r ) * ( r - springlength ) * ( -springConstant );
+			F_total[0][INDEX_NRmore][howmanyfluids][k] +=( springVector->pos_new_x  / r ) * ( r - springlength ) * ( -springConstant );
+			F_total[1][INDEX_NRmore][howmanyfluids][k] += ( springVector->pos_new_y  / r ) * ( r - springlength) * ( -springConstant );
+			F_total[2][INDEX_NRmore][howmanyfluids][k] +=( springVector->pos_new_z  / r ) * ( r - springlength ) * ( -springConstant );
 
-		F_total[0][INDEX_NR][howmanyfluids] +=-(  state_result_worm_ventral[INDEX_NR][howmanyfluids]->vel_new_x - state_result_worm_ventral[INDEX_NRmore][howmanyfluids]->vel_new_x ) * frictionConstant;
- 		F_total[1][INDEX_NR][howmanyfluids] += -( state_result_worm_ventral[INDEX_NR][howmanyfluids]->vel_new_y- state_result_worm_ventral[INDEX_NRmore][howmanyfluids]->vel_new_y ) * frictionConstant;
- 		F_total[2][INDEX_NR][howmanyfluids] += -(  state_result_worm_ventral[INDEX_NR][howmanyfluids]->vel_new_z - state_result_worm_ventral[INDEX_NRmore ][howmanyfluids]->vel_new_z ) * frictionConstant;
+		F_total[0][INDEX_NR][howmanyfluids][k] +=-(  state_result_worm_ventral[INDEX_NR][k][howmanyfluids].vel_new_x - state_result_worm_ventral[INDEX_NRmore][k][howmanyfluids].vel_new_x ) * frictionConstant;
+ 		F_total[1][INDEX_NR][howmanyfluids][k] += -( state_result_worm_ventral[INDEX_NR][k][howmanyfluids].vel_new_y- state_result_worm_ventral[INDEX_NRmore][k][howmanyfluids].vel_new_y ) * frictionConstant;
+ 		F_total[2][INDEX_NR][howmanyfluids][k] += -(  state_result_worm_ventral[INDEX_NR][k][howmanyfluids].vel_new_z - state_result_worm_ventral[INDEX_NRmore ][k][howmanyfluids].vel_new_z ) * frictionConstant;
 
 
-		F_total[0][INDEX_NRmore][howmanyfluids] +=-(  state_result_worm_ventral[INDEX_NR][howmanyfluids]->vel_new_x - state_result_worm_ventral[INDEX_NRmore][howmanyfluids]->vel_new_x ) * frictionConstant;
- 		F_total[1][INDEX_NRmore][howmanyfluids] += -( state_result_worm_ventral[INDEX_NR][howmanyfluids]->vel_new_y- state_result_worm_ventral[INDEX_NRmore][howmanyfluids]->vel_new_y ) * frictionConstant;
- 		F_total[2][INDEX_NRmore][howmanyfluids] += -(  state_result_worm_ventral[INDEX_NR][howmanyfluids]->vel_new_z - state_result_worm_ventral[INDEX_NRmore ][howmanyfluids]->vel_new_z ) * frictionConstant;
+		F_total[0][INDEX_NRmore][howmanyfluids][k] +=-(  state_result_worm_ventral[INDEX_NR][k][howmanyfluids].vel_new_x - state_result_worm_ventral[INDEX_NRmore][k][howmanyfluids].vel_new_x ) * frictionConstant;
+ 		F_total[1][INDEX_NRmore][howmanyfluids][k] += -( state_result_worm_ventral[INDEX_NR][k][howmanyfluids].vel_new_y- state_result_worm_ventral[INDEX_NRmore][k][howmanyfluids].vel_new_y ) * frictionConstant;
+ 		F_total[2][INDEX_NRmore][howmanyfluids][k] += -(  state_result_worm_ventral[INDEX_NR][k][howmanyfluids].vel_new_z - state_result_worm_ventral[INDEX_NRmore ][k][howmanyfluids].vel_new_z ) * frictionConstant;
 
-		 state_result_worm_ventral[INDEX_NRmore][howmanyfluids]->vel_new_x = state_result_worm_ventral[INDEX_NRmore][howmanyfluids]->vel_new_x*0.995 ;
+		 state_result_worm_ventral[INDEX_NRmore][k][howmanyfluids].vel_new_x = state_result_worm_ventral[INDEX_NRmore][k][howmanyfluids].vel_new_x*0.995 ;
 		
-		state_result_worm_ventral[INDEX_NRmore][howmanyfluids]->vel_new_y = state_result_worm_ventral[INDEX_NRmore][howmanyfluids]->vel_new_y*0.995 ;
+		state_result_worm_ventral[INDEX_NRmore][k][howmanyfluids].vel_new_y = state_result_worm_ventral[INDEX_NRmore][k][howmanyfluids].vel_new_y*0.995 ;
 
-		state_result_worm_ventral[INDEX_NRmore][howmanyfluids]->vel_new_z = state_result_worm_ventral[INDEX_NRmore][howmanyfluids]->vel_new_z*0.995 ;
+		state_result_worm_ventral[INDEX_NRmore][k][howmanyfluids].vel_new_z = state_result_worm_ventral[INDEX_NRmore][k][howmanyfluids].vel_new_z*0.995 ;
 
-		state_result_worm_ventral[INDEX_NR][howmanyfluids]->vel_new_x = state_result_worm_ventral[INDEX_NR][howmanyfluids]->vel_new_x*0.995 ;
+		state_result_worm_ventral[INDEX_NR][k][howmanyfluids].vel_new_x = state_result_worm_ventral[INDEX_NR][k][howmanyfluids].vel_new_x*0.995 ;
 		
-		state_result_worm_ventral[INDEX_NR][howmanyfluids]->vel_new_y = state_result_worm_ventral[INDEX_NR][howmanyfluids]->vel_new_y*0.995 ;
-		state_result_worm_ventral[INDEX_NR][howmanyfluids]->vel_new_z = state_result_worm_ventral[INDEX_NR][howmanyfluids]->vel_new_z*0.995 ;  
+		state_result_worm_ventral[INDEX_NR][k][howmanyfluids].vel_new_y = state_result_worm_ventral[INDEX_NR][k][howmanyfluids].vel_new_y*0.995 ;
+		state_result_worm_ventral[INDEX_NR][k][howmanyfluids].vel_new_z = state_result_worm_ventral[INDEX_NR][k][howmanyfluids].vel_new_z*0.995 ;  
 		}
 
 
 
-		state_result_worm_ventral[INDEX_NR][howmanyfluids]->force_sign =  -1;
-		state_result_worm_ventral[INDEX_NR][howmanyfluids]    =  worm_ventral(  state_result_worm_ventral[INDEX_NR][howmanyfluids] ,1) ;
+		state_result_worm_ventral[INDEX_NR][k][howmanyfluids].force_sign =  -1;
+		state_result_worm_ventral[INDEX_NR][k][howmanyfluids]    =  worm_ventral(   state_result_worm_ventral[INDEX_NR][k][howmanyfluids] ,1) ;
 
-		state_result_worm_ventral[INDEX_NRmore][howmanyfluids]->force_sign =   1; ; 
-		state_result_worm_ventral[INDEX_NRmore][howmanyfluids]    =  worm_ventral(  state_result_worm_ventral[INDEX_NRmore][howmanyfluids] ,1);
+		state_result_worm_ventral[INDEX_NRmore][k][howmanyfluids].force_sign =   1; ; 
+		state_result_worm_ventral[INDEX_NRmore][k][howmanyfluids]    =  worm_ventral(   state_result_worm_ventral[INDEX_NRmore][k][howmanyfluids] ,1);
 
 	//	 printf("f[0] = %.10f:%.10f%.10f \n", state_result_worm_ventral[INDEX_NRmore]->pos_new_x,state_result_worm_ventral[INDEX_NRmore]->pos_new_y,state_result_worm_ventral[INDEX_NRmore]->pos_new_z);
 
@@ -428,14 +430,14 @@ INDEX_NRmore = state_result_worm_ventral_feather[llll][d].INDEX_NR;
 //}
 		 
  }		
-				 if(fabs(F_total[0][llll][howmanyfluids]) > 21 )
-	 				 F_total[0][llll][howmanyfluids] =0;
+				 if(fabs(F_total[0][llll][howmanyfluids][k]) > 21 )
+	 				 F_total[0][llll][howmanyfluids][k] =0;
  
-		 		 if(fabs(F_total[1][llll][howmanyfluids])  > 21)
-					 F_total[1][llll][howmanyfluids] =0;
+		 		 if(fabs(F_total[1][llll][howmanyfluids][k])  > 21)
+					 F_total[1][llll][howmanyfluids][k] =0;
 
-			 	 if(fabs(F_total[2][llll][howmanyfluids])  > 21)
-					 F_total[2][llll][howmanyfluids] =0;
+			 	 if(fabs(F_total[2][llll][howmanyfluids][k])  > 21)
+					 F_total[2][llll][howmanyfluids][k] =0;
 			// printf("FORCE(x,y,z) = %.50f:%.50f%.50f \n", fabs(F_total[0][INDEX_NR]),fabs(F_total[1][llll]),fabs(F_total[2][INDEX_NRmore]));
 			
 			//if(llll >= SIZE_OBJECT -1  )
@@ -449,7 +451,7 @@ INDEX_NRmore = state_result_worm_ventral_feather[llll][d].INDEX_NR;
  	
 				//}
 		//	}
-}
+//}
 //llll++;
 }
 
@@ -458,9 +460,9 @@ int find_index_____(int NUM, struct state_vector **real[]  ,int num,int k, int h
 int ll = 0;
  	while(ll < NUM)
 	{
-		if(state_result_worm_ventral_feather[num][k].pos_new_x ==real[ll][howm]->pos_new_x && state_result_worm_ventral_feather[num][k].pos_new_y ==real[ll][howm]->pos_new_y && 		state_result_worm_ventral_feather[num][k].pos_new_z ==real[ll][howm]->pos_new_z)
+		if(state_result_worm_ventral_feather[num][k][howm].pos_new_x ==real[ll][howm]->pos_new_x && state_result_worm_ventral_feather[num][k][howm].pos_new_y ==real[ll][howm]->pos_new_y && 		state_result_worm_ventral_feather[num][k][howm].pos_new_z ==real[ll][howm]->pos_new_z)
 		{
-			//printf("found index_____ @ %d \n", ll);
+			 printf("found index_____ @ %d \n", ll);
 			return ll;
 		}
 	ll++;
@@ -469,12 +471,12 @@ int ll = 0;
 
 
 
-int find_index (int NUM, struct state_vector **real   ,int num,int k, int howm )
+int find_index (int NUM, struct state_vector ***real   ,int num,int k, int howm , int j)
 {
 int ll = 0;
  	while(ll < NUM)
 	{
-		if(state_result_worm_ventral[num][k]->pos_new_x ==real[ll][howm].pos_new_x && state_result_worm_ventral[num][k]->pos_new_y ==real[ll][howm].pos_new_y && 		state_result_worm_ventral[num][k]->pos_new_z ==real[ll][howm].pos_new_z)
+		if(state_result_worm_ventral[num][howm][j].pos_new_x ==real[ll][howm][j].pos_new_x && state_result_worm_ventral[num][howm][j].pos_new_y ==real[ll][howm][j].pos_new_y && 		state_result_worm_ventral[num][howm][j].pos_new_z ==real[ll][howm][j].pos_new_z)
 		{
 			  printf("found index_____ @ %d \n", ll);
 			return ll;
@@ -485,18 +487,22 @@ int ll = 0;
 
 
  
-
+int TOTALFLAPPERS[HOW_MANY_FLUIDS] = {0,0};
   
 int ptreeonce = 1;
-int findnearestpoint(int points,struct state_vector *** worm , int num,int howmany,int kk) {
+int findnearestpoint(int points,struct state_vector     *worm , int num,int howmany,int kk, int xxx) {
 int i, num_pts = points;
 int INDEX;
 char *data, *pch;
 struct kdres *presults;
 double pos[3], dist;
-double pt[3] = { worm[num][kk]->pos_new_x,worm[num][kk]->pos_new_y, worm[num][kk]->pos_new_z };
-double radius = 0.004/1.0;
 
+double pt[3];
+
+
+ pt[0] = worm->pos_new_x ;
+double radius = 6.4/1.0;
+ 
 num_pts =points;
 void *ptree;
 srand( time(0) );
@@ -504,7 +510,8 @@ srand( time(0) );
  
 	ptree = kd_create( 3 );
   	for( i=0; i<points; i++ ) {   
-    		assert( 0 == kd_insert3( ptree, worm[i][kk]->pos_new_x, worm[i][kk]->pos_new_y, worm[i][kk]->pos_new_z, NULL ) );
+    		assert( 0 == kd_insert3( ptree, worm->pos_new_x, worm->pos_new_y, worm->pos_new_z, NULL ) );
+	//printf("worm[i][xxx][kk].pos_new_x =%f \n", worm->pos_new_x);
  	 }
  
 
@@ -512,11 +519,11 @@ srand( time(0) );
 presults = kd_nearest_range( ptree, pt, radius );
  
   /* print out all the points found in results */
-  //printf( "found %d results:\n", kd_res_size(presults) );
+ //printf( "found %d results:\n", kd_res_size(presults) );
 
 
- state_result_worm_ventral_feather[num][0].totaln = kd_res_size(presults) ;
-
+ state_result_worm_ventral_feather[num][0][kk].totaln = kd_res_size(presults) ;
+TOTALFLAPPERS[kk] = kd_res_size(presults);
 //state_result_worm_dorsal_feather[num][0].totaln = kd_res_size(presults) ;
  //printf( "found %d results:\n", kd_res_size(presults) );
 int feather_count = 0;
@@ -526,24 +533,24 @@ while( !kd_res_end( presults ) ) {
 	pch = (char*)kd_res_item( presults, pos ); 
     	dist = sqrt( dist_sq( pt, pos, 3 ) );
 
- // if(worm[num]->pos_new_x != pos[0])
- //	  printf( "node at (%.3f, %.3f, %.3f) is %.3f away   \n", 
- //	    pos[0], pos[1], pos[2], dist  );
+ 
+ 	  printf( "node at (%.3f, %.3f, %.3f) is %.3f away   \n", 
+ 	    pos[0], pos[1], pos[2], dist  );
 	 
 
-  	totalneigbours[num][howmanyfluids_g] = state_result_worm_ventral_feather[num][0].totaln;
+  	totalneigbours[num][howmanyfluids_g] = state_result_worm_ventral_feather[num][0][kk].totaln;
 	// if(worm[num]->pos_new_x != pos[0])
-   		state_result_worm_ventral_feather[num][feather_count].pos_new_x = pos[0];
+   		state_result_worm_ventral_feather[num][feather_count][kk].pos_new_x = pos[0];
 	// if(worm[num]->pos_new_y != pos[1])
-  		state_result_worm_ventral_feather[num][feather_count].pos_new_y = pos[1];
+  		state_result_worm_ventral_feather[num][feather_count][kk].pos_new_y = pos[1];
 	//  if(worm[num]->pos_new_z != pos[2])
-   		state_result_worm_ventral_feather[num][feather_count].pos_new_z = pos[2];
+   		state_result_worm_ventral_feather[num][feather_count][kk].pos_new_z = pos[2];
 	int k;
  
    
-  INDEX = find_index_____(c_m,state_result_worm_ventral,num,feather_count,kk);
+  INDEX = find_index_____(c_m,pos,num,feather_count,kk);
  // printf("INDEX = %d \n", INDEX);
-  state_result_worm_ventral_feather[num][feather_count].INDEX_NR = INDEX;
+  state_result_worm_ventral_feather[num][feather_count][kk].INDEX_NR = INDEX;
   feather_count++;
     kd_res_next( presults );
  if(num % 1000 ==0)
@@ -577,11 +584,10 @@ int main (int argc, char **argv)
 
  int i,j,k; //glColor3f (1.0, 1.0, 0.0)
 loadOBJ__("elysium.obj"); //61856 //61856 //13108_Eastern_Hognose_Snake_v1_L3  61856
-   
+     
 springVector = malloc(SIZE_OBJECT*1);
-state_result_worm_ventral_feather = (struct state_vector*)malloc(sizeof(struct state_vector*)*SIZE_OBJECT*4);
  
-reall =   (struct state_vector*)malloc(sizeof(struct state_vector*)*SIZE_OBJECT*4);
+ 
 
 state_result_worm_ventral= (struct state_vector ***) malloc(sizeof(struct state_vector**) * SIZE_OBJECT); //FIX 1
 for(i = 0; i < SIZE_OBJECT; i++){
@@ -594,14 +600,32 @@ for(i = 0; i < SIZE_OBJECT; i++){
 }
 
  
+
+state_result_worm_ventral_feather= (struct state_vector ***) malloc(sizeof(struct state_vector**) * SIZE_OBJECT); //FIX 1
+for(i = 0; i < SIZE_OBJECT; i++){
+  //printf("h\n");
+  state_result_worm_ventral_feather[i] = (struct state_vector **) malloc(sizeof(struct state_vector*) * SIZE_OBJECT);  // FIX 2
+  for(j = 0; j < 12; j++){
+       // printf("j\n");
+        state_result_worm_ventral_feather[i][j] = (struct state_vector *) malloc(sizeof(struct state_vector) * HOW_MANY_FLUIDS);
+  }
+}
+
+
+reall= (struct state_vector ***) malloc(sizeof(struct state_vector**) * SIZE_OBJECT); //FIX 1
+for(i = 0; i < SIZE_OBJECT; i++){
+  //printf("h\n");
+  reall[i] = (struct state_vector **) malloc(sizeof(struct state_vector*) * SIZE_OBJECT);  // FIX 2
+  for(j = 0; j < 12; j++){
+       // printf("j\n");
+        reall[i][j] = (struct state_vector *) malloc(sizeof(struct state_vector) * HOW_MANY_FLUIDS);
+  }
+}
 printf("done ! \n");
  
-for(int i=0; i<SIZE_OBJECT*1; i++)
-	state_result_worm_ventral_feather[i] = (struct state_vector*)malloc(sizeof(struct state_vector)*32);
+ 
   
-
-for(int i=0; i<SIZE_OBJECT*1; i++)
-	reall[i] = (struct state_vector*)malloc(sizeof(struct state_vector)*32);
+ 
 printf("done ! \n");
   
  
@@ -615,24 +639,36 @@ for(int kk = 0; kk < HOW_MANY_FLUIDS  ; kk++)
 	{
 	for(ll = 0; ll < SIZE_OBJECT  ; ll+=1    )
 	{
+		//for(int granne = 0; granne < 10  ;granne++   )
+		//{
 		  v= (Vec3 *)(V + 3*(KvvVENTALA[ll]-1));
-         	  state_result_worm_ventral[c_m][kk]->pos_new_x = v->x+kk*10 ;
+         	  state_result_worm_ventral[c_m][0][kk].pos_new_x = v->x+kk*10 ;
  
- 	          state_result_worm_ventral[c_m][kk]->pos_new_y = v->y ;
- 		  state_result_worm_ventral[c_m][kk]->pos_new_z = v->z +kk*10;
+ 	          state_result_worm_ventral[c_m][0][kk].pos_new_y = v->y +10*(HOW_MANY_FLUIDS-1);
+ 		  state_result_worm_ventral[c_m][0][kk].pos_new_z = v->z +kk*10;
  
- 	  	  state_result_worm_ventral[c_m][kk]->vel_new_x =   0.00004;
- 		  state_result_worm_ventral[c_m][kk]->vel_new_y =  0.000035 ;
- 		  state_result_worm_ventral[c_m][kk]->vel_new_z =  0.00003 ;
+ 	  	  state_result_worm_ventral[c_m][0][kk].vel_new_x =   0.00004;
+ 		  state_result_worm_ventral[c_m][0][kk].vel_new_y =  0.000035 ;
+ 		  state_result_worm_ventral[c_m][0][kk].vel_new_z =  0.00003 ;
+	//  printf("state_result_worm_ventral[c_m][0][kk].pos_new_x = %f \n", state_result_worm_ventral[c_m][0][kk].pos_new_x);
 c_m++;
-	}
+	//}
+}
 }
  
+ /*for(int kk = 0; kk < HOW_MANY_FLUIDS  ; kk++)
+	{
 	for(ll = 0; ll < c_m; ll++ )
 	{
- 		findnearestpoint(c_m  ,state_result_worm_ventral,ll,1,0 );
+		//for(int granne = 0; granne < 10  ;granne++   )
+		//{
+ 		 //	findnearestpoint(c_m  ,&state_result_worm_ventral[ll][0][kk] ,ll,kk,kk,c_m );
+			
+		//}
+
 	}
- 
+}
+ for(;;);*/
 	initonce = 0;
 }
 
@@ -757,7 +793,7 @@ glutMainLoop();
 
 }
 
-struct state_vector   *   worm_ventral(struct state_vector     *  next_state, int num )
+struct state_vector       worm_ventral(struct state_vector        next_state, int num )
 {
 	double f0[6];
 	double f0_result[6];
@@ -767,29 +803,29 @@ struct state_vector   *   worm_ventral(struct state_vector     *  next_state, in
  	double tburn = 1.0;
 	double tf[6] = {tburn,tburn,tburn,tburn,tburn,tburn};
 
-	z[0] =  next_state->pos_new_x;
-	z[1] =  next_state->pos_new_y;
-	z[2] = next_state->pos_new_z;
-	z[3] =  next_state->vel_new_x;
-	z[4] =  next_state->vel_new_y;
-	z[5] = next_state->vel_new_z;
+	z[0] =  next_state.pos_new_x;
+	z[1] =  next_state.pos_new_y;
+	z[2] = next_state.pos_new_z;
+	z[3] =  next_state.vel_new_x;
+	z[4] =  next_state.vel_new_y;
+	z[5] = next_state.vel_new_z;
 
-	f0[0] = next_state->pos_new_x;
-	f0[1] =next_state->pos_new_y;
-	f0[2] =next_state->pos_new_z;
-	f0[3] =next_state->vel_new_x;
-	f0[4] =next_state->vel_new_y;
-	f0[5] = next_state->vel_new_z;
+	f0[0] = next_state.pos_new_x;
+	f0[1] =next_state.pos_new_y;
+	f0[2] =next_state.pos_new_z;
+	f0[3] =next_state.vel_new_x;
+	f0[4] =next_state.vel_new_y;
+	f0[5] = next_state.vel_new_z;
  
 	rk45(rates_dorsal, t0, f0,f0_result, tf,z,6, 1  );
 
-	next_state->pos_new_x = f0[0];
-	next_state->pos_new_y = f0[1];
-	next_state->pos_new_z = f0[2];
+	next_state.pos_new_x = f0[0];
+	next_state.pos_new_y = f0[1];
+	next_state.pos_new_z = f0[2];
 
-	next_state->vel_new_x = f0[3];
-	next_state->vel_new_y = f0[4];
-	next_state->vel_new_z = f0[5];
+	next_state.vel_new_x = f0[3];
+	next_state.vel_new_y = f0[4];
+	next_state.vel_new_z = f0[5];
 
 	return   next_state ;
 }
@@ -882,25 +918,27 @@ glTranslatef(1.0, 0.0, 0.0);
 
 //glRotatef(rotationX,1,0,0);
 //glRotatef(rotationY+90,0,1,0);
- //for(int kk = 0; kk <   HOW_MANY_FLUIDS; kk++)  
-	//	  {
-int kk = 0;
+ for(int kk = 0; kk <   HOW_MANY_FLUIDS; kk++)  
+ 	  {
+ 
    for(int ll = 0; ll <  c_m; ll++)  
 		  {
 
+  
+int xx = 0;
+  // for(int xx = 0; xx <  TOTALFLAPPERS[kk]; xx++)  
+	//	  {
+int INDEX_NR___ =     state_result_worm_ventral_feather[ll][xx][kk].INDEX_NR ;
 
-
-int INDEX_NR___ =    (state_result_worm_ventral_feather[ll][kk].INDEX_NR);
-
- taskworm(kk,INDEX_NR___);
-      calc_fluid_velocity(INDEX_NR___,kk);
+ taskworm(kk,ll,0);
+      calc_fluid_velocity(INDEX_NR___,kk,xx);
  
 	
 
- calc_fluid_velocity_drops_reflect(INDEX_NR___,kk);
+ //calc_fluid_velocity_drops_reflect(INDEX_NR___,kk);
 //findnearestpoint_3_points_water_pressure(c_m     ,   ll,fabs(xxxx) , NULL ,ll,kk);
 
-       calc_fluid_acceleration(INDEX_NR___,kk);
+       calc_fluid_acceleration(INDEX_NR___,kk,xx);
 /*if(once_pos == 1)
 {
 double distance_from_origin = sqrtf(powf( state_result_worm_ventral[ll][kk]->pos_new_x - 0 ,2.0) +  powf( state_result_worm_ventral[ll][kk]->pos_new_y -0 ,2.0)  + 		powf( state_result_worm_ventral[ll][kk]->pos_new_z -0 ,2.0  ));
@@ -939,10 +977,10 @@ if(time_activate[INDEX_p[ll]] == 1)
 glPushMatrix();
 glColor3f(1.5f, 1.5f, 1.5f);
 	 glPolygonMode (GL_FRONT_AND_BACK, GL_FILL);
- glScalef(25,25,25);
-  glTranslatef(state_result_worm_ventral[INDEX_NR___][kk]->pos_new_x-0,  state_result_worm_ventral[INDEX_NR___][kk]->pos_new_y+0,state_result_worm_ventral[INDEX_NR___][kk]->pos_new_z);
+ glScalef(30,30,30);
+  glTranslatef(state_result_worm_ventral[INDEX_NR___][xx][kk].pos_new_x-0,  state_result_worm_ventral[INDEX_NR___][xx][kk].pos_new_y+0,state_result_worm_ventral[INDEX_NR___][xx][kk].pos_new_z);
  // vDrawScene(state_result_worm_ventral,INDEX_NR___,kk);
-     glutSolidSphere(0.07,20,20  );
+     glutSolidSphere(0.2,20,20  );
 // glCallList(pipe);
 glPopMatrix();
 
@@ -987,8 +1025,10 @@ glPushMatrix();
  
  glutPostRedisplay();
 //}
+//}
 }
-   for(int ll = 0; ll <  KvvVENTAL2; ll+=1000  )  
+}
+   /*for(int ll = 0; ll <  KvvVENTAL2; ll+=1000  )  
 		  {
 glPushMatrix();
 glScalef(25,25,25);
@@ -998,7 +1038,7 @@ glScalef(25,25,25);
  glutSolidSphere(0.03,12,12  );
  glutPostRedisplay();
 glPopMatrix(); 
-}
+}*/
 display_mpeg();
 
 glutSwapBuffers();
@@ -1012,39 +1052,39 @@ void rates_dorsal ( double *t, double *f, double result[]   )
 {
 // printf("f[0] = %.10f:%.10f%.10f \n", f[0],f[1],f[2]);
  
-if(state_result_worm_ventral[llll][howmanyfluids_g]->force_sign == 1)
+if(state_result_worm_ventral[llll][k_flappers][howmanyfluids_g].force_sign == 1)
 {
     	result[0] =             f[3]/200.0;
     	result[1] =             f[4]/200.0;
     	result[2] =             f[5]/200.0;
   
-	result[3] = (F_total[0][llll][howmanyfluids_g]+acc2_fluid[0][llll][howmanyfluids_g])/(4000.0   );
-	result[4] = (F_total[1][llll][howmanyfluids_g] +acc2_fluid[1][llll][howmanyfluids_g] - 9.8 )/(4000.0   );
-	result[5] = (F_total[2][llll][howmanyfluids_g] +acc2_fluid[2][llll][howmanyfluids_g])/(4000.0); 
+	result[3] = (F_total[0][llll][howmanyfluids_g][k_flappers]+acc2_fluid[0][llll][howmanyfluids_g][k_flappers])/(4000.0   );
+	result[4] = (F_total[1][llll][howmanyfluids_g][k_flappers] +acc2_fluid[1][llll][howmanyfluids_g][k_flappers] - 9.8 )/(4000.0   );
+	result[5] = (F_total[2][llll][howmanyfluids_g][k_flappers] +acc2_fluid[2][llll][howmanyfluids_g][k_flappers])/(4000.0); 
 
  
 }
-else if(state_result_worm_ventral[INDEX_NR][howmanyfluids_g]->force_sign == -1)
+else if(state_result_worm_ventral[INDEX_NR][k_flappers][howmanyfluids_g].force_sign == -1)
 {
     result[0] =             f[3]/200.0;
     result[1] =             f[4]/200.0;
     result[2] =             f[5]/200.0;
   
-    result[3] = -(F_total[0][INDEX_NR][howmanyfluids_g]+acc2_fluid[0][INDEX_NR][howmanyfluids_g])/(4000.0  );
-    result[4] = -(F_total[1][INDEX_NR][howmanyfluids_g]  +acc2_fluid[1][INDEX_NR][howmanyfluids_g]- 9.8) /(4000.0) ;
-    result[5] = -(F_total[2][INDEX_NR][howmanyfluids_g] +acc2_fluid[2][INDEX_NR][howmanyfluids_g])/(4000.0  ); //522
+    result[3] = -(F_total[0][INDEX_NR][howmanyfluids_g][k_flappers]+acc2_fluid[0][INDEX_NR][howmanyfluids_g][k_flappers])/(4000.0  );
+    result[4] = -(F_total[1][INDEX_NR][howmanyfluids_g][k_flappers]  +acc2_fluid[1][INDEX_NR][howmanyfluids_g][k_flappers]- 9.8) /(4000.0) ;
+    result[5] = -(F_total[2][INDEX_NR][howmanyfluids_g][k_flappers] +acc2_fluid[2][INDEX_NR][howmanyfluids_g][k_flappers])/(4000.0  ); //522
  
 
 }
-else if(state_result_worm_ventral[INDEX_NRmore][howmanyfluids_g]->force_sign == 1)
+else if(state_result_worm_ventral[INDEX_NRmore][k_flappers][howmanyfluids_g].force_sign == 1)
 {
     	result[0] =             f[3]/200.0;
     	result[1] =             f[4]/200.0;
     	result[2] =             f[5]/200.0;
   
-	result[3] = (F_total[0][INDEX_NRmore][howmanyfluids_g]+acc2_fluid[0][INDEX_NRmore][howmanyfluids_g])/(4000.0   );
-	result[4] = (F_total[1][INDEX_NRmore][howmanyfluids_g]  +acc2_fluid[1][INDEX_NRmore][howmanyfluids_g]- 9.8 )/(4000.0   );
-	result[5] = (F_total[2][INDEX_NRmore][howmanyfluids_g] +acc2_fluid[2][INDEX_NRmore][howmanyfluids_g])/(4000.0); 
+	result[3] = (F_total[0][INDEX_NRmore][howmanyfluids_g][k_flappers]+acc2_fluid[0][INDEX_NRmore][howmanyfluids_g][k_flappers])/(4000.0   );
+	result[4] = (F_total[1][INDEX_NRmore][howmanyfluids_g][k_flappers]  +acc2_fluid[1][INDEX_NRmore][howmanyfluids_g][k_flappers]- 9.8 )/(4000.0   );
+	result[5] = (F_total[2][INDEX_NRmore][howmanyfluids_g][k_flappers] +acc2_fluid[2][INDEX_NRmore][howmanyfluids_g][k_flappers])/(4000.0); 
 
  
 }
@@ -1123,9 +1163,9 @@ double * dot(double *a, double *b , double *c )
 	c[2] = a[2]*b[2];  	  
 }
 int pressure_once = 1;
-void calc_fluid_acceleration(int ll, int j)
+void calc_fluid_acceleration(int ll, int j,int xxx)
 {
-	  density = 5*total_molekules_nearby;
+	  density = 100*total_molekules_nearby;
  	  Area_tube = powf(water_radius,2)*M_PI;
 	  mass_fluid_element =  density*(M_PI*powf(water_radius,3.0))*4.0/3.0;
 
@@ -1154,9 +1194,9 @@ void calc_fluid_acceleration(int ll, int j)
 	else if ((sqrtme)  > 0)
 		addme = sqrtf(sqrtme );
 
-    acc2_fluid[0][ll][j] = (-1*(state_result_worm_ventral[ll][j]->pressure )/(( state_result_worm_ventral[ll][j]->pos_new_x)))/density + (viscous_constant*Area_tube*addme)/mass_fluid_element;
-    acc2_fluid[1][ll][j] = (-1*(state_result_worm_ventral[ll][j]->pressure )/(( state_result_worm_ventral[ll][j]->pos_new_y)))/density + (viscous_constant*Area_tube*addme)/mass_fluid_element;
-    acc2_fluid[2][ll][j] = (-1*(state_result_worm_ventral[ll][j]->pressure )/(( state_result_worm_ventral[ll][j]->pos_new_z)))/density + (viscous_constant*Area_tube*addme)/mass_fluid_element;
+    acc2_fluid[0][ll][j][xxx] = (-1*(state_result_worm_ventral[ll][xxx][j].pressure )/(( state_result_worm_ventral[ll][xxx][j].pos_new_x)))/density + (viscous_constant*Area_tube*addme)/mass_fluid_element;
+    acc2_fluid[1][ll][j][xxx] = (-1*(state_result_worm_ventral[ll][xxx][j].pressure )/(( state_result_worm_ventral[ll][xxx][j].pos_new_y)))/density + (viscous_constant*Area_tube*addme)/mass_fluid_element;
+    acc2_fluid[2][ll][j][xxx] = (-1*(state_result_worm_ventral[ll][xxx][j].pressure )/(( state_result_worm_ventral[ll][xxx][j].pos_new_z)))/density + (viscous_constant*Area_tube*addme)/mass_fluid_element;
 
 
 	// printf(" %f \n", state_result_worm_ventral[ll][j]->pressure );
@@ -1304,26 +1344,26 @@ free(pt);
 
 }
 
-double tdiff[100000] ;
-double ratiotime[100000];
+double tdiff[600000][2] ;
+double ratiotime[600000][2];
 
-double totaltime[100000];
-double disttime[100000];
- double time__[100000];
+double totaltime[600000];
+double disttime[600000];
+ double time__[600000];
 	
-int INIT_ALLOCATE = 1;
+int INIT_ALLOCATE[2] = {1,1};
 
 
-void findnearestpoint_3_points_water_pressure(int points , int num,double r_collision, double **vvv,int ll, int j )
+void findnearestpoint_3_points_water_pressure(int points , int num,double r_collision, double **vvv,int ll, int j,int xxx )
 {
 	int i, num_pts ;
-void *ptree_______[100000];
+void *ptree_______[600000];
 	char  *pch;
 	struct kdres *presults;
 	
 	double pos[3], dist,vel;
-	double pt[3] = { state_result_worm_ventral[ll][j]->pos_new_x,state_result_worm_ventral[ll][j]->pos_new_y, state_result_worm_ventral[ll][j]->pos_new_z };
-	double velt[3] = { state_result_worm_ventral[ll][j]->vel_new_x,state_result_worm_ventral[ll][j]->vel_new_y, state_result_worm_ventral[ll][j]->vel_new_z };
+	double pt[3] = { state_result_worm_ventral[ll][xxx][j].pos_new_x,state_result_worm_ventral[ll][xxx][j].pos_new_y, state_result_worm_ventral[ll][xxx][j].pos_new_z };
+	double velt[3] = { state_result_worm_ventral[ll][xxx][j].vel_new_x,state_result_worm_ventral[ll][xxx][j].vel_new_y, state_result_worm_ventral[ll][xxx][j].vel_new_z };
 	double radius = r_collision;
  
 	num_pts =SIZE_OBJECT;
@@ -1332,9 +1372,9 @@ void *ptree_______[100000];
  
 
 
-   if(tdiff[ll] > ratiotime[ll] || INIT_ALLOCATE == 1    )
+   if(tdiff[ll][j] > ratiotime[ll][j] || INIT_ALLOCATE[j] == 1    )
 {
-	tdiff[ll]= 0;	
+	tdiff[ll][j]= 0;	
 
   	//	for( i=0; i<points; i++ ) {   
 		//  if(tdiff[i] > ratiotime[i] )
@@ -1355,16 +1395,16 @@ for( i=0; i<points; i++ ) {
 			ptree_______[i] = kd_create( 3 );
 			//     printf("target node at number %f \n", state_result_worm_ventral[idx][j]->pos_new_x);
 			//if(idx != i &&  tdiff[i] == 0)
-    			assert( 0 == kd_insert3( ptree_______[idx], state_result_worm_ventral[idx][j]->pos_new_x, state_result_worm_ventral[idx][j]->pos_new_y, state_result_worm_ventral[idx][j]->pos_new_z, NULL ) );
+    			assert( 0 == kd_insert3( ptree_______[idx], state_result_worm_ventral[ll][xxx][j].pos_new_x, state_result_worm_ventral[ll][xxx][j].pos_new_y, state_result_worm_ventral[ll][xxx][j].pos_new_z, NULL ) );
 //tdiff[i]= 0;
  // }
 	 }
-INIT_ALLOCATE = 0;
+INIT_ALLOCATE[j] = 0;
 	}
 else
 {
 
-tdiff[ll]+=0.1;
+tdiff[ll][j]+=0.1;
  return;
 }
  
@@ -1382,6 +1422,7 @@ tdiff[ll]+=0.1;
  int INDEX___;
 total_molekules_nearby = kd_res_size(presults);
         int vc = 0;
+TOTALFLAPPERS[j] = kd_res_size(presults);
   // printf("source node at (%.3f, %.3f, %.3f) \n", pt[0], pt[1],pt[2]);
         while( !kd_res_end( presults ) ) {
    
@@ -1391,20 +1432,20 @@ total_molekules_nearby = kd_res_size(presults);
 		 // if(worm[num]->pos_new_x != pos[0])
  		// printf( "node at (%.3f, %.3f, %.3f) is %.3f away   \n", 
  		//    pos[0], pos[1], pos[2], dist  );
- 	reall[ll][vc].pos_new_x = pos[0];
- 	reall[ll][vc].pos_new_y  = pos[1];
- 	reall[ll][vc].pos_new_z  = pos[2];
-                   INDEX___ = find_index (c_m,reall,ll,total_molekules_nearby,vc);
+ 	reall[ll][vc][j].pos_new_x = pos[0];
+ 	reall[ll][vc][j].pos_new_y  = pos[1];
+ 	reall[ll][vc][j].pos_new_z  = pos[2];
+                   INDEX___ = find_index (c_m,reall,ll,total_molekules_nearby,vc, j);
  	 printf( "found %d results:\n", kd_res_size(presults) );
-	//	totalneigbours[ll][0] =total_molekules_nearby;
+	 	totalneigbours[ll][j] =total_molekules_nearby;
 	 printf( "found %d results:\n", kd_res_size(presults) );
   //INDEX___ = find_index_____(c_m,state_result_worm_ventral,ll,vc,0);
  // printf("INDEX = %d \n", INDEX);
   //state_result_worm_ventral_feather[ll][vc].INDEX_NR = INDEX___;
-  //state_result_worm_ventral_feather[ll][vc].INDEX_NR = INDEX___;
+  state_result_worm_ventral_feather[ll][vc][j].INDEX_NR = INDEX___;
  	 printf( "found %d results:\n", INDEX___);
 		if(INDEX___ == c_m) break; 
-		 vel  = sqrtf(powf( state_result_worm_ventral[ll][j]->vel_new_x - state_result_worm_ventral[INDEX___][j]->vel_new_x ,2.0) +  powf( state_result_worm_ventral[ll][j]->vel_new_y - 	state_result_worm_ventral[INDEX___][j]->vel_new_y ,2.0)  + powf( state_result_worm_ventral[ll][j]->vel_new_z - state_result_worm_ventral[INDEX___][j]->vel_new_z ,2.0  ));
+		 vel  = sqrtf(powf( state_result_worm_ventral[ll][vc][j].vel_new_x - state_result_worm_ventral[INDEX___][vc][j].vel_new_x ,2.0) +  powf( state_result_worm_ventral[ll][vc][j].vel_new_y - 	state_result_worm_ventral[INDEX___][vc][j].vel_new_y ,2.0)  + powf( state_result_worm_ventral[ll][vc][j].vel_new_z - state_result_worm_ventral[INDEX___][vc][j].vel_new_z ,2.0  ));
 		
 		// velt = sqrt( dist_sq( velt, pos, 3 ) );
 		 time__[vc] = (r_collision - dist)/vel;
@@ -1455,7 +1496,7 @@ total_molekules_nearby = kd_res_size(presults);
 printf("time[0] = %f \n", time__[0] );
 
 
-ratiotime[ll] =   time__[0];
+ratiotime[ll][j] =   time__[0];
 	 
   // vc = 0;
    kd_res_free( presults );
@@ -1591,7 +1632,7 @@ if(isnan(distz_) == 0)
 }
 
 
-void calc_fluid_velocity(int ll, int j)
+void calc_fluid_velocity(int ll, int j, int xxx)
 {
 int vn = ll;
 	double distance_from_origin = sqrtf(powf( state_result_worm_ventral[ll][j]->pos_new_x - 0 ,2.0) +  powf( state_result_worm_ventral[ll][j]->pos_new_y -0 ,2.0)  + 		powf( state_result_worm_ventral[ll][j]->pos_new_z -0 ,2.0  ));
@@ -1694,7 +1735,7 @@ if(isnan(normal[0]) == 0 && isnan(u_perpv[0]) ==0)
 		 
  		//	state_result_worm_ventral[ll][j] = mass_motion( mass_motion_state[howmanyfluids_g] ,1,0);
 		 //if(isnan(normal[0]) == 0)
- 		 	taskworm(j,ll);
+ 		 	taskworm(j,ll,xxx);
 }
 			/*	printf("vel[0]   =%.10f \n", vel[0] );
 			printf("u_perpv[0]   =%.10f \n", u_perpv[0] );
