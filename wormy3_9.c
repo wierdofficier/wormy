@@ -55,7 +55,7 @@ double viscous_constant = 1.6735;
 float acc1;
 float acc2;
 int INDEX_NRmore;
-#define SIZE_OBJECT 1984 //126976
+#define SIZE_OBJECT 7936 //126976
 #define HOW_MANY_FLUIDS 1
 #define HOWMANY HOW_MANY_FLUIDS
 float springlength =  9.4/1.0;
@@ -538,7 +538,7 @@ int main (int argc, char **argv)
 { 
 
  int i,j,k;  
-loadOBJ__("s.obj");  
+loadOBJ__("s2.obj");  
      
 springVector = malloc(SIZE_OBJECT*1);
  
@@ -586,17 +586,17 @@ if(initonce==1)
 
 for(int kk = 0; kk < HOW_MANY_FLUIDS  ; kk++)
 	{
-	for(ll = 0; ll < SIZE_OBJECT  ; ll+=10     )
+	for(ll = 0; ll < SIZE_OBJECT  ; ll+=2     )
 	{
 		//for(int granne = 0; granne < 10  ;granne++   )
 		//{
 		  v= (Vec3 *)(V + 3*(KvvVENTALA[ll]-1));
          	  state_result_worm_ventral[c_m][0][kk].pos_new_x = v->x+kk*10 ;
  
- 	          state_result_worm_ventral[c_m][0][kk].pos_new_y = v->y+10 ;
+ 	          state_result_worm_ventral[c_m][0][kk].pos_new_y = v->y+13 ;
  		  state_result_worm_ventral[c_m][0][kk].pos_new_z = v->z +kk*10;
  
- 	  	  state_result_worm_ventral[c_m][0][kk].vel_new_x =  14.04;
+ 	  	  state_result_worm_ventral[c_m][0][kk].vel_new_x =  5.04;
  		  state_result_worm_ventral[c_m][0][kk].vel_new_y = 0;
  		  state_result_worm_ventral[c_m][0][kk].vel_new_z =  0 ;
 	//  printf("state_result_worm_ventral[c_m][0][kk].pos_new_x = %f \n", state_result_worm_ventral[c_m][0][kk].pos_new_x);
@@ -610,7 +610,7 @@ c_m++;
 }
 
 KvvVENTAL2=0;
-  loadOBJ__big("snark.obj");
+  loadOBJ__big("snark3.obj");
   wall_info = (struct state_vector*)malloc(sizeof(struct state_vector*)*KvvVENTAL2*1);
 
  
@@ -832,7 +832,7 @@ cool_once = 0;
     glFrustum(-1.0, 1.0, -1.0, 1.0, 3.0, 25900.0);
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
-    gluLookAt(cameraEye[0]+0, cameraEye[1]+150, cameraEye[2]+250  , cameraLookAt[0], cameraLookAt[1], cameraLookAt[2], cameraUp[0], cameraUp[1], cameraUp[2]);
+    gluLookAt(cameraEye[0]+0, cameraEye[1]+150, cameraEye[2]+650  , cameraLookAt[0], cameraLookAt[1], cameraLookAt[2], cameraUp[0], cameraUp[1], cameraUp[2]);
     glTranslatef(1.0, 0.0, 0.0);
  
  //for(int kk = 0; kk <   HOW_MANY_FLUIDS; kk++)  
@@ -859,7 +859,7 @@ cool_once = 0;
  	glScalef(30,30,30);
   	glTranslatef(state_result_worm_ventral[INDEX_NR___][xx][kk].pos_new_x-0,   state_result_worm_ventral[INDEX_NR___][xx][kk].pos_new_y+0,state_result_worm_ventral[INDEX_NR___][xx][kk].pos_new_z);
  
-        glutSolidSphere(0.35,20,20  );
+        glutSolidSphere(0.15,20,20  );
  
 glPopMatrix();
 
@@ -873,14 +873,14 @@ glPushMatrix();
 //}
 //}
 }
-   for(int ll = 0; ll <  KvvVENTAL2; ll+=1000  )  
+   for(int ll = 0; ll <  KvvVENTAL2; ll+=100  )  
    {
 		glPushMatrix();
 		glScalef(30,30,30);
   		glTranslatef(wall_info[ll]->pos_new_x, wall_info[ll]->pos_new_y,wall_info[ll]->pos_new_z);
 
 
- 		glutSolidSphere(0.04,12,12  );
+ 		glutSolidSphere(0.07,12,12  );
  		glutPostRedisplay();
 		glPopMatrix(); 
 } 
@@ -1231,7 +1231,7 @@ void calc_fluid_velocity(int ll, int j, int xxx)
 
 
 		
-		if( fabs(xxxx) > 0 &&  fabs(xxxx) <4)
+		if( fabs(xxxx) > 0 &&  fabs(xxxx) <1)
 		{
  
 			double u_perpv[3];
@@ -1274,8 +1274,8 @@ void calc_fluid_velocity(int ll, int j, int xxx)
  
 			double* pos_new  = malloc(20);
 			pos_new[0] =  state_result_worm_ventral[ll][k_flappers][j].pos_new_x   ;
-			pos_new[1] = state_result_worm_ventral[ll][k_flappers][j].pos_new_y  ;
-			pos_new[2] = state_result_worm_ventral[ll][k_flappers][j].pos_new_z  ;
+			pos_new[1] =  state_result_worm_ventral[ll][k_flappers][j].pos_new_y  ;
+			pos_new[2] =  state_result_worm_ventral[ll][k_flappers][j].pos_new_z  ;
 
 			double *result = malloc(20);
 			result[0] = pos_new[0] - cc[0];
