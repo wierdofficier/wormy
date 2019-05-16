@@ -19,7 +19,7 @@
 #include <jpeglib.h>
 #include <jerror.h>
 #include "noise.h"
-int totaln[10000] ;
+int totaln[40000] ;
 
 int c_m = 0;
 int cm2 = 0;
@@ -48,7 +48,7 @@ extern int KvvVENTAL2;
   struct state_vector  ** wall_info ; 
 double  neighbourV_[600000*2][11] ;
 double  neighbourV_m[1000][100] ;
-double  neighbourV_water[1000][100] ;
+double  neighbourV_water[40000][100] ;
 double neigbours_wall_xyz[10000][100][4];
 int neigbours_wall[60000][400];
  double acc2_fluid[3][600000 ][12][10] ;
@@ -69,8 +69,8 @@ float springlength =  9.4/1.0;
 float fovy = 45.0;
 float dNear = 100;
 float dFar = 2000;
-double F_total[3][SIZE_OBJECT*2][HOW_MANY_FLUIDS][10] ;
-int totalneigbours[SIZE_OBJECT*2][HOW_MANY_FLUIDS] ;
+double F_total[3][SIZE_OBJECT*12][HOW_MANY_FLUIDS][10] ;
+int totalneigbours[SIZE_OBJECT*12][HOW_MANY_FLUIDS] ;
 float     vertexpoint_g_ventral[SIZE_OBJECT][3];
 struct state_vector * springVector;
 struct state_vector *** state_result_worm_ventral_feather;
@@ -260,13 +260,14 @@ void taskworm(int howmanyfluids, int kkkkkkkk, int xxx )
 	k_flappers = xxx;
 	int k = xxx;
 
-	findnearestpoint_3_points_water_pressure(c_m      ,   llll, .065 , NULL ,llll,howmanyfluids,xxx);
- 
+	//findnearestpoint_3_points_water_pressure(c_m      ,   llll, .065 , NULL ,llll,howmanyfluids,xxx);
+ findnearestpoint_fluid(c_m  ,NULL,llll,1,0,0 );
+
 if(acc1once == 0)
 	{
 		if(fabs(acc1) > 0)
 		{		
-			springConstant =   1.205;
+			springConstant =   12.205;
  
 			frictionConstant =  1.0202;
 		}
@@ -440,6 +441,21 @@ int ll = 0;
 	}
 }
 
+int find_index_____fluid(int NUM, double *pos   ,int num,int k, int howm )
+{
+int ll = 0;
+ 	while(ll < NUM)
+	{
+
+		if(state_result_worm_ventral[ll][0][0].pos_new_x ==pos[0] && state_result_worm_ventral[ll][0][0].pos_new_y ==pos[1]  && state_result_worm_ventral[ll][0][0].pos_new_z ==pos[2] )
+		{
+
+			return ll;
+		}
+
+	ll++;
+	}
+}
 
 
 int find_index (int NUM, struct state_vector ***real   ,int num,int k, int howm , int j)
@@ -455,10 +471,77 @@ int ll = 0;
 	ll++;
 	}
 }
+int ptreeonce_fluid= 1;
+
+int TOTALFLAPPERS[HOW_MANY_FLUIDS] = {0,0};
+  
+	 
+int findnearestpoint_fluid(int points,struct state_vector     *worm , int num,int howmany,int kk, int xxx) {
+	int i, num_pts = points;
+	int INDEX;
+	char *data, *pch;
+	struct kdres *presults;
+	double pos[3], dist;
+	double pt[3];
+void *ptree_fluid;
+	pt[0] = state_result_worm_ventral[num][0][0].pos_new_x;
+	pt[1] = state_result_worm_ventral[num][0][0].pos_new_y;
+	pt[2] = state_result_worm_ventral[num][0][0].pos_new_z;
+	double radius = 0.03/1.0;
+ 
+	num_pts =points;
+	
+	srand( time(0) );
+ 
+ 	ptree_fluid = kd_create( 3 );
+  	for( i=0; i<points; i++ ) {   
+    		assert( 0 == kd_insert3( ptree_fluid,  state_result_worm_ventral[i][0][0].pos_new_x,  state_result_worm_ventral[i][0][0].pos_new_y,  state_result_worm_ventral[i][0][0].pos_new_z, NULL ) );
+ 	 }
+ 
+ 
+
+ 
+	presults = kd_nearest_range( ptree_fluid, pt, radius );
+  
+ total_molekules_nearby = kd_res_size(presults);
+	//totaln_fluid[num]= kd_res_size(presults);
+ totalneigbours[num][0] = kd_res_size(presults);
+//printf("totalneigbours[num][0] = %d \n", totalneigbours[num][0]);
+	int feather_count = 0;
+ 
+while( !kd_res_end( presults ) ) {
+   
+	 pch = (char*)kd_res_item( presults, pos ); 
+    	 dist = sqrt( dist_sq( pt, pos, 3 ) );
+
+  
+	 int k;
+  
+  
+ 	 INDEX = find_index_____fluid(points,pos,num,feather_count,kk);
+ 
+  	 
+ state_result_worm_ventral_feather[num][feather_count][0].INDEX_NR = INDEX;
+ 	feather_count++;
+        kd_res_next( presults );
+ //if(num % 1000 ==0)
+ 	//printf("num @ %d \n", num);
+}
+ 
+
+ 
+  feather_count = 0;
+ 
+ 
+  kd_res_free( presults );
+  kd_free( ptree_fluid );
+
+  return 0;
+}
 
 
  void *ptree;
-int TOTALFLAPPERS[HOW_MANY_FLUIDS] = {0,0};
+ 
   
 	int ptreeonce = 1;
 int findnearestpoint(int points,struct state_vector     *worm , int num,int howmany,int kk, int xxx) {
@@ -556,13 +639,13 @@ for(i = 0; i < SIZE_OBJECT; i++){
 
  
 
-state_result_worm_ventral_feather= (struct state_vector ***) malloc(sizeof(struct state_vector**) * SIZE_OBJECT); //FIX 1
-for(i = 0; i < SIZE_OBJECT; i++){
+state_result_worm_ventral_feather= (struct state_vector ***) malloc(sizeof(struct state_vector**) * SIZE_OBJECT*2); //FIX 1
+for(i = 0; i < SIZE_OBJECT*2; i++){
  
-  state_result_worm_ventral_feather[i] = (struct state_vector **) malloc(sizeof(struct state_vector*) * SIZE_OBJECT);  // FIX 2
+  state_result_worm_ventral_feather[i] = (struct state_vector **) malloc(sizeof(struct state_vector*) * SIZE_OBJECT*2);  // FIX 2
   for(j = 0; j < 12; j++){
  
-        state_result_worm_ventral_feather[i][j] = (struct state_vector *) malloc(sizeof(struct state_vector) * HOW_MANY_FLUIDS);
+        state_result_worm_ventral_feather[i][j] = (struct state_vector *) malloc(sizeof(struct state_vector) * 12);
   }
 }
 
@@ -588,7 +671,7 @@ if(initonce==1)
 
 for(int kk = 0; kk < HOW_MANY_FLUIDS  ; kk++)
 	{
-	for(ll = 0; ll < SIZE_OBJECT  ; ll+=15       )
+	for(ll = 0; ll < SIZE_OBJECT  ; ll+=2        )
 	{
 		 
 		  v= (Vec3 *)(V + 3*(KvvVENTALA[ll]-1));
@@ -598,8 +681,8 @@ for(int kk = 0; kk < HOW_MANY_FLUIDS  ; kk++)
  		  state_result_worm_ventral[c_m][0][kk].pos_new_z = v->z +kk*10;
  
  	  	  state_result_worm_ventral[c_m][0][kk].vel_new_x = 8.04;
- 		  state_result_worm_ventral[c_m][0][kk].vel_new_y = 0;
- 		  state_result_worm_ventral[c_m][0][kk].vel_new_z =  0 ;
+ 		  state_result_worm_ventral[c_m][0][kk].vel_new_y = .1;
+ 		  state_result_worm_ventral[c_m][0][kk].vel_new_z =  0.1 ;
  
 c_m++;
 	 
@@ -608,6 +691,11 @@ c_m++;
  
  
 	initonce = 0;
+}
+
+for(int ll = 0; ll < c_m; ll++ )
+	{
+ 		findnearestpoint_fluid(SIZE_OBJECT  ,NULL,ll,1,0,0 );
 }
 
 KvvVENTAL2=0;
@@ -621,7 +709,7 @@ for(int i=0; i<KvvVENTAL2*1; i++)
  
  	Vec3 *v ;  
 	int ll;
-	for(ll = 0; ll < KvvVENTAL2  ; ll+=12  )
+	for(ll = 0; ll < KvvVENTAL2  ; ll+=5   )
 	{
      	
 		  v= (Vec3 *)(V2 + 3*(KvvVENTALA2[ll]-1));
@@ -848,18 +936,19 @@ cool_once = 0;
  for(int ll = 0; ll <  c_m; ll++)  
 		  {
 
-  
+ 
  int xx = 0;
   // for(int xx = 0; xx <  TOTALFLAPPERS[kk]; xx++)  
 	//	  {
  int INDEX_NR___ =      state_result_worm_ventral_feather[ll][xx][kk].INDEX_NR ;
-
- taskworm(kk,ll,0);
-      calc_fluid_velocity(INDEX_NR___,kk,xx);
  
+ taskworm(kk,INDEX_NR___,0);
+      
  
-
-       calc_fluid_acceleration(INDEX_NR___,kk,xx);
+ calc_fluid_velocity(INDEX_NR___,kk,xx);
+ 
+calc_fluid_acceleration(INDEX_NR___,kk,0,INDEX_NR___);
+ 
        glPushMatrix();
  
 	 glPolygonMode (GL_FRONT_AND_BACK, GL_FILL);
@@ -990,16 +1079,19 @@ double * dot(double *a, double *b , double *c )
   	  
 }
 int pressure_once = 1;
-void calc_fluid_acceleration(int ll, int j,int xxx)
+void calc_fluid_acceleration(int ll, int j,int xxx,int n)
 {
-	  density = 1000*total_molekules_nearby;
+
+	  density = (total_molekules_nearby )*100;
+
+//printf("total_molekules_nearby = %d :: density = %f\n", total_molekules_nearby,density);
  	  Area_tube = powf(water_radius,2)*M_PI;
 	  mass_fluid_element =  density*(M_PI*powf(water_radius,3.0))*4.0/3.0;
 
 	  double gMASS;
         if(pressure_once ==1)
 	{
-		state_result_worm_ventral[ll][j]->pressure =  ((   9.8+0)*mass_fluid_element/(M_PI*pow(water_radius,2.0)));
+		state_result_worm_ventral[ll][j]->pressure =  ((   -9.8+0)*mass_fluid_element/(M_PI*pow(water_radius,2.0)));
 		//pressure_once =0;
 	}
 
@@ -1034,7 +1126,7 @@ int largestFloat(float array[], int length){     // return type is int
     return max;
 } 
 int alloc_once_2 =1;
-double dist__[10000];
+double dist__[40000];
 void *ptree_____;
  int result________;
 void findnearestpoint_3_points (int points , int num,double r_collision, struct state_vector **vvv,int ll, int j )
@@ -1109,37 +1201,39 @@ double disttime[600000];
 double time__[600000];
 	
 int INIT_ALLOCATE[2] = {1,1};
-
+void *ptree_______t[600000];
+void *ptree_______ ;
 
 void findnearestpoint_3_points_water_pressure(int points , int num,double r_collision, double **vvv,int ll, int j,int xxx )
 {
 	int i, num_pts ;
-void *ptree_______[600000];
+
 	char  *pch;
 	struct kdres *presults;
 	
 	double pos[3], dist,vel;
 	double pt[3] = { state_result_worm_ventral[ll][xxx][j].pos_new_x,state_result_worm_ventral[ll][xxx][j].pos_new_y, state_result_worm_ventral[ll][xxx][j].pos_new_z };
 	double velt[3] = { state_result_worm_ventral[ll][xxx][j].vel_new_x,state_result_worm_ventral[ll][xxx][j].vel_new_y, state_result_worm_ventral[ll][xxx][j].vel_new_z };
-	double radius = r_collision;
+	double radius = 0.05;
  
 	num_pts =SIZE_OBJECT;
  
-   if(tdiff[ll][j] > ratiotime[ll][j] || INIT_ALLOCATE[j] == 1    )
+   if(tdiff[ll][j] > ratiotime[ll][j] || INIT_ALLOCATE[ll] == 1    )
 {
-	tdiff[ll][j]= 0;	
- 
+		
+ if(tdiff[ll][j] > ratiotime[ll][j] && INIT_ALLOCATE[ll] == 0)
+	tdiff[ll][j]= 0;
 	int idx = ll ; 
 	for( i=0; i<points; i++ ) {   
  
 	int idx = i ; 
-	ptree_______[i] = kd_create( 3 );
+	ptree_______t[i]  = kd_create( 3 );
  
-    	assert( 0 == kd_insert3( ptree_______[idx], state_result_worm_ventral[ll][xxx][j].pos_new_x, state_result_worm_ventral[ll][xxx][j].pos_new_y, state_result_worm_ventral[ll][xxx][j].pos_new_z, NULL ) );
+    	assert( 0 == kd_insert3( ptree_______t[i] , state_result_worm_ventral[i][xxx][j].pos_new_x, state_result_worm_ventral[i][xxx][j].pos_new_y, state_result_worm_ventral[i][xxx][j].pos_new_z, NULL ) );
  
  
 	 }
-	INIT_ALLOCATE[j] = 0;
+	INIT_ALLOCATE[ll] = 0;
 	}
 else
 {
@@ -1148,9 +1242,9 @@ else
 }
  
  
-	presults = kd_nearest_range( ptree_______[ll], pt, radius );
+	presults = kd_nearest_range( ptree_______t[ll] , pt, radius );
  
- 	// printf( "found %d results:\n", kd_res_size(presults) );
+ 	  printf( "found %d results: :: pos x =%f\n", kd_res_size(presults), state_result_worm_ventral[ll][xxx][j].pos_new_x );
 
  
  	int INDEX___;
@@ -1200,7 +1294,8 @@ else
  
    	kd_res_free( presults );
  for( i=0; i<points; i++ ) {   
-    kd_free( ptree_______[i] );
+if(tdiff[ll][j] == 0)
+    kd_free( ptree_______t[i] );
  }
 }
  
@@ -1348,7 +1443,7 @@ if(index_wall[i] != i)
  float min_dist  = sqrtthis_[0];
 
 
-int index4 =8;
+int index4 =32;
 float max_dist = sqrtthis_[0];
 int index3 = 2;
  
@@ -1358,7 +1453,7 @@ int index3 = 2;
 
  
  
- //printf("maximum = %f :: max_dist = %f  index2 = %d :: index3 = %d :: %f :: %f :: %d\n", maximum, max_dist,index2,index3,neighbourV_[index3][0],neighbourV_[index2][0],totaln[n]);
+  //printf("maximum = %f :: max_dist = %f  index2 = %d :: index3 = %d :: %f :: %f :: %d\n", maximum, max_dist,index2,index3,neighbourV_[index3][0],neighbourV_[index2][0],totaln[n]);
 //printf("neigbours_wall[n][0] = %d :: %d \n",neigbours_wall[n][0],neigbours_wall[n][2]);
 
 			bb[0] = wall_info[neigbours_wall[n][index4]]->pos_new_x;
@@ -1411,10 +1506,12 @@ int index3 = 2;
 			result3[2]   = normal[2]* result2[0];
  if(fabs(normal[0]) > 0 && fabs(normal[1]) > 0 &&fabs(normal[2]) > 0 && xxxx < 1.2)
 {
-			state_result_worm_ventral[ll][k_flappers][j].vel_new_x  -=2*result3[0] ;
-			state_result_worm_ventral[ll][k_flappers][j].vel_new_y  -=2*result3[1] ;
-			state_result_worm_ventral[ll][k_flappers][j].vel_new_z  -=2*result3[2] ;
- printf("xxxx= %f :: posx = %f :: posx_wall =%f :: index2 = %d\n", xxxx,state_result_worm_ventral[ll][k_flappers][j].pos_new_x, wall_info[neigbours_wall[n][index4]]->pos_new_x,index2);	
+			state_result_worm_ventral[ll][k_flappers][j].vel_new_x  -=1.9*result3[0] ;
+			state_result_worm_ventral[ll][k_flappers][j].vel_new_y  -=1.9*result3[1] ;
+			state_result_worm_ventral[ll][k_flappers][j].vel_new_z  -=1.9*result3[2] ;
+
+
+// printf("xxxx= %f :: posx = %f :: posx_wall =%f :: index2 = %d\n", xxxx,state_result_worm_ventral[ll][k_flappers][j].pos_new_x, wall_info[neigbours_wall[n][index4]]->pos_new_x,index2);	
 }
  
   returc++;
