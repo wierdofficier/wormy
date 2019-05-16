@@ -266,7 +266,7 @@ if(acc1once == 0)
 	{
 		if(fabs(acc1) > 0)
 		{		
-			springConstant =   0.205;
+			springConstant =   1.205;
  
 			frictionConstant =  1.0202;
 		}
@@ -296,7 +296,7 @@ if(  INDEX_NR > 0  )
 
 				float r = length(state_result_worm_ventral[INDEX_NR][k][howmanyfluids],state_result_worm_ventral[llll][k][howmanyfluids]);
 
-				if ( r != 0  &&    (r) <10.1  )
+				if ( r != 0  &&    fabs(r) <8.1  )
 				{			
 					F_total[0][INDEX_NR][howmanyfluids][k] +=( springVector->pos_new_x  /  r ) * ( r - springlength ) * ( -springConstant );
 					F_total[1][INDEX_NR][howmanyfluids][k] += ( springVector->pos_new_y /  r ) * ( r - springlength ) * ( -springConstant );
@@ -368,7 +368,7 @@ if(  INDEX_NR > 0  )
 
 		float r = length(state_result_worm_ventral[INDEX_NR][k][howmanyfluids],state_result_worm_ventral[INDEX_NRmore][k][howmanyfluids]);
 
-		if ( r != 0  &&   (r) < 10.1    )
+		if ( r != 0  &&   fabs(r) < 8.1    )
 		{	
  
 			F_total[0][INDEX_NR][howmanyfluids][k] +=( springVector->pos_new_x  /  r ) * ( r - springlength ) * ( -springConstant );
@@ -588,7 +588,7 @@ if(initonce==1)
 
 for(int kk = 0; kk < HOW_MANY_FLUIDS  ; kk++)
 	{
-	for(ll = 0; ll < SIZE_OBJECT  ; ll+=45       )
+	for(ll = 0; ll < SIZE_OBJECT  ; ll+=15       )
 	{
 		 
 		  v= (Vec3 *)(V + 3*(KvvVENTALA[ll]-1));
@@ -621,7 +621,7 @@ for(int i=0; i<KvvVENTAL2*1; i++)
  
  	Vec3 *v ;  
 	int ll;
-	for(ll = 0; ll < KvvVENTAL2  ; ll+=10  )
+	for(ll = 0; ll < KvvVENTAL2  ; ll+=12  )
 	{
      	
 		  v= (Vec3 *)(V2 + 3*(KvvVENTALA2[ll]-1));
@@ -1348,9 +1348,9 @@ if(index_wall[i] != i)
  float min_dist  = sqrtthis_[0];
 
 
-int index4 =6;
+int index4 =8;
 float max_dist = sqrtthis_[0];
-int index3 = 3;
+int index3 = 2;
  
 
  
@@ -1411,9 +1411,9 @@ int index3 = 3;
 			result3[2]   = normal[2]* result2[0];
  if(fabs(normal[0]) > 0 && fabs(normal[1]) > 0 &&fabs(normal[2]) > 0 && xxxx < 1.2)
 {
-			state_result_worm_ventral[ll][k_flappers][j].vel_new_x  -=1*result3[0] ;
-			state_result_worm_ventral[ll][k_flappers][j].vel_new_y  -=1*result3[1] ;
-			state_result_worm_ventral[ll][k_flappers][j].vel_new_z  -=1*result3[2] ;
+			state_result_worm_ventral[ll][k_flappers][j].vel_new_x  -=2*result3[0] ;
+			state_result_worm_ventral[ll][k_flappers][j].vel_new_y  -=2*result3[1] ;
+			state_result_worm_ventral[ll][k_flappers][j].vel_new_z  -=2*result3[2] ;
  printf("xxxx= %f :: posx = %f :: posx_wall =%f :: index2 = %d\n", xxxx,state_result_worm_ventral[ll][k_flappers][j].pos_new_x, wall_info[neigbours_wall[n][index4]]->pos_new_x,index2);	
 }
  
