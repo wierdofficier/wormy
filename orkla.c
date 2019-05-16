@@ -73,7 +73,9 @@ double F_total[3][SIZE_OBJECT*12][HOW_MANY_FLUIDS][10] ;
 int totalneigbours[SIZE_OBJECT*12][HOW_MANY_FLUIDS] ;
 float     vertexpoint_g_ventral[SIZE_OBJECT][3];
 struct state_vector * springVector;
-struct state_vector *** state_result_worm_ventral_feather;
+//struct state_vector *** state_result_worm_ventral_feather;
+
+int state_result_worm_ventral_feather[40000][200][2];
 struct state_vector *** reall;
 struct state_vector  *** state_result_worm_ventral ;
 extern int KvvVENTALA[SIZE_OBJECT*8];
@@ -274,7 +276,7 @@ if(acc1once == 0)
 	}
 	acc1once = 0;	
  
-	INDEX_NR =   state_result_worm_ventral_feather[llll][k][howmanyfluids].INDEX_NR ;
+	INDEX_NR =   state_result_worm_ventral_feather[llll][k][howmanyfluids]  ;
 	
 if(  INDEX_NR > 0  )
 {
@@ -331,17 +333,17 @@ if(  INDEX_NR > 0  )
 
 		state_result_worm_ventral[INDEX_NR][k][howmanyfluids].force_sign =  -1;
 		state_result_worm_ventral[INDEX_NR][k][howmanyfluids]    =  worm_ventral(   state_result_worm_ventral[INDEX_NR][k][howmanyfluids] ,1) ;
-
+glutPostRedisplay();
 		state_result_worm_ventral[llll][k][howmanyfluids].force_sign =   1; ; 
 		state_result_worm_ventral[llll][k][howmanyfluids]    =  worm_ventral(   state_result_worm_ventral[llll][k][howmanyfluids] ,1);
- 
+ glutPostRedisplay();
 	for(int d = 0; d <= totalneigbours[llll][howmanyfluids]; d++)
 	{	 
 		
 		if(d == k  )
 		  continue;
  
-		INDEX_NRmore = state_result_worm_ventral_feather[llll][d][howmanyfluids].INDEX_NR;
+		INDEX_NRmore = state_result_worm_ventral_feather[llll][d][howmanyfluids] ;
   
 		if(fabs(F_total[0][INDEX_NRmore][howmanyfluids][k]) > 21 )
 	 				  F_total[0][INDEX_NRmore][howmanyfluids][k] =0;
@@ -405,10 +407,10 @@ if(  INDEX_NR > 0  )
 
 		state_result_worm_ventral[INDEX_NR][k][howmanyfluids].force_sign =  -1;
 		state_result_worm_ventral[INDEX_NR][k][howmanyfluids]    =  worm_ventral(   state_result_worm_ventral[INDEX_NR][k][howmanyfluids] ,1) ;
-
+glutPostRedisplay();
 		state_result_worm_ventral[INDEX_NRmore][k][howmanyfluids].force_sign =   1; ; 
 		state_result_worm_ventral[INDEX_NRmore][k][howmanyfluids]    =  worm_ventral(   state_result_worm_ventral[INDEX_NRmore][k][howmanyfluids] ,1);
-  
+ glutPostRedisplay(); 
  	} 		 
  }	
  
@@ -487,7 +489,7 @@ void *ptree_fluid;
 	pt[0] = state_result_worm_ventral[num][0][0].pos_new_x;
 	pt[1] = state_result_worm_ventral[num][0][0].pos_new_y;
 	pt[2] = state_result_worm_ventral[num][0][0].pos_new_z;
-	double radius = 0.03/1.0;
+	double radius = 0.4/1.0;
  
 	num_pts =points;
 	
@@ -503,10 +505,10 @@ void *ptree_fluid;
  
 	presults = kd_nearest_range( ptree_fluid, pt, radius );
   
- total_molekules_nearby = kd_res_size(presults);
+ 
 	//totaln_fluid[num]= kd_res_size(presults);
  totalneigbours[num][0] = kd_res_size(presults);
-//printf("totalneigbours[num][0] = %d \n", totalneigbours[num][0]);
+ printf("totalneigbours[num][0] = %d \n", totalneigbours[num][0]);
 	int feather_count = 0;
  
 while( !kd_res_end( presults ) ) {
@@ -521,7 +523,7 @@ while( !kd_res_end( presults ) ) {
  	 INDEX = find_index_____fluid(points,pos,num,feather_count,kk);
  
   	 
- state_result_worm_ventral_feather[num][feather_count][0].INDEX_NR = INDEX;
+ state_result_worm_ventral_feather[num][feather_count][0]  = INDEX;
  	feather_count++;
         kd_res_next( presults );
  //if(num % 1000 ==0)
@@ -638,17 +640,17 @@ for(i = 0; i < SIZE_OBJECT; i++){
 }
 
  
-
-state_result_worm_ventral_feather= (struct state_vector ***) malloc(sizeof(struct state_vector**) * SIZE_OBJECT*2); //FIX 1
-for(i = 0; i < SIZE_OBJECT*2; i++){
+/*
+state_result_worm_ventral_feather= (struct state_vector ***) malloc(sizeof(struct state_vector**) * SIZE_OBJECT*21); //FIX 1
+for(i = 0; i < SIZE_OBJECT*21; i++){
  
-  state_result_worm_ventral_feather[i] = (struct state_vector **) malloc(sizeof(struct state_vector*) * SIZE_OBJECT*2);  // FIX 2
-  for(j = 0; j < 12; j++){
+  state_result_worm_ventral_feather[i] = (struct state_vector **) malloc(sizeof(struct state_vector*) * SIZE_OBJECT*21);  // FIX 2
+  for(j = 0; j < 21; j++){
  
-        state_result_worm_ventral_feather[i][j] = (struct state_vector *) malloc(sizeof(struct state_vector) * 12);
+        state_result_worm_ventral_feather[i][j] = (struct state_vector *) malloc(sizeof(struct state_vector) * 62);
   }
 }
-
+*/
 
 reall= (struct state_vector ***) malloc(sizeof(struct state_vector**) * SIZE_OBJECT); //FIX 1
 for(i = 0; i < SIZE_OBJECT; i++){
@@ -671,7 +673,7 @@ if(initonce==1)
 
 for(int kk = 0; kk < HOW_MANY_FLUIDS  ; kk++)
 	{
-	for(ll = 0; ll < SIZE_OBJECT  ; ll+=2        )
+	for(ll = 0; ll < SIZE_OBJECT  ; ll+=1        )
 	{
 		 
 		  v= (Vec3 *)(V + 3*(KvvVENTALA[ll]-1));
@@ -709,7 +711,7 @@ for(int i=0; i<KvvVENTAL2*1; i++)
  
  	Vec3 *v ;  
 	int ll;
-	for(ll = 0; ll < KvvVENTAL2  ; ll+=5   )
+	for(ll = 0; ll < KvvVENTAL2  ; ll+=2   )
 	{
      	
 		  v= (Vec3 *)(V2 + 3*(KvvVENTALA2[ll]-1));
@@ -940,7 +942,7 @@ cool_once = 0;
  int xx = 0;
   // for(int xx = 0; xx <  TOTALFLAPPERS[kk]; xx++)  
 	//	  {
- int INDEX_NR___ =      state_result_worm_ventral_feather[ll][xx][kk].INDEX_NR ;
+ int INDEX_NR___ =      state_result_worm_ventral_feather[ll][xx][kk]  ;
  
  taskworm(kk,INDEX_NR___,0);
       
@@ -1265,7 +1267,7 @@ else
 	 	totalneigbours[ll][j] =total_molekules_nearby;
  
  
-  		state_result_worm_ventral_feather[ll][vc][j].INDEX_NR = INDEX___;
+  		state_result_worm_ventral_feather[ll][vc][j]  = INDEX___;
  	 
 		if(INDEX___ == c_m) break; 
 		 vel  = sqrtf(powf( state_result_worm_ventral[ll][vc][j].vel_new_x - state_result_worm_ventral[INDEX___][vc][j].vel_new_x ,2.0) +  powf( state_result_worm_ventral[ll][vc][j].vel_new_y - 			 state_result_worm_ventral[INDEX___][vc][j].vel_new_y ,2.0)  + powf( state_result_worm_ventral[ll][vc][j].vel_new_z - state_result_worm_ventral[INDEX___][vc][j].vel_new_z ,2.0  ));
@@ -1518,7 +1520,7 @@ int index3 = 2;
   
 	 
  
- glutPostRedisplay();
+ 
     
  
  
