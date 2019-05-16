@@ -19,7 +19,7 @@
 #include <jpeglib.h>
 #include <jerror.h>
 #include "noise.h"
-int totaln[20000] ;
+int totaln[50000] ;
 
 int c_m = 0;
 int cm2 = 0;
@@ -47,8 +47,8 @@ int pipe = 0;
 extern int KvvVENTAL2;
   struct state_vector  ** wall_info ; 
 double  neighbourV_[600000*2][11] ;
-double  neighbourV_m[20000][100] ;
-double  neighbourV_water[20000][100] ;
+double  neighbourV_m[50000][100] ;
+double  neighbourV_water[50000][100] ;
 double neigbours_wall_xyz[10000][100][4];
 int neigbours_wall[60000][400];
  double acc2_fluid[3][600000 ][12][10] ;
@@ -1034,7 +1034,7 @@ int largestFloat(float array[], int length){     // return type is int
     return max;
 } 
 int alloc_once_2 =1;
-double dist__[20000];
+double dist__[50000];
 void *ptree_____;
  int result________;
 void findnearestpoint_3_points (int points , int num,double r_collision, struct state_vector **vvv,int ll, int j )
