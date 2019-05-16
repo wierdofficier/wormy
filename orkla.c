@@ -296,7 +296,7 @@ if(  INDEX_NR > 0  )
 
 				float r = length(state_result_worm_ventral[INDEX_NR][k][howmanyfluids],state_result_worm_ventral[llll][k][howmanyfluids]);
 
-				if ( r != 0  &&    (r) <1.1  )
+				if ( r != 0  &&    (r) <10.1  )
 				{			
 					F_total[0][INDEX_NR][howmanyfluids][k] +=( springVector->pos_new_x  /  r ) * ( r - springlength ) * ( -springConstant );
 					F_total[1][INDEX_NR][howmanyfluids][k] += ( springVector->pos_new_y /  r ) * ( r - springlength ) * ( -springConstant );
@@ -368,7 +368,7 @@ if(  INDEX_NR > 0  )
 
 		float r = length(state_result_worm_ventral[INDEX_NR][k][howmanyfluids],state_result_worm_ventral[INDEX_NRmore][k][howmanyfluids]);
 
-		if ( r != 0  &&   (r) < 1.1    )
+		if ( r != 0  &&   (r) < 10.1    )
 		{	
  
 			F_total[0][INDEX_NR][howmanyfluids][k] +=( springVector->pos_new_x  /  r ) * ( r - springlength ) * ( -springConstant );
@@ -588,7 +588,7 @@ if(initonce==1)
 
 for(int kk = 0; kk < HOW_MANY_FLUIDS  ; kk++)
 	{
-	for(ll = 0; ll < SIZE_OBJECT  ; ll+=9       )
+	for(ll = 0; ll < SIZE_OBJECT  ; ll+=45       )
 	{
 		 
 		  v= (Vec3 *)(V + 3*(KvvVENTALA[ll]-1));
@@ -621,7 +621,7 @@ for(int i=0; i<KvvVENTAL2*1; i++)
  
  	Vec3 *v ;  
 	int ll;
-	for(ll = 0; ll < KvvVENTAL2  ; ll+=5  )
+	for(ll = 0; ll < KvvVENTAL2  ; ll+=10  )
 	{
      	
 		  v= (Vec3 *)(V2 + 3*(KvvVENTALA2[ll]-1));
@@ -729,7 +729,7 @@ struct state_vector       worm_ventral(struct state_vector        next_state, in
 
 	double z[6];
  	double t0[6] = {0,0,0,0,0,0};
- 	double tburn = 1.0;
+ 	double tburn = 0.01;
 	double tf[6] = {tburn,tburn,tburn,tburn,tburn,tburn};
 
 	z[0] =  next_state.pos_new_x;
@@ -839,7 +839,7 @@ cool_once = 0;
     glFrustum(-1.0, 1.0, -1.0, 1.0, 3.0, 25900.0);
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
-    gluLookAt(cameraEye[0]+0, cameraEye[1]+150, cameraEye[2]+700  , cameraLookAt[0], cameraLookAt[1], cameraLookAt[2], cameraUp[0], cameraUp[1], cameraUp[2]);
+    gluLookAt(cameraEye[0]+0, cameraEye[1]+150, cameraEye[2]+930  , cameraLookAt[0], cameraLookAt[1], cameraLookAt[2], cameraUp[0], cameraUp[1], cameraUp[2]);
     glTranslatef(1.0, 0.0, 0.0);
  
  //for(int kk = 0; kk <   HOW_MANY_FLUIDS; kk++)  
@@ -852,7 +852,7 @@ cool_once = 0;
  int xx = 0;
   // for(int xx = 0; xx <  TOTALFLAPPERS[kk]; xx++)  
 	//	  {
- int INDEX_NR___ =   ll;//  state_result_worm_ventral_feather[ll][xx][kk].INDEX_NR ;
+ int INDEX_NR___ =      state_result_worm_ventral_feather[ll][xx][kk].INDEX_NR ;
 
  taskworm(kk,ll,0);
       calc_fluid_velocity(INDEX_NR___,kk,xx);
@@ -904,37 +904,37 @@ void rates_dorsal ( double *t, double *f, double result[]   )
  
 if(state_result_worm_ventral[llll][k_flappers][howmanyfluids_g].force_sign == 1)
 {
-    	result[0] =             state_result_worm_ventral[llll][k_flappers][howmanyfluids_g].vel_new_x/60.0;
-    	result[1] =             state_result_worm_ventral[llll][k_flappers][howmanyfluids_g].vel_new_y/60.0;
-    	result[2] =             state_result_worm_ventral[llll][k_flappers][howmanyfluids_g].vel_new_z/60.0;
+    	result[0] =             state_result_worm_ventral[llll][k_flappers][howmanyfluids_g].vel_new_x/1.0;
+    	result[1] =             state_result_worm_ventral[llll][k_flappers][howmanyfluids_g].vel_new_y/1.0;
+    	result[2] =             state_result_worm_ventral[llll][k_flappers][howmanyfluids_g].vel_new_z/1.0;
   
-	result[3] = (F_total[0][llll][howmanyfluids_g][k_flappers]+acc2_fluid[0][llll][howmanyfluids_g][k_flappers])/(60.0   );
-	result[4] = (F_total[1][llll][howmanyfluids_g][k_flappers] +acc2_fluid[1][llll][howmanyfluids_g][k_flappers] + 9.8 )/(60.0   );
-	result[5] = (F_total[2][llll][howmanyfluids_g][k_flappers] +acc2_fluid[2][llll][howmanyfluids_g][k_flappers])/(60.0); 
+	result[3] = (F_total[0][llll][howmanyfluids_g][k_flappers]+acc2_fluid[0][llll][howmanyfluids_g][k_flappers])/(1.0   );
+	result[4] = (F_total[1][llll][howmanyfluids_g][k_flappers] +acc2_fluid[1][llll][howmanyfluids_g][k_flappers]    )/(1.0   )-9.8;
+	result[5] = (F_total[2][llll][howmanyfluids_g][k_flappers] +acc2_fluid[2][llll][howmanyfluids_g][k_flappers])/(1.0); 
 
  
 }
 else if(state_result_worm_ventral[INDEX_NR][k_flappers][howmanyfluids_g].force_sign == -1)
 {
-    result[0] =             state_result_worm_ventral[INDEX_NR][k_flappers][howmanyfluids_g].vel_new_x/60.0;
-    result[1] =             state_result_worm_ventral[INDEX_NR][k_flappers][howmanyfluids_g].vel_new_y/60.0;
-    result[2] =             state_result_worm_ventral[INDEX_NR][k_flappers][howmanyfluids_g].vel_new_z/60.0;
+    result[0] =             state_result_worm_ventral[INDEX_NR][k_flappers][howmanyfluids_g].vel_new_x/1.0;
+    result[1] =             state_result_worm_ventral[INDEX_NR][k_flappers][howmanyfluids_g].vel_new_y/1.0;
+    result[2] =             state_result_worm_ventral[INDEX_NR][k_flappers][howmanyfluids_g].vel_new_z/1.0;
   
-    result[3] = -(F_total[0][INDEX_NR][howmanyfluids_g][k_flappers]+acc2_fluid[0][INDEX_NR][howmanyfluids_g][k_flappers])/(60.0  );
-    result[4] = -(F_total[1][INDEX_NR][howmanyfluids_g][k_flappers]  +acc2_fluid[1][INDEX_NR][howmanyfluids_g][k_flappers]+ 9.8) /(60.0) ;
-    result[5] = -(F_total[2][INDEX_NR][howmanyfluids_g][k_flappers] +acc2_fluid[2][INDEX_NR][howmanyfluids_g][k_flappers])/(60.0  ); //522
+    result[3] = -(F_total[0][INDEX_NR][howmanyfluids_g][k_flappers]+acc2_fluid[0][INDEX_NR][howmanyfluids_g][k_flappers])/(1.0  );
+    result[4] = -(F_total[1][INDEX_NR][howmanyfluids_g][k_flappers]  +acc2_fluid[1][INDEX_NR][howmanyfluids_g][k_flappers] ) /(1.0) -9.8;
+    result[5] = -(F_total[2][INDEX_NR][howmanyfluids_g][k_flappers] +acc2_fluid[2][INDEX_NR][howmanyfluids_g][k_flappers])/(1.0  ); //522
  
 
 }
 else if(state_result_worm_ventral[INDEX_NRmore][k_flappers][howmanyfluids_g].force_sign == 1)
 {
-    	result[0] =             state_result_worm_ventral[INDEX_NRmore][k_flappers][howmanyfluids_g].vel_new_x/60.0;
-    	result[1] =             state_result_worm_ventral[INDEX_NRmore][k_flappers][howmanyfluids_g].vel_new_y/60.0;
-    	result[2] =             state_result_worm_ventral[INDEX_NRmore][k_flappers][howmanyfluids_g].vel_new_z/60.0;
+    	result[0] =             state_result_worm_ventral[INDEX_NRmore][k_flappers][howmanyfluids_g].vel_new_x/1.0;
+    	result[1] =             state_result_worm_ventral[INDEX_NRmore][k_flappers][howmanyfluids_g].vel_new_y/1.0;
+    	result[2] =             state_result_worm_ventral[INDEX_NRmore][k_flappers][howmanyfluids_g].vel_new_z/1.0;
   
-	result[3] = (F_total[0][INDEX_NRmore][howmanyfluids_g][k_flappers]+acc2_fluid[0][INDEX_NRmore][howmanyfluids_g][k_flappers])/(60.0   );
-	result[4] = (F_total[1][INDEX_NRmore][howmanyfluids_g][k_flappers]  +acc2_fluid[1][INDEX_NRmore][howmanyfluids_g][k_flappers]+ 9.8 )/(60.0     );
-	result[5] = (F_total[2][INDEX_NRmore][howmanyfluids_g][k_flappers] +acc2_fluid[2][INDEX_NRmore][howmanyfluids_g][k_flappers])/(60.0); 
+	result[3] = (F_total[0][INDEX_NRmore][howmanyfluids_g][k_flappers]+acc2_fluid[0][INDEX_NRmore][howmanyfluids_g][k_flappers])/(1.0   );
+	result[4] = (F_total[1][INDEX_NRmore][howmanyfluids_g][k_flappers]  +acc2_fluid[1][INDEX_NRmore][howmanyfluids_g][k_flappers] )/(1.0     )-9.8;
+	result[5] = (F_total[2][INDEX_NRmore][howmanyfluids_g][k_flappers] +acc2_fluid[2][INDEX_NRmore][howmanyfluids_g][k_flappers])/(1.0); 
 
  
 }
@@ -1245,7 +1245,11 @@ void calc_fluid_velocity(int ll, int j, int xxx)
  for(int n = 0; n < cm2; n++)
 	{
 		 
- 
+ double sqrtthis2 = sqrtf(powf( state_result_worm_ventral[ll][k_flappers][j].pos_new_x - wall_info[n]->pos_new_x ,2.0) +  powf( state_result_worm_ventral[ll][k_flappers][j].pos_new_y - 	wall_info[n]->pos_new_y ,2.0)  + powf( state_result_worm_ventral[ll][k_flappers][j].pos_new_z - wall_info[n ]->pos_new_z ,2.0  ));
+
+
+if(sqrtthis2 < 2 && sqrtthis2 > 1)
+{
 	double distance_from_origin_mini = sqrtf(powf( - state_result_worm_ventral[ll][k_flappers][j].pos_new_x    ,2.0) +  powf( state_result_worm_ventral[ll][k_flappers][j].pos_new_y-13.0   ,2.0)  + 				powf( state_result_worm_ventral[ll][k_flappers][j].pos_new_z -0 ,2.0  ));
 
 
@@ -1340,30 +1344,19 @@ if(index_wall[i] != i)
 
 
 }
- 
-float max_dist = sqrtthis_[0];
-int index3 = 0;
-for (  i = 0; i < totaln[n]+1; ++i)
-{
-  if (sqrtthis_[i] > max_dist)
-  {
-    max_dist = sqrtthis_[i];
-   index3 = i;
-  }
-}
 
- 
+ float min_dist  = sqrtthis_[0];
 
-float min_dist  = sqrtthis_[0];
+
 int index4 =6;
-for (  i = 0; i > totaln[n]+1; ++i)
-{
-  if (sqrtthis_[i] < min_dist)
-  {
-    min_dist = sqrtthis_[i];
-   index4 = i;
-  }
-} 
+float max_dist = sqrtthis_[0];
+int index3 = 3;
+ 
+
+ 
+
+
+ 
  
  //printf("maximum = %f :: max_dist = %f  index2 = %d :: index3 = %d :: %f :: %f :: %d\n", maximum, max_dist,index2,index3,neighbourV_[index3][0],neighbourV_[index2][0],totaln[n]);
 //printf("neigbours_wall[n][0] = %d :: %d \n",neigbours_wall[n][0],neigbours_wall[n][2]);
@@ -1391,13 +1384,7 @@ for (  i = 0; i > totaln[n]+1; ++i)
 //for(;;);
 			//v′ = f w − r u
  
- 			calculate_normal(aa ,bb ,cc ,normal);
- 
-          		dot(vel,normal,result2);
-			double result3[3];
-			result3[0]  = normal[0]* result2[0];
-			result3[1]   = normal[1]* result2[0];
-			result3[2]   = normal[2]* result2[0];
+ 		
 
 
  
@@ -1415,7 +1402,13 @@ for (  i = 0; i > totaln[n]+1; ++i)
 		else if ((sqrtthis)  > 0)	  
 			xxxx = sqrtf(sqrtthis );
 
-
+	calculate_normal(aa ,bb ,cc ,normal);
+ 
+          		dot(vel,normal,result2);
+			double result3[3];
+			result3[0]  = normal[0]* result2[0];
+			result3[1]   = normal[1]* result2[0];
+			result3[2]   = normal[2]* result2[0];
  if(fabs(normal[0]) > 0 && fabs(normal[1]) > 0 &&fabs(normal[2]) > 0 && xxxx < 1.2)
 {
 			state_result_worm_ventral[ll][k_flappers][j].vel_new_x  -=1*result3[0] ;
@@ -1433,7 +1426,7 @@ for (  i = 0; i > totaln[n]+1; ++i)
  
  
   }
-
+}
  // taskworm(j,ll,xxx);	
 }
  
