@@ -33,7 +33,8 @@
 #define RESET "\x1B[0m" 
 #define HOW_MANY_CHARGES 126976 //126976
 #define HOW_MANY_SPHERES 12
-double areatriangle[10000];
+double more = 0;
+double areatriangle[1000000];
  typedef struct {
 	float x, y, z;
 } Vec3;
@@ -380,6 +381,10 @@ int main()
 	for(ll = 0; ll < HOW_MANY_CHARGES     ; ll++)
 	{
  		findnearestcharge(HOW_MANY_CHARGES  ,state_result_e_motion,ll,0,0,0 );
+		more = more +areatriangle[ll];
+
+printf("area = %.13f\n",more);
+
 	}
 for(;;);
 	ind = 1;
@@ -606,13 +611,43 @@ static double dist_sq( double *a1, double *a2, int dims ) {
 void *ptree;
 int ptreeonce = 1;
 //find nearest charge from the charge in question
+double length[3];
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
+ 
+
+int compare (const void * a, const void * b)
+{
+  double fa = *(const double*) a;
+  double fb = *(const double*) b;
+  return (fa > fb) - (fa < fb);
+}
+
+ 
+ 
+int find_buddy_from_pos(int NUM, struct state_vector **real[]  ,int num,int k, int howm  )
+{
+int ll = 0;
+ 	while(ll < NUM)
+	{
+		if(state_result_e_motion[num][k]->pos_new_x ==real[ll][howm]->pos_new_x && state_result_e_motion[num][k]->pos_new_y ==real[ll][howm]->pos_new_y && 		state_result_e_motion[num][k]->pos_new_z ==real[ll][howm]->pos_new_z)
+		{
+			//printf("found index_____ @ %d \n", ll);
+			return ll;
+		}
+	ll++;
+	}
+}
 
 int findnearestcharge(int points,struct state_vector *** e_charge , int num,int howmany,int kk, int what_index ) {
 int i, num_pts = points;
 double dist[1000];
-double length[3];
+
 int indexbuddyfirst = 0;
 int indexbuddysecond = 0;
+int indexbuddysecond2 =0;
 int INDEX;
 char *data, *pch;
 struct kdres *presults;
@@ -670,8 +705,8 @@ while( !kd_res_end( presults ) ) {
 }
  
     
- if(num % 1000 ==0)
- 	printf("num @ %d \n", num);
+ //if(num % 1000 ==0)
+ //	printf("num @ %d \n", num);
 
  
 kd_res_next( presults );
@@ -679,59 +714,112 @@ kd_res_next( presults );
     /* go to the next entry */
 
 
-	float minimumfirst = dist[0];
-for (  i = 0; i < feather_count; ++i)
-{
+  
+
+    qsort (dist, feather_count, sizeof(double), compare);
+
+    for (i = 0; i < feather_count; i++)
+    {
+         printf ("%f ",dist[ i ]);
+    }
+     putchar('\n');
  
-  if (dist[i] < minimumfirst  )
-  {
-    minimumfirst = dist[i];
-    
-   indexbuddyfirst = i;
-  }
+    for (i = 0; i < feather_count; i++)
+    {
+		double deltax_first = e_charge[num][kk]->pos_new_x -e_charge[num][kk][i].near_buddy_posx;
+		double deltay_first =e_charge[num][kk]->pos_new_y -e_charge[num][kk][i].near_buddy_posy;
+		double deltaz_first =e_charge[num][kk]->pos_new_z -e_charge[num][kk][i].near_buddy_posz;
+		double l = sqrt(pow(deltax_first,2.0) + pow(deltay_first,2.0)+pow(deltaz_first,2.0));
+
+		if(l == dist[ 0 ])
+		 {
+			indexbuddyfirst = i;
+			
+			break;
+		}
+		
 }
- 
 
- //printf("#1 minium buddy distance @ %.20f with index %d \n", minimumfirst,indexbuddyfirst);
- 	float minimumsecond = dist[0];
-for (  i = 0; i < feather_count; ++i)
-{
- 	 printf("buddy distance @ %.20f  index = %d\n", dist[i],i);
-  if (dist[i] < minimumsecond    )
-  {
-if (dist[i] >  minimumfirst*1.01 )
-{
-    minimumsecond = dist[i];
-   indexbuddysecond = i;
+     
+
+
+    for (i = 0; i < feather_count; i++)
+    {
+	if( dist[i] > dist[0 ])
+		{
+			indexbuddysecond = i;
+			      printf ("indexbuddysecond = %d \n",indexbuddysecond);
+			break;
+		}
+    }
+    for (i = 0; i < feather_count; i++)
+    {
+		double deltax_first = e_charge[num][kk]->pos_new_x -e_charge[num][kk][i].near_buddy_posx;
+		double deltay_first =e_charge[num][kk]->pos_new_y -e_charge[num][kk][i].near_buddy_posy;
+		double deltaz_first =e_charge[num][kk]->pos_new_z -e_charge[num][kk][i].near_buddy_posz;
+		double l = sqrt(pow(deltax_first,2.0) + pow(deltay_first,2.0)+pow(deltaz_first,2.0));
+
+		if(l == dist[ indexbuddysecond ])
+		 {			 
+			indexbuddysecond2 = i;
+			printf ("dist = %f \n", l);
+			break;
+		}
+		
 }
- 
-  }
-}
-	 printf("#2 minium buddy distance @ %.20f #1 minium buddy distance @ %.20f \n", minimumsecond,minimumfirst);
-
-	 printf("#2 with index %d #1 with index %d \n", indexbuddysecond,indexbuddyfirst);
 
 
- printf( "node from (%.13f, %.13f, %.13f)  \n", 
-	e_charge[num][kk]->pos_new_x ,e_charge[num][kk]->pos_new_y,e_charge[num][kk]->pos_new_z );
 
 
- printf( "to node (%.13f, %.13f, %.13f)  \n", 
-	e_charge[num][kk][indexbuddyfirst].near_buddy_posx ,e_charge[num][kk][indexbuddyfirst].near_buddy_posy,e_charge[num][kk][indexbuddyfirst].near_buddy_posz );
+	 printf("#1 minium buddy distance @ %.20f #2 minium buddy distance @ %.20f \n", dist[0],dist[indexbuddysecond]);
 
- printf( "and node (%.13f, %.13f, %.13f)  \n", 
-	e_charge[num][kk][indexbuddysecond].near_buddy_posx ,e_charge[num][kk][indexbuddysecond].near_buddy_posy,e_charge[num][kk][indexbuddysecond].near_buddy_posz );
+	//  printf("#2 with index %d #1 with index %d \n", indexbuddysecond,indexbuddyfirst);
+
+
+ //printf( "node from (%.13f, %.13f, %.13f)  \n", 
+//	e_charge[num][kk]->pos_new_x ,e_charge[num][kk]->pos_new_y,e_charge[num][kk]->pos_new_z );
+
+
+// printf( "to node (%.13f, %.13f, %.13f)  \n", 
+	//e_charge[num][kk][indexbuddyfirst].near_buddy_posx ,e_charge[num][kk][indexbuddyfirst].near_buddy_posy,e_charge[num][kk][indexbuddyfirst].near_buddy_posz );
+
+ //printf( "and node (%.13f, %.13f, %.13f)  \n", 
+	//e_charge[num][kk][indexbuddysecond].near_buddy_posx ,e_charge[num][kk][indexbuddysecond].near_buddy_posy,e_charge[num][kk][indexbuddysecond].near_buddy_posz );
 //hjältens ekvation:
-length[0] = sqrt(pow(e_charge[num][kk]->pos_new_x,2.0) + pow(e_charge[num][kk]->pos_new_y,2.0)+pow(e_charge[num][kk]->pos_new_z,2.0));
-length[1] = sqrt(pow(e_charge[num][kk][indexbuddyfirst].near_buddy_posx ,2.0) + pow(e_charge[num][kk][indexbuddyfirst].near_buddy_posy,2.0)+pow(e_charge[num][kk][indexbuddyfirst].near_buddy_posz,2.0));
-length[2] =  sqrt(pow(e_charge[num][kk][indexbuddysecond].near_buddy_posx ,2.0) + pow(e_charge[num][kk][indexbuddysecond].near_buddy_posy,2.0)+pow(e_charge[num][kk][indexbuddyfirst].near_buddy_posz,2.0));
+double deltax_first = e_charge[num][kk]->pos_new_x -e_charge[num][kk][0].near_buddy_posx;
+double deltay_first =e_charge[num][kk]->pos_new_y -e_charge[num][kk][0].near_buddy_posy;
+double deltaz_first =e_charge[num][kk]->pos_new_z -e_charge[num][kk][0].near_buddy_posz;
 
+double deltax_third =e_charge[num][kk][0].near_buddy_posx-e_charge[num][kk][indexbuddysecond2].near_buddy_posx;
+double deltay_third =e_charge[num][kk][0].near_buddy_posy-e_charge[num][kk][indexbuddysecond2].near_buddy_posy;
+double deltaz_third =e_charge[num][kk][0].near_buddy_posz-e_charge[num][kk][indexbuddysecond2].near_buddy_posz;
+
+double deltax_second =e_charge[num][kk][indexbuddysecond2].near_buddy_posx - e_charge[num][kk]->pos_new_x;
+double deltay_second =e_charge[num][kk][indexbuddysecond2].near_buddy_posy - e_charge[num][kk]->pos_new_y;
+double deltaz_second =e_charge[num][kk][indexbuddysecond2].near_buddy_posz - e_charge[num][kk]->pos_new_z;
+ 
+length[0] = sqrt(pow(deltax_first,2.0) + pow(deltay_first,2.0)+pow(deltaz_first,2.0));
+
+length[1] = sqrt(pow(deltax_second,2.0) + pow(deltay_second,2.0)+pow(deltaz_second,2.0));
+
+length[2] = sqrt(pow(deltax_third,2.0) + pow(deltay_third,2.0)+pow(deltaz_third,2.0));
+
+
+printf( "and node (%.13f, %.13f, %.13f)  \n", 
+	length[0] ,length[1],length[2] );
 double perimeter = (length[0]+length[1]+length[2])/2.0;
 
 
-areatriangle[num] = sqrt(perimeter*(perimeter-length[0])*(perimeter-length[1])*(perimeter-length[2]));
+//areatriangle[num]  = sqrt(perimeter*(perimeter-length[0])*(perimeter-length[1])*(perimeter-length[2]));
+double a = length[0];
+double b = length[1];
+double c = length[2];
 
-printf("areatriangle[num] = %.13f\n",areatriangle[num] );
+
+areatriangle[num]  = 1.0/4.0*sqrt((a+(b+c))*(c-(a-b))*(c+(a-b))*(a+(b-c)));
+
+//printf("areatriangle[num] = %f\n",areatriangle[num] );
+
   feather_count = 0;
   /* free our tree, results set, and other allocated memory */
   //free( data );
