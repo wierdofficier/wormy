@@ -64,13 +64,15 @@ char ** fill_equation(char * line_buf, double ** data , int lll,char *  str[],ch
 
 	for(int ll = 0; ll < 16; ll++)
 	{			 			
-		char * ptr = strstr(  new_str2[lll]   , search[ll]);
+		char * ptr = strstr(  &new_str2[lll][ll]   , search[ll]);
 		if (ptr != NULL) /* Substring found */
 		{
-			sprintf(  buf1[ll]    ,"%f" ,data[lll][ll]  );		
-			new_str2[lll]  =  str_replace(   new_str2[lll]  ,search[ll],buf1 );
+			sprintf(  buf1[lll]   ,"%f" ,data[lll][ll]  );		
+			//printf("eq: =  %s  \n",buf1[ll]) ;
+			new_str2[lll]  =  str_replace(   new_str2[lll]  ,search[ll],buf1[lll] );
 		}	 
-	} 	    
+	} 
+		 	    
  return new_str2[lll] ;
 }
 
@@ -171,7 +173,7 @@ double a1[NUMEQ+1][16] ={{111,	381.64414414,	13.9549550,	52.72792206,	28305	,111
 				 
 				 }				
 			  	 new_str2[oooo] = fill_equation(line_buf,VARA1 ,oooo,0,0);
-			 	//  printf("eq: =  %s  \n",new_str2[oooo]) ;		 
+			 	//   printf("eq: =  %s  \n",new_str2[oooo]) ;		 
 				 result[oooo][0] = te_interp(new_str2[oooo], 0);
 				 if(  isnan(result[oooo][0])  != 0  ||  (result[oooo][0] >  100000) || (result[oooo][0]<  0)   || (result[oooo][0] == 0) || result[oooo][0] ==  fpos  || result[oooo][0] ==  fneg  )
 				 {					 
@@ -204,10 +206,10 @@ double a1[NUMEQ+1][16] ={{111,	381.64414414,	13.9549550,	52.72792206,	28305	,111
 	  	//  printf("po2: =  %.10f  %.10f \n",po,result[4][0]) ;
 		//sleep(1);
  		//sleep(1);
-
- 		//  if(fabs((result[0][0]))- po > 1.0 &&  ((result[0][0])  - po < 15.0))
-		//   if(fabs((result[1][0]))- po > 1.0 &&  ((result[1][0])  - po < 15.0))
-		//   if(fabs((result[2][0]))- po > 1.0 &&  ((result[2][0])  - po < 15.0))
+ 
+ 		  if(fabs((result[0][0]))- po > 1.0 &&  ((result[0][0])  - po < 3.0))
+		   if(fabs((result[1][0]))- po > 1.0 &&  ((result[1][0])  - po < 3.0))
+		   if(fabs((result[2][0]))- po > 1.0 &&  ((result[2][0])  - po < 3.0)) 
 		{
 		  	 for(  oooo = 0; oooo < NUMEQ; oooo++)	
 			 	 printf("eq: =  %s  :: %f \n",new_str2[oooo], result[oooo][0] ) ;
